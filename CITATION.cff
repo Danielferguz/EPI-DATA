@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "If you use EPI-DATA, please cite it as below."
+title: "EPI-DATA: browser-based epidemiological regression, survival, longitudinal and missing-data analysis with assumption checks"
+type: software
+authors:
+  - family-names: "Fernández-Guzmán"
+    given-names: "Daniel"
+version: "2026.10.16"
+date-released: "2026-10-16"
+license: CC-BY-NC-ND-4.0
+repository-code: "https://github.com/Danielferguz/EPI-DATA"
+keywords:
+  - epidemiology
+  - regression
+  - robust Poisson regression
+  - survival analysis
+  - longitudinal data
+  - multiple imputation
+  - missing data

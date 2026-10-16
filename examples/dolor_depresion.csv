@@ -1,0 +1,213 @@
+id,edad,grupo_edad,sexo,estado_civil,habitos_nocivos,relacion_familiar,comorbilidad,dolor_poliarticular,tiempo_dolor,intensidad_eva,intensidad_dolor,terapia_psicologia,terapia_fisica,phq9,depresion
+1,46.0,40 a 59 años,Masculino,Casado,No,Funcional,Sí,No,7 a 11 meses,,,No,No,13.0,Sí
+2,59.0,40 a 59 años,Masculino,Casado,No,Funcional,Sí,No,7 a 11 meses,4.3,Moderado,No,Sí,8.0,Sí
+3,31.0,20 a 39 años,Femenino,Casado,No,Funcional,No,No,3 a 6 meses,,,No,No,,Sí
+4,74.0,≥ 60 años,Masculino,Soltero,No,Funcional,Sí,No,≥ 12 meses,6.6,Moderado,No,Sí,4.0,No
+5,64.0,≥ 60 años,Femenino,Casado,No,Funcional,No,No,3 a 6 meses,7.0,Severo,No,No,8.0,No
+6,52.0,40 a 59 años,Masculino,Viudo/divorciado,No,Disfuncional,No,No,7 a 11 meses,3.4,Leve,No,Sí,2.0,No
+7,52.0,40 a 59 años,Masculino,Casado,No,Funcional,No,No,3 a 6 meses,1.4,Leve,No,Sí,10.0,No
+8,60.0,≥ 60 años,Femenino,Casado,No,Funcional,Sí,No,3 a 6 meses,6.5,Moderado,No,Sí,9.0,Sí
+9,53.0,40 a 59 años,Masculino,Casado,No,Funcional,Sí,No,≥ 12 meses,8.6,Severo,No,Sí,7.0,Sí
+10,53.0,40 a 59 años,Masculino,Soltero,Sí,Disfuncional,Sí,No,3 a 6 meses,8.8,Severo,No,No,8.0,Sí
+11,65.0,≥ 60 años,Masculino,Casado,No,Funcional,No,No,≥ 12 meses,6.0,Moderado,No,Sí,10.0,Sí
+12,63.0,≥ 60 años,Masculino,Conviviente,No,Funcional,No,No,3 a 6 meses,,,No,Sí,8.0,Sí
+13,55.0,40 a 59 años,Femenino,Conviviente,No,Funcional,Sí,No,≥ 12 meses,5.6,Moderado,No,Sí,8.0,No
+14,55.0,40 a 59 años,Masculino,,No,Funcional,Sí,No,≥ 12 meses,3.2,Leve,No,Sí,13.0,Sí
+15,58.0,40 a 59 años,Masculino,Casado,No,Funcional,Sí,Sí,3 a 6 meses,5.7,Moderado,No,No,10.0,Sí
+16,48.0,40 a 59 años,Femenino,Casado,Sí,Funcional,No,Sí,3 a 6 meses,8.0,Severo,No,No,12.0,No
+17,51.0,40 a 59 años,Femenino,Soltero,No,Disfuncional,Sí,Sí,7 a 11 meses,6.2,Moderado,No,Sí,8.0,Sí
+18,63.0,≥ 60 años,Femenino,Casado,No,Funcional,Sí,Sí,≥ 12 meses,4.9,Moderado,No,Sí,,Sí
+19,54.0,40 a 59 años,Masculino,Casado,No,Funcional,Sí,Sí,≥ 12 meses,6.1,Moderado,No,No,11.0,No
+20,38.0,20 a 39 años,Masculino,Viudo/divorciado,Sí,Funcional,Sí,Sí,≥ 12 meses,,,No,Sí,8.0,Sí
+21,50.0,40 a 59 años,Masculino,Soltero,No,Funcional,Sí,Sí,7 a 11 meses,6.3,Moderado,No,Sí,10.0,Sí
+22,65.0,≥ 60 años,Masculino,Casado,Sí,Disfuncional,No,No,≥ 12 meses,6.6,Moderado,No,Sí,6.0,Sí
+23,53.0,40 a 59 años,Masculino,Casado,No,Disfuncional,Sí,No,7 a 11 meses,6.7,Moderado,No,Sí,7.0,No
+24,54.0,40 a 59 años,Masculino,Viudo/divorciado,No,Funcional,Sí,Sí,≥ 12 meses,,,No,Sí,10.0,Sí
+25,64.0,≥ 60 años,Masculino,,No,Funcional,No,No,≥ 12 meses,6.2,Moderado,No,No,2.0,Sí
+26,80.0,≥ 60 años,Femenino,Viudo/divorciado,No,Funcional,Sí,Sí,3 a 6 meses,5.7,Moderado,No,Sí,15.0,Sí
+27,47.0,40 a 59 años,Masculino,Casado,No,Funcional,No,Sí,3 a 6 meses,6.7,Moderado,No,No,5.0,Sí
+28,74.0,≥ 60 años,Masculino,Casado,No,Funcional,Sí,No,3 a 6 meses,7.2,Severo,No,Sí,,No
+29,40.0,40 a 59 años,Femenino,Casado,No,Funcional,Sí,No,3 a 6 meses,2.5,Leve,No,Sí,8.0,Sí
+30,58.0,40 a 59 años,Femenino,Casado,No,Funcional,Sí,No,7 a 11 meses,8.3,Severo,No,No,8.0,Sí
+31,41.0,40 a 59 años,Femenino,Soltero,No,Funcional,Sí,No,3 a 6 meses,9.4,Severo,No,No,13.0,No
+32,74.0,≥ 60 años,Masculino,Casado,No,Funcional,Sí,No,3 a 6 meses,6.0,Moderado,No,Sí,10.0,Sí
+33,67.0,≥ 60 años,Femenino,Casado,No,Disfuncional,Sí,Sí,3 a 6 meses,7.2,Severo,No,No,10.0,Sí
+34,71.0,≥ 60 años,Femenino,Casado,No,Funcional,Sí,No,7 a 11 meses,4.5,Moderado,No,No,,Sí
+35,44.0,40 a 59 años,Masculino,Soltero,No,Disfuncional,No,Sí,3 a 6 meses,7.3,Severo,No,Sí,10.0,Sí
+36,65.0,≥ 60 años,Femenino,Casado,No,Disfuncional,Sí,No,3 a 6 meses,4.3,Moderado,Sí,No,,Sí
+37,49.0,40 a 59 años,Masculino,,No,Funcional,No,Sí,≥ 12 meses,6.3,Moderado,No,Sí,2.0,No
+38,50.0,40 a 59 años,Masculino,Casado,No,Funcional,Sí,No,3 a 6 meses,7.1,Severo,No,Sí,4.0,Sí
+39,63.0,≥ 60 años,Femenino,Viudo/divorciado,No,Disfuncional,Sí,No,≥ 12 meses,4.4,Moderado,No,Sí,11.0,No
+40,67.0,≥ 60 años,Femenino,Viudo/divorciado,No,Funcional,Sí,Sí,≥ 12 meses,3.8,Leve,No,Sí,6.0,Sí
+41,59.0,40 a 59 años,Masculino,,No,Disfuncional,Sí,No,7 a 11 meses,5.3,Moderado,No,Sí,4.0,Sí
+42,48.0,40 a 59 años,Masculino,Casado,No,Funcional,Sí,No,3 a 6 meses,4.9,Moderado,No,Sí,9.0,Sí
+43,45.0,40 a 59 años,Masculino,Viudo/divorciado,No,Funcional,Sí,Sí,≥ 12 meses,5.3,Moderado,No,Sí,11.0,Sí
+44,75.0,≥ 60 años,Femenino,Casado,No,Funcional,No,No,7 a 11 meses,3.8,Leve,No,Sí,4.0,Sí
+45,64.0,≥ 60 años,Masculino,Casado,No,Disfuncional,Sí,No,7 a 11 meses,,,No,No,8.0,Sí
+46,65.0,≥ 60 años,Masculino,Casado,No,Funcional,Sí,Sí,≥ 12 meses,5.4,Moderado,No,No,12.0,Sí
+47,84.0,≥ 60 años,Femenino,Casado,No,Disfuncional,Sí,No,3 a 6 meses,6.9,Moderado,No,No,10.0,Sí
+48,45.0,40 a 59 años,Femenino,Casado,No,Funcional,Sí,Sí,≥ 12 meses,2.7,Leve,No,Sí,8.0,No
+49,89.0,≥ 60 años,Femenino,Viudo/divorciado,No,Disfuncional,No,No,3 a 6 meses,,,No,Sí,8.0,Sí
+50,90.0,≥ 60 años,Masculino,Casado,No,Funcional,Sí,No,3 a 6 meses,9.2,Severo,No,Sí,12.0,Sí
+51,77.0,≥ 60 años,Masculino,Casado,No,Funcional,No,No,3 a 6 meses,4.2,Moderado,No,Sí,3.0,Sí
+52,67.0,≥ 60 años,Masculino,Viudo/divorciado,No,Disfuncional,No,No,≥ 12 meses,6.6,Moderado,Sí,Sí,5.0,Sí
+53,47.0,40 a 59 años,Masculino,Casado,No,Funcional,No,No,≥ 12 meses,10.0,Severo,No,Sí,10.0,No
+54,69.0,≥ 60 años,Masculino,Conviviente,No,Funcional,Sí,No,≥ 12 meses,6.0,Moderado,No,Sí,,Sí
+55,50.0,40 a 59 años,Masculino,Conviviente,No,Funcional,Sí,No,7 a 11 meses,9.0,Severo,No,Sí,12.0,No
+56,56.0,40 a 59 años,Femenino,Soltero,No,Funcional,Sí,No,≥ 12 meses,4.2,Moderado,Sí,Sí,10.0,Sí
+57,52.0,40 a 59 años,Masculino,Soltero,No,Disfuncional,Sí,No,3 a 6 meses,5.0,Moderado,No,Sí,5.0,Sí
+58,60.0,≥ 60 años,Masculino,Viudo/divorciado,No,Funcional,Sí,No,7 a 11 meses,5.9,Moderado,No,Sí,8.0,Sí
+59,73.0,≥ 60 años,Femenino,Viudo/divorciado,No,Disfuncional,Sí,No,≥ 12 meses,,,Sí,Sí,14.0,Sí
+60,49.0,40 a 59 años,Femenino,Conviviente,No,Funcional,Sí,No,≥ 12 meses,6.7,Moderado,Sí,No,14.0,Sí
+61,43.0,40 a 59 años,Femenino,Casado,No,Funcional,Sí,No,≥ 12 meses,2.4,Leve,No,Sí,8.0,Sí
+62,43.0,40 a 59 años,Femenino,,No,Disfuncional,Sí,No,3 a 6 meses,,,Sí,Sí,11.0,Sí
+63,43.0,40 a 59 años,Femenino,Casado,Sí,Disfuncional,No,No,≥ 12 meses,8.6,Severo,No,Sí,3.0,Sí
+64,37.0,20 a 39 años,Masculino,Viudo/divorciado,No,Funcional,Sí,No,≥ 12 meses,6.2,Moderado,No,No,6.0,Sí
+65,44.0,40 a 59 años,Femenino,,No,Funcional,Sí,No,3 a 6 meses,7.0,Severo,No,Sí,14.0,Sí
+66,73.0,≥ 60 años,Masculino,Viudo/divorciado,No,Funcional,Sí,No,≥ 12 meses,9.3,Severo,No,Sí,9.0,Sí
+67,48.0,40 a 59 años,Masculino,Casado,No,Funcional,Sí,No,3 a 6 meses,2.5,Leve,No,No,9.0,No
+68,59.0,40 a 59 años,Femenino,Casado,No,Funcional,No,No,≥ 12 meses,0.0,Leve,No,Sí,9.0,No
+69,40.0,40 a 59 años,Masculino,Casado,No,Funcional,Sí,No,3 a 6 meses,9.5,Severo,No,Sí,11.0,Sí
+70,58.0,40 a 59 años,Femenino,Casado,No,Funcional,Sí,No,7 a 11 meses,3.2,Leve,No,Sí,9.0,Sí
+71,33.0,20 a 39 años,Masculino,Casado,No,Funcional,No,No,≥ 12 meses,6.1,Moderado,No,Sí,3.0,No
+72,47.0,40 a 59 años,Masculino,Casado,No,Funcional,Sí,No,3 a 6 meses,2.7,Leve,No,Sí,1.0,No
+73,85.0,≥ 60 años,Masculino,,No,Disfuncional,Sí,No,≥ 12 meses,0.9,Leve,No,Sí,,Sí
+74,48.0,40 a 59 años,Masculino,Casado,No,Funcional,Sí,No,3 a 6 meses,5.8,Moderado,No,Sí,6.0,Sí
+75,71.0,≥ 60 años,Femenino,Casado,Sí,Funcional,Sí,No,3 a 6 meses,6.9,Moderado,No,No,11.0,No
+76,62.0,≥ 60 años,Femenino,Viudo/divorciado,No,Funcional,Sí,No,≥ 12 meses,4.3,Moderado,No,Sí,9.0,No
+77,54.0,40 a 59 años,Masculino,Casado,No,Funcional,Sí,No,7 a 11 meses,0.9,Leve,Sí,No,13.0,Sí
+78,48.0,40 a 59 años,Masculino,Conviviente,Sí,Funcional,Sí,No,3 a 6 meses,6.6,Moderado,No,No,4.0,No
+79,73.0,≥ 60 años,Masculino,Viudo/divorciado,No,Funcional,Sí,Sí,≥ 12 meses,9.7,Severo,Sí,No,8.0,Sí
+80,54.0,40 a 59 años,Masculino,Casado,No,Funcional,Sí,No,3 a 6 meses,2.5,Leve,Sí,Sí,11.0,Sí
+81,76.0,≥ 60 años,Masculino,Conviviente,No,Disfuncional,Sí,Sí,≥ 12 meses,7.5,Severo,No,Sí,17.0,Sí
+82,47.0,40 a 59 años,Masculino,Conviviente,No,Funcional,Sí,No,7 a 11 meses,,,No,Sí,,Sí
+83,57.0,40 a 59 años,Masculino,Casado,No,Funcional,No,No,≥ 12 meses,2.2,Leve,No,No,4.0,No
+84,62.0,≥ 60 años,Masculino,Soltero,No,Funcional,No,Sí,3 a 6 meses,8.0,Severo,No,No,11.0,Sí
+85,61.0,≥ 60 años,Masculino,Viudo/divorciado,No,Funcional,Sí,No,3 a 6 meses,,,No,No,12.0,No
+86,40.0,40 a 59 años,Masculino,Viudo/divorciado,No,Funcional,No,Sí,3 a 6 meses,5.7,Moderado,No,Sí,3.0,No
+87,47.0,40 a 59 años,Femenino,Conviviente,No,Funcional,Sí,No,3 a 6 meses,8.5,Severo,No,Sí,9.0,Sí
+88,53.0,40 a 59 años,Masculino,Casado,No,Disfuncional,Sí,No,3 a 6 meses,6.0,Moderado,No,No,10.0,No
+89,45.0,40 a 59 años,Femenino,Soltero,No,Funcional,No,No,≥ 12 meses,,,No,Sí,8.0,Sí
+90,65.0,≥ 60 años,Femenino,Viudo/divorciado,Sí,Funcional,No,No,3 a 6 meses,10.0,Severo,No,Sí,6.0,Sí
+91,64.0,≥ 60 años,Masculino,Viudo/divorciado,No,Funcional,No,No,7 a 11 meses,,,No,Sí,,No
+92,31.0,20 a 39 años,Masculino,Casado,No,Funcional,No,No,7 a 11 meses,,,No,Sí,,No
+93,33.0,20 a 39 años,Masculino,Viudo/divorciado,No,Funcional,Sí,No,3 a 6 meses,4.8,Moderado,No,No,2.0,No
+94,39.0,20 a 39 años,Masculino,Soltero,No,Funcional,Sí,No,7 a 11 meses,9.0,Severo,No,Sí,9.0,No
+95,58.0,40 a 59 años,Masculino,Viudo/divorciado,No,Funcional,Sí,No,7 a 11 meses,3.5,Leve,No,No,4.0,Sí
+96,82.0,≥ 60 años,Femenino,Casado,No,Funcional,No,No,≥ 12 meses,5.0,Moderado,No,No,7.0,No
+97,51.0,40 a 59 años,Femenino,Viudo/divorciado,No,Disfuncional,Sí,No,3 a 6 meses,5.9,Moderado,No,Sí,5.0,Sí
+98,59.0,40 a 59 años,Masculino,Soltero,No,Funcional,Sí,Sí,3 a 6 meses,5.6,Moderado,No,No,10.0,Sí
+99,42.0,40 a 59 años,Femenino,Casado,No,Funcional,Sí,No,3 a 6 meses,4.6,Moderado,No,No,7.0,Sí
+100,42.0,40 a 59 años,Masculino,Conviviente,No,Funcional,Sí,No,3 a 6 meses,7.8,Severo,No,No,8.0,Sí
+101,31.0,20 a 39 años,Femenino,Casado,No,Funcional,Sí,Sí,≥ 12 meses,5.4,Moderado,No,No,4.0,Sí
+102,56.0,40 a 59 años,Masculino,Soltero,No,Funcional,Sí,No,7 a 11 meses,1.7,Leve,No,No,8.0,Sí
+103,68.0,≥ 60 años,Masculino,Conviviente,No,Funcional,No,No,7 a 11 meses,8.3,Severo,No,Sí,,No
+104,51.0,40 a 59 años,Femenino,Conviviente,No,Disfuncional,Sí,Sí,3 a 6 meses,9.5,Severo,No,Sí,9.0,Sí
+105,74.0,≥ 60 años,Femenino,Viudo/divorciado,No,Funcional,Sí,No,≥ 12 meses,4.9,Moderado,No,Sí,10.0,Sí
+106,59.0,40 a 59 años,Masculino,Soltero,No,Funcional,No,No,≥ 12 meses,8.7,Severo,No,Sí,10.0,Sí
+107,56.0,40 a 59 años,Femenino,Casado,No,Funcional,Sí,No,3 a 6 meses,4.9,Moderado,No,Sí,13.0,Sí
+108,63.0,≥ 60 años,Masculino,Soltero,No,Disfuncional,No,No,≥ 12 meses,4.0,Moderado,No,Sí,6.0,No
+109,62.0,≥ 60 años,Femenino,Conviviente,No,Funcional,Sí,No,3 a 6 meses,4.2,Moderado,No,Sí,9.0,Sí
+110,71.0,≥ 60 años,Femenino,Casado,No,Funcional,Sí,Sí,7 a 11 meses,9.3,Severo,No,Sí,9.0,Sí
+111,46.0,40 a 59 años,Masculino,Casado,No,Disfuncional,Sí,No,3 a 6 meses,8.7,Severo,No,Sí,7.0,No
+112,26.0,20 a 39 años,Femenino,Casado,No,Disfuncional,Sí,No,≥ 12 meses,7.4,Severo,No,No,12.0,Sí
+113,57.0,40 a 59 años,Masculino,Viudo/divorciado,No,Funcional,Sí,No,3 a 6 meses,4.0,Moderado,No,Sí,6.0,Sí
+114,48.0,40 a 59 años,Femenino,Viudo/divorciado,No,Funcional,Sí,No,3 a 6 meses,7.6,Severo,No,Sí,15.0,Sí
+115,56.0,40 a 59 años,Femenino,Casado,No,Funcional,Sí,No,3 a 6 meses,3.8,Leve,No,Sí,5.0,No
+116,78.0,≥ 60 años,Femenino,Casado,Sí,Disfuncional,Sí,No,7 a 11 meses,7.3,Severo,No,Sí,10.0,Sí
+117,42.0,40 a 59 años,Femenino,Viudo/divorciado,No,Funcional,No,No,3 a 6 meses,4.9,Moderado,No,Sí,5.0,Sí
+118,66.0,≥ 60 años,Masculino,Conviviente,No,Funcional,Sí,No,3 a 6 meses,4.9,Moderado,No,No,6.0,Sí
+119,68.0,≥ 60 años,Femenino,Viudo/divorciado,No,Funcional,Sí,No,3 a 6 meses,5.0,Moderado,No,Sí,8.0,No
+120,62.0,≥ 60 años,Femenino,Conviviente,No,Disfuncional,Sí,No,≥ 12 meses,1.9,Leve,No,No,8.0,Sí
+121,71.0,≥ 60 años,Masculino,Casado,No,Funcional,No,No,3 a 6 meses,2.5,Leve,No,Sí,7.0,No
+122,50.0,40 a 59 años,Masculino,Casado,No,Funcional,No,No,3 a 6 meses,5.7,Moderado,No,Sí,5.0,No
+123,47.0,40 a 59 años,Masculino,Casado,No,Funcional,Sí,No,3 a 6 meses,3.9,Leve,No,No,10.0,No
+124,70.0,≥ 60 años,Masculino,Viudo/divorciado,No,Funcional,Sí,No,7 a 11 meses,7.6,Severo,No,No,17.0,Sí
+125,65.0,≥ 60 años,Femenino,Casado,No,Disfuncional,Sí,No,3 a 6 meses,8.3,Severo,No,No,,Sí
+126,74.0,≥ 60 años,Masculino,Casado,No,Funcional,No,No,≥ 12 meses,2.9,Leve,No,Sí,8.0,Sí
+127,59.0,40 a 59 años,Femenino,Soltero,No,Disfuncional,No,No,7 a 11 meses,3.0,Leve,No,Sí,4.0,Sí
+128,77.0,≥ 60 años,Masculino,Casado,No,Disfuncional,Sí,No,3 a 6 meses,5.7,Moderado,No,Sí,7.0,Sí
+129,52.0,40 a 59 años,Masculino,Casado,No,Funcional,Sí,No,3 a 6 meses,9.9,Severo,No,Sí,4.0,No
+130,42.0,40 a 59 años,Masculino,Viudo/divorciado,No,Funcional,Sí,No,≥ 12 meses,4.4,Moderado,No,Sí,,No
+131,30.0,20 a 39 años,Femenino,Soltero,Sí,Disfuncional,Sí,No,3 a 6 meses,7.0,Severo,No,Sí,4.0,Sí
+132,42.0,40 a 59 años,Masculino,Soltero,No,Disfuncional,No,No,3 a 6 meses,2.7,Leve,No,Sí,7.0,No
+133,67.0,≥ 60 años,Masculino,Viudo/divorciado,No,Funcional,Sí,No,3 a 6 meses,4.2,Moderado,No,Sí,6.0,Sí
+134,37.0,20 a 39 años,Masculino,Soltero,No,Funcional,No,Sí,≥ 12 meses,6.9,Moderado,No,Sí,7.0,No
+135,50.0,40 a 59 años,Masculino,Viudo/divorciado,No,Funcional,Sí,No,≥ 12 meses,,,Sí,Sí,11.0,Sí
+136,83.0,≥ 60 años,Femenino,Soltero,No,Disfuncional,Sí,No,≥ 12 meses,7.0,Severo,No,No,6.0,No
+137,67.0,≥ 60 años,Masculino,Conviviente,No,Funcional,Sí,No,≥ 12 meses,6.2,Moderado,No,No,,Sí
+138,79.0,≥ 60 años,Femenino,Casado,No,Funcional,Sí,No,≥ 12 meses,5.9,Moderado,No,Sí,11.0,Sí
+139,43.0,40 a 59 años,Femenino,Casado,Sí,Funcional,Sí,Sí,≥ 12 meses,5.9,Moderado,No,Sí,11.0,Sí
+140,24.0,20 a 39 años,Femenino,Conviviente,No,Disfuncional,Sí,No,3 a 6 meses,8.7,Severo,No,Sí,11.0,Sí
+141,76.0,≥ 60 años,Masculino,Casado,No,Funcional,No,Sí,7 a 11 meses,5.8,Moderado,No,Sí,7.0,Sí
+142,38.0,20 a 39 años,Femenino,Casado,No,Funcional,No,No,≥ 12 meses,7.7,Severo,Sí,Sí,9.0,No
+143,57.0,40 a 59 años,Masculino,Soltero,No,Funcional,No,Sí,3 a 6 meses,5.4,Moderado,No,Sí,12.0,Sí
+144,59.0,40 a 59 años,Femenino,Soltero,No,Funcional,No,No,7 a 11 meses,6.1,Moderado,No,No,7.0,Sí
+145,44.0,40 a 59 años,Masculino,Casado,No,Funcional,No,Sí,≥ 12 meses,3.8,Leve,No,Sí,9.0,No
+146,76.0,≥ 60 años,Masculino,Casado,Sí,Disfuncional,Sí,No,3 a 6 meses,1.7,Leve,No,Sí,8.0,Sí
+147,76.0,≥ 60 años,Masculino,Conviviente,No,Funcional,Sí,Sí,≥ 12 meses,,,No,Sí,5.0,Sí
+148,63.0,≥ 60 años,Femenino,Casado,No,Disfuncional,Sí,No,≥ 12 meses,6.1,Moderado,No,Sí,10.0,No
+149,56.0,40 a 59 años,Masculino,Conviviente,No,Funcional,Sí,No,3 a 6 meses,,,No,Sí,9.0,Sí
+150,58.0,40 a 59 años,Femenino,Casado,No,Funcional,Sí,No,≥ 12 meses,7.0,Severo,No,Sí,13.0,No
+151,42.0,40 a 59 años,Masculino,Viudo/divorciado,No,Funcional,Sí,No,3 a 6 meses,4.3,Moderado,No,Sí,4.0,No
+152,53.0,40 a 59 años,Femenino,Casado,No,Funcional,Sí,No,7 a 11 meses,3.1,Leve,No,Sí,6.0,No
+153,55.0,40 a 59 años,Masculino,Casado,No,Disfuncional,Sí,No,3 a 6 meses,3.0,Leve,No,Sí,1.0,Sí
+154,45.0,40 a 59 años,Masculino,Casado,No,Funcional,Sí,No,≥ 12 meses,7.2,Severo,Sí,Sí,12.0,Sí
+155,67.0,≥ 60 años,Femenino,Conviviente,No,Funcional,No,No,3 a 6 meses,4.3,Moderado,No,Sí,,Sí
+156,37.0,20 a 39 años,Masculino,Viudo/divorciado,No,Funcional,Sí,No,3 a 6 meses,5.9,Moderado,No,Sí,5.0,No
+157,50.0,40 a 59 años,Masculino,Casado,No,Funcional,No,No,3 a 6 meses,3.1,Leve,No,No,4.0,No
+158,27.0,20 a 39 años,Masculino,Casado,No,Funcional,Sí,No,≥ 12 meses,4.2,Moderado,No,Sí,6.0,No
+159,62.0,≥ 60 años,Masculino,Casado,No,Disfuncional,Sí,Sí,≥ 12 meses,5.8,Moderado,No,Sí,14.0,Sí
+160,66.0,≥ 60 años,Masculino,Soltero,No,Funcional,No,No,≥ 12 meses,8.0,Severo,No,Sí,10.0,Sí
+161,64.0,≥ 60 años,Masculino,Casado,Sí,Disfuncional,Sí,No,3 a 6 meses,3.7,Leve,No,Sí,11.0,No
+162,90.0,≥ 60 años,Masculino,Viudo/divorciado,No,Funcional,Sí,Sí,≥ 12 meses,3.0,Leve,No,Sí,,Sí
+163,68.0,≥ 60 años,Femenino,Casado,No,Funcional,No,No,≥ 12 meses,5.8,Moderado,No,No,6.0,Sí
+164,44.0,40 a 59 años,Masculino,Conviviente,Sí,Funcional,Sí,Sí,3 a 6 meses,6.2,Moderado,No,No,12.0,Sí
+165,90.0,≥ 60 años,Masculino,Soltero,No,Funcional,No,No,3 a 6 meses,,,No,Sí,2.0,Sí
+166,44.0,40 a 59 años,Femenino,Casado,No,Funcional,Sí,No,3 a 6 meses,8.3,Severo,Sí,Sí,13.0,Sí
+167,66.0,≥ 60 años,Masculino,Casado,No,Funcional,Sí,No,≥ 12 meses,2.4,Leve,No,Sí,4.0,Sí
+168,66.0,≥ 60 años,Masculino,Viudo/divorciado,No,Disfuncional,Sí,No,7 a 11 meses,4.2,Moderado,No,Sí,10.0,No
+169,45.0,40 a 59 años,Masculino,Casado,No,Funcional,Sí,No,3 a 6 meses,5.8,Moderado,No,No,9.0,Sí
+170,74.0,≥ 60 años,Femenino,Viudo/divorciado,No,Funcional,Sí,No,7 a 11 meses,4.1,Moderado,No,Sí,,No
+171,61.0,≥ 60 años,Femenino,Casado,No,Funcional,Sí,Sí,≥ 12 meses,6.5,Moderado,Sí,No,13.0,Sí
+172,63.0,≥ 60 años,Masculino,Conviviente,No,Funcional,Sí,No,7 a 11 meses,5.8,Moderado,No,Sí,5.0,Sí
+173,47.0,40 a 59 años,Femenino,Soltero,No,Funcional,Sí,No,7 a 11 meses,5.3,Moderado,No,Sí,5.0,Sí
+174,73.0,≥ 60 años,Femenino,Viudo/divorciado,No,Disfuncional,Sí,No,≥ 12 meses,10.0,Severo,No,Sí,10.0,Sí
+175,45.0,40 a 59 años,Femenino,Casado,No,Disfuncional,No,No,3 a 6 meses,3.9,Leve,No,Sí,4.0,No
+176,33.0,20 a 39 años,Masculino,,No,Funcional,Sí,No,3 a 6 meses,,,No,Sí,10.0,Sí
+177,75.0,≥ 60 años,Masculino,,No,Funcional,Sí,No,≥ 12 meses,6.8,Moderado,No,Sí,,No
+178,50.0,40 a 59 años,Masculino,Viudo/divorciado,No,Funcional,Sí,No,3 a 6 meses,4.3,Moderado,No,Sí,7.0,No
+179,57.0,40 a 59 años,Masculino,Conviviente,No,Funcional,No,No,7 a 11 meses,6.1,Moderado,No,Sí,6.0,Sí
+180,81.0,≥ 60 años,Masculino,Casado,No,Disfuncional,Sí,No,≥ 12 meses,7.5,Severo,No,Sí,13.0,Sí
+181,71.0,≥ 60 años,Femenino,Viudo/divorciado,No,Funcional,Sí,No,3 a 6 meses,6.3,Moderado,No,Sí,,Sí
+182,64.0,≥ 60 años,Masculino,Casado,Sí,Funcional,No,No,≥ 12 meses,7.3,Severo,No,No,9.0,No
+183,70.0,≥ 60 años,Femenino,Casado,No,Funcional,Sí,No,≥ 12 meses,5.1,Moderado,No,Sí,3.0,Sí
+184,47.0,40 a 59 años,Masculino,Soltero,No,Disfuncional,Sí,Sí,3 a 6 meses,5.3,Moderado,No,Sí,6.0,Sí
+185,66.0,≥ 60 años,Femenino,Viudo/divorciado,No,Funcional,Sí,No,7 a 11 meses,9.7,Severo,No,No,6.0,Sí
+186,70.0,≥ 60 años,Masculino,Viudo/divorciado,No,Funcional,Sí,No,3 a 6 meses,6.8,Moderado,No,No,,No
+187,66.0,≥ 60 años,Femenino,Casado,No,Funcional,Sí,No,≥ 12 meses,7.8,Severo,No,No,13.0,No
+188,53.0,40 a 59 años,Femenino,Soltero,No,Disfuncional,Sí,No,≥ 12 meses,4.5,Moderado,No,Sí,7.0,No
+189,20.0,20 a 39 años,Femenino,Soltero,No,Disfuncional,Sí,No,3 a 6 meses,5.4,Moderado,No,Sí,12.0,Sí
+190,63.0,≥ 60 años,Masculino,Casado,No,Funcional,No,No,3 a 6 meses,8.2,Severo,No,No,12.0,Sí
+191,57.0,40 a 59 años,Masculino,Soltero,No,Funcional,Sí,No,3 a 6 meses,6.0,Moderado,No,Sí,7.0,Sí
+192,51.0,40 a 59 años,Femenino,Viudo/divorciado,No,Disfuncional,No,Sí,≥ 12 meses,3.4,Leve,No,No,6.0,Sí
+193,66.0,≥ 60 años,Masculino,Casado,No,Funcional,Sí,No,≥ 12 meses,4.0,Moderado,No,No,6.0,Sí
+194,59.0,40 a 59 años,Masculino,Casado,No,Funcional,Sí,No,7 a 11 meses,,,No,Sí,0.0,Sí
+195,59.0,40 a 59 años,Masculino,Conviviente,No,Funcional,Sí,No,7 a 11 meses,9.0,Severo,Sí,Sí,10.0,Sí
+196,37.0,20 a 39 años,Masculino,Viudo/divorciado,No,Funcional,Sí,No,≥ 12 meses,6.9,Moderado,No,Sí,6.0,No
+197,37.0,20 a 39 años,Masculino,Conviviente,No,Funcional,Sí,No,≥ 12 meses,4.3,Moderado,No,Sí,5.0,No
+198,61.0,≥ 60 años,Femenino,Viudo/divorciado,No,Funcional,Sí,No,3 a 6 meses,5.8,Moderado,No,Sí,6.0,Sí
+199,57.0,40 a 59 años,Femenino,Viudo/divorciado,No,Funcional,No,No,≥ 12 meses,6.0,Moderado,No,Sí,6.0,Sí
+200,58.0,40 a 59 años,Masculino,Soltero,No,Disfuncional,No,No,3 a 6 meses,2.5,Leve,No,Sí,5.0,No
+201,58.0,40 a 59 años,Masculino,Soltero,No,Disfuncional,Sí,No,3 a 6 meses,5.8,Moderado,No,No,8.0,No
+202,61.0,≥ 60 años,Masculino,Casado,No,Funcional,Sí,No,≥ 12 meses,5.2,Moderado,No,Sí,5.0,Sí
+203,56.0,40 a 59 años,Masculino,Casado,Sí,Disfuncional,Sí,Sí,3 a 6 meses,5.6,Moderado,No,Sí,15.0,Sí
+204,58.0,40 a 59 años,Femenino,Viudo/divorciado,No,Funcional,No,No,≥ 12 meses,4.1,Moderado,No,No,8.0,Sí
+205,59.0,40 a 59 años,Femenino,Casado,No,Disfuncional,Sí,No,7 a 11 meses,6.6,Moderado,No,Sí,8.0,Sí
+206,68.0,≥ 60 años,Femenino,Casado,No,Funcional,No,No,7 a 11 meses,5.0,Moderado,Sí,No,,No
+207,49.0,40 a 59 años,Masculino,Casado,No,Funcional,Sí,No,≥ 12 meses,4.3,Moderado,Sí,Sí,6.0,No
+208,66.0,≥ 60 años,Masculino,Casado,No,Funcional,Sí,No,3 a 6 meses,9.6,Severo,No,Sí,12.0,Sí
+209,64.0,≥ 60 años,Femenino,Conviviente,No,Funcional,Sí,No,≥ 12 meses,5.1,Moderado,No,Sí,8.0,Sí
+210,57.0,40 a 59 años,Masculino,Viudo/divorciado,No,Funcional,Sí,No,3 a 6 meses,3.1,Leve,No,Sí,8.0,Sí
+211,50.0,40 a 59 años,Masculino,Casado,No,Disfuncional,Sí,No,≥ 12 meses,,,No,No,10.0,Sí
+212,61.0,≥ 60 años,Femenino,Viudo/divorciado,No,Funcional,Sí,No,3 a 6 meses,8.7,Severo,No,Sí,9.0,No

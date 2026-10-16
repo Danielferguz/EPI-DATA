@@ -1,5 +1,18 @@
 // Contenido de la pestaña «Métodos y ayuda».
 export const HELP_HTML = `
+<h2>EPI-DATA en 8 pasos</h2>
+<ol>
+<li><b>Datos:</b> cargue su base o un ejemplo de nefrología; corrija nombres, tipos, categoría de referencia y de evento; renombre o agrupe categorías.</li>
+<li><b>Base de datos:</b> revise todas las filas; los datos perdidos aparecen sombreados.</li>
+<li><b>Pregunta y modelo:</b> elija el objetivo (causal, explicativo o predictivo), el desenlace, la exposición o variable de intervención y las covariables.</li>
+<li><b>Descriptivo:</b> Tabla 1 por grupos.</li>
+<li><b>Datos perdidos:</b> magnitud, pérdida según exposición y desenlace, MCAR/MAR/MNAR e imputación múltiple con método por variable.</li>
+<li><b>Resultados:</b> elija cómo tratar los perdidos (casos completos, imputación simple o múltiple) y compare con y sin imputación; forest con n, resumen del desenlace por grupo y estimados crudo y ajustado; interpretación en lenguaje sencillo; supuestos al final con explicación.</li>
+<li><b>Modelización:</b> selección de covariables, confusión, modificación de efecto y comparación de modelos.</li>
+<li><b>Reporte:</b> métodos y tablas para el manuscrito.</li>
+</ol>
+<h2>Falacia de la Tabla 2</h2>
+<p>En un modelo construido para estimar el efecto causal de una intervención, el coeficiente de cada confusor <b>no</b> es el efecto de ese confusor: para estimarlo habría que ajustar por otro conjunto de variables (sus propios confusores) y no ajustar por sus mediadores, entre ellos la propia intervención. Presentar e interpretar todos los coeficientes de un modelo multivariable como «factores de riesgo» es la falacia de la Tabla 2 (Westreich y Greenland, Am J Epidemiol 2013;177:292-8). Por eso, cuando el objetivo es causal, EPI-DATA muestra por defecto solo el efecto de la intervención.</p>
 <h2>Flujo de trabajo</h2>
 <ol>
 <li><b>Datos.</b> Suba un CSV o Excel con una fila por participante (o por medición, en datos longitudinales). Revise el tipo de cada variable, la <b>categoría de referencia</b> y, en desenlaces binarios, la categoría de <b>evento</b>. Genere la Tabla 1.</li>
@@ -64,5 +77,5 @@ export const HELP_HTML = `
 <p>Los motores se comparan con statsmodels y scipy (MCO y HC3, logística, Poisson robusta HC0, Cox de Efron, GEE gaussiana y binomial intercambiables, modelo mixto REML, Kaplan-Meier, log-rank, Shapiro-Wilk, χ², Fisher, Welch, Mann-Whitney, Kruskal-Wallis) y con una implementación independiente de la prueba de Little: <code>node tests/validate.mjs</code>. Diferencias &lt; 1e-5 (1e-4 en GEE y modelo mixto).</p>
 
 <h2>Referencias</h2>
-<p class="small">Barros AJD, Hirakata VN. BMC Med Res Methodol 2003;3:21 · Zou G. Am J Epidemiol 2004;159:702-6 · Hosmer DW, Lemeshow S, Sturdivant RX. Applied Logistic Regression, 3.ª ed. Wiley 2013 · Bursac Z, et al. Source Code Biol Med 2008;3:17 · Greenland S. Am J Public Health 1989;79:340-9 · Maldonado G, Greenland S. Am J Epidemiol 1993;138:923-36 · Fox J, Monette G. J Am Stat Assoc 1992;87:178-83 · Grambsch PM, Therneau TM. Biometrika 1994;81:515-26 · Liang KY, Zeger SL. Biometrika 1986;73:13-22 · Pan W. Biometrics 2001;57:120-5 · Little RJA. J Am Stat Assoc 1988;83:1198-202 · Rubin DB. Multiple Imputation for Nonresponse in Surveys. Wiley 1987 · Barnard J, Rubin DB. Biometrika 1999;86:948-55 · van Buuren S, Groothuis-Oudshoorn K. J Stat Softw 2011;45(3) · van Buuren S. Flexible Imputation of Missing Data, 2.ª ed. CRC 2018 · Sterne JAC, et al. BMJ 2009;338:b2393 · Royston P. Appl Stat 1995;44:547-51.</p>
+<p class="small">Barros AJD, Hirakata VN. BMC Med Res Methodol 2003;3:21 · Zou G. Am J Epidemiol 2004;159:702-6 · Hosmer DW, Lemeshow S, Sturdivant RX. Applied Logistic Regression, 3.ª ed. Wiley 2013 · Bursac Z, et al. Source Code Biol Med 2008;3:17 · Greenland S. Am J Public Health 1989;79:340-9 · Maldonado G, Greenland S. Am J Epidemiol 1993;138:923-36 · Fox J, Monette G. J Am Stat Assoc 1992;87:178-83 · Grambsch PM, Therneau TM. Biometrika 1994;81:515-26 · Liang KY, Zeger SL. Biometrika 1986;73:13-22 · Pan W. Biometrics 2001;57:120-5 · Little RJA. J Am Stat Assoc 1988;83:1198-202 · Rubin DB. Multiple Imputation for Nonresponse in Surveys. Wiley 1987 · Barnard J, Rubin DB. Biometrika 1999;86:948-55 · van Buuren S, Groothuis-Oudshoorn K. J Stat Softw 2011;45(3) · van Buuren S. Flexible Imputation of Missing Data, 2.ª ed. CRC 2018 · Sterne JAC, et al. BMJ 2009;338:b2393 · Westreich D, Greenland S. Am J Epidemiol 2013;177:292-8 · Gelman A, Hill J. Data Analysis Using Regression and Multilevel/Hierarchical Models. Cambridge 2007 · Lüdecke D, et al. performance: J Open Source Softw 2021;6:3139 · Royston P. Appl Stat 1995;44:547-51.</p>
 `;

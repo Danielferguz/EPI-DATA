@@ -1,7 +1,7 @@
 // Tabla 1 descriptiva, tablas exportables (Word/CSV) y texto de métodos.
-import { isMiss, levelsOf } from './data.js?v=2026.10.16-1';
-import { shapiro, chisqTest, fisher2x2, welch, anova, mannWhitney, kruskal, mean, sd, median, quantile } from './tests.js?v=2026.10.16-1';
-import { TYPES } from './analysis.js?v=2026.10.16-1';
+import { isMiss, levelsOf } from './data.js?v=2026.10.16-2';
+import { shapiro, chisqTest, fisher2x2, welch, anova, mannWhitney, kruskal, mean, sd, median, quantile } from './tests.js?v=2026.10.16-2';
+import { TYPES } from './analysis.js?v=2026.10.16-2';
 
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 export const fp = p => (!isFinite(p) ? '' : p < 0.001 ? '<0.001' : p.toFixed(3));
@@ -52,8 +52,8 @@ export const table1HTML = T => `<table class="data t1"><thead><tr>${T.head.map(h
 // ---------------- tabla de resultados (estilo artículo) ----------------
 const ci = e => (e && isFinite(e.est) ? `${f(e.est, 2)} (${f(e.lo, 2)}–${f(e.hi, 2)})` : '');
 export function resultsMatrix(R, showCrude = true) {
-  const M = R.M, head = ['Variable', 'n', ...(showCrude ? [`${M.measure} crudo (IC 95%)`, 'p'] : []), `${M.measure} ajustado (IC 95%)`, 'p'];
-  const body = R.table.map(r => r.kind === 'head' ? { b: true, c: [r.label, '', ...(showCrude ? ['', fp(r.pCrude)] : []), '', fp(r.pAdj)] } : { c: [`   ${r.label}`, isFinite(r.n) ? r.n : '', ...(showCrude ? [r.ref ? 'Referencia' : ci(r.crude), r.ref ? '' : fp(r.crude?.p)] : []), r.ref ? 'Referencia' : ci(r.adj), r.ref ? '' : fp(r.adj?.p)] });
+  const M = R.M, head = ['Variable', 'n', R.sumHead || '', ...(showCrude ? [`${M.measure} crudo (IC 95%)`, 'p'] : []), `${M.measure} ajustado (IC 95%)`, 'p'];
+  const body = R.table.filter(r => !R.hideCovs || r.v === R.spec.exposure || r.inter).map(r => r.kind === 'head' ? { b: true, c: [r.label, '', '', ...(showCrude ? ['', ''] : []), '', ''] } : { c: [`   ${r.label}`, isFinite(r.n) ? r.n : '', r.sum ? r.sum.text + (r.sum.ofVar ? '*' : '') : '', ...(showCrude ? [r.ref ? 'Referencia' : ci(r.crude), r.ref ? '' : fp(r.crude?.p)] : []), r.ref ? 'Referencia' : ci(r.adj), r.ref ? '' : fp(r.adj?.p)] });
   return { head, body };
 }
 export function wordDoc(title, tablesHTML, notes = '') {
@@ -83,11 +83,14 @@ export function methodsText(R, ctx, lang = 'es') {
     : `Crude (one variable at a time) and adjusted estimates (multivariable model with ${s.exposure ? `${s.exposure} as main exposure and ` : ''}${cov} as covariates${s.inter?.length ? `, and ${s.inter.map(p => p.join('×')).join(', ')} interactions` : ''}) are presented, in the same sample.`;
   let miss = '';
   if (ctx.source === 'cc') miss = es ? `Se realizó un análisis de casos completos (n = ${R.n} de ${ctx.N}).` : `A complete-case analysis was performed (n = ${R.n} of ${ctx.N}).`;
-  if (ctx.source === 'simple') miss = es ? `Los datos perdidos se reemplazaron por la media (cuantitativas) o la moda (categóricas); esta imputación simple subestima la variabilidad y se presenta solo como análisis de sensibilidad.` : `Missing values were replaced by the mean (continuous) or mode (categorical); this single imputation underestimates variability and is presented only as a sensitivity analysis.`;
+  if (ctx.source === 'simple') miss = es ? `Los datos perdidos se trataron con imputación simple (${ctx.simpleLabel?.es || 'media/moda'}); la imputación simple subestima la variabilidad y se presenta como análisis de sensibilidad.` : `Missing values were handled with single imputation (${ctx.simpleLabel?.en || 'mean/mode'}); single imputation underestimates variability and is presented as a sensitivity analysis.`;
+  if (ctx.compare) miss += es ? ' Los resultados se compararon con el análisis de casos completos.' : ' Results were compared with a complete-case analysis.';
   if (ctx.source === 'mi' && ctx.mi) miss = es ? `Los datos perdidos se exploraron con la prueba MCAR de Little${ctx.little ? ` (χ² = ${ctx.little.stat.toFixed(2)}, gl = ${ctx.little.df}, p ${ctx.little.p < 0.001 ? '< 0.001' : '= ' + ctx.little.p.toFixed(3)})` : ''} y con modelos de la probabilidad de pérdida. Bajo el supuesto de datos perdidos al azar (MAR), se realizó imputación múltiple por ecuaciones encadenadas (MICE; ${ctx.mi.m} imputaciones, ${ctx.mi.maxit} iteraciones, semilla ${ctx.mi.seed}) con emparejamiento por media predictiva para variables cuantitativas, regresión logística para binarias y regresión logística multinomial para politómicas; el modelo de imputación incluyó ${ctx.mi.vars.join(', ')}. Las estimaciones se combinaron con las reglas de Rubin (grados de libertad de Barnard-Rubin).${ctx.delta ? ' La robustez frente a datos perdidos no al azar (MNAR) se evaluó con un análisis de sensibilidad por ajuste δ (patrón-mezcla).' : ''}`
     : `Missing data were explored with Little's MCAR test${ctx.little ? ` (χ² = ${ctx.little.stat.toFixed(2)}, df = ${ctx.little.df}, p ${ctx.little.p < 0.001 ? '< 0.001' : '= ' + ctx.little.p.toFixed(3)})` : ''} and models of the probability of missingness. Under a missing-at-random (MAR) assumption, multiple imputation by chained equations was performed (MICE; ${ctx.mi.m} imputations, ${ctx.mi.maxit} iterations, seed ${ctx.mi.seed}) using predictive mean matching for continuous variables, logistic regression for binary and multinomial logistic regression for polytomous variables; the imputation model included ${ctx.mi.vars.join(', ')}. Estimates were pooled with Rubin's rules (Barnard-Rubin degrees of freedom).${ctx.delta ? ' Robustness to missing-not-at-random (MNAR) data was assessed with a δ-adjustment (pattern-mixture) sensitivity analysis.' : ''}`;
   const sel = ctx.selection ? (es ? ` La selección de covariables siguió ${ctx.selection}.` : ` Covariate selection followed ${ctx.selection}.`) : '';
   const soft = es ? 'Los análisis se realizaron con EPI-DATA (cálculos en el navegador), con un nivel de significancia de 0.05.' : 'Analyses were performed with EPI-DATA (browser-based computations) with a significance level of 0.05.';
-  return [T, adj + sel, miss, soft].filter(Boolean).join(' ');
+  const obj = s.objective === 'causal' ? (es ? `El objetivo fue estimar el efecto de ${s.exposure} sobre ${s.y || s.status}; las variables de ajuste se seleccionaron a priori como posibles confusores según el conocimiento previo, y sus coeficientes no se interpretan como efectos (falacia de la Tabla 2).` : `The aim was to estimate the effect of ${s.exposure} on ${s.y || s.status}; adjustment variables were selected a priori as potential confounders based on prior knowledge, and their coefficients are not interpreted as effects (Table 2 fallacy).`)
+    : s.objective === 'prediccion' ? (es ? 'El objetivo fue predictivo; se evaluaron la discriminación y la calibración del modelo.' : 'The aim was predictive; model discrimination and calibration were assessed.') : '';
+  return [obj, T, adj + sel, miss, soft].filter(Boolean).join(' ');
 }
 export { TYPES };

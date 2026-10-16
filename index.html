@@ -2,171 +2,199 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>EPI-DATA</title>
-<meta name="description" content="Análisis epidemiológico en el navegador: regresión lineal, logística, Poisson con varianza robusta, supervivencia, análisis longitudinal, datos perdidos (MCAR/MAR/MNAR, imputación múltiple) y modelización multivariable, con evaluación de supuestos y forest plots.">
-<link rel="stylesheet" href="css/style.css?v=2026.10.16-1">
+<meta name="description" content="EPI-DATA (EPI-LAB): análisis de bases de datos clínicas y de nefrología en el navegador. Regresión lineal, logística, Poisson robusta, supervivencia, análisis longitudinal, datos perdidos e imputación, con guía paso a paso y evaluación de supuestos.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700&family=Source+Sans+3:wght@400;600&display=swap">
+<link rel="stylesheet" href="css/style.css?v=2026.10.16-2">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" defer></script>
 </head>
 <body>
 <header class="top">
-  <div class="brand"><span class="logo" aria-hidden="true">ε</span><div><h1>EPI-DATA</h1><p>Regresión, supervivencia, datos longitudinales y datos perdidos con evaluación de supuestos y forest plots</p></div></div>
+  <div class="brand">
+    <svg viewBox="0 0 46 40" aria-hidden="true"><rect x="2" y="16" width="4" height="22" rx="1" fill="#4D4D4D"/><rect x="9" y="12" width="4" height="26" rx="1" fill="#4D4D4D"/><rect x="16" y="9" width="4" height="29" rx="1" fill="#5BA7B8"/><rect x="23" y="22" width="4" height="16" rx="1" fill="#5BA7B8"/><rect x="30" y="28" width="4" height="10" rx="1" fill="#4D4D4D"/><path d="M8 4 C20 4 22 18 28 22 S38 30 42 28" fill="none" stroke="#4D4D4D" stroke-width="1.6"/><circle cx="8" cy="5" r="4" fill="#8B2E3B"/><circle cx="28" cy="21" r="3" fill="#4D4D4D"/><circle cx="42" cy="28" r="3" fill="#5BA7B8"/></svg>
+    <div><h1><span class="epi">EPI</span><span class="data">-DATA</span></h1><p>Un módulo de <b>EPI-LAB</b> · De preguntas clínicas a mejor evidencia</p></div>
+  </div>
   <nav class="tabs" role="tablist">
-    <button role="tab" data-tab="datos" class="active">1 · Datos</button>
-    <button role="tab" data-tab="perdidos">2 · Datos perdidos</button>
-    <button role="tab" data-tab="modelos">3 · Modelos de regresión</button>
-    <button role="tab" data-tab="modelizacion">4 · Modelización multivariable</button>
-    <button role="tab" data-tab="reporte">5 · Reporte</button>
-    <button role="tab" data-tab="ayuda">Métodos y ayuda</button>
+    <button role="tab" data-tab="datos" class="active"><span class="n">1</span>Datos</button>
+    <button role="tab" data-tab="base"><span class="n">2</span>Base de datos</button>
+    <button role="tab" data-tab="pregunta"><span class="n">3</span>Pregunta y modelo</button>
+    <button role="tab" data-tab="descriptivo"><span class="n">4</span>Descriptivo</button>
+    <button role="tab" data-tab="perdidos"><span class="n">5</span>Datos perdidos</button>
+    <button role="tab" data-tab="modelos"><span class="n">6</span>Resultados</button>
+    <button role="tab" data-tab="modelizacion"><span class="n">7</span>Modelización</button>
+    <button role="tab" data-tab="reporte"><span class="n">8</span>Reporte</button>
+    <button role="tab" data-tab="ayuda"><span class="n">?</span>Ayuda</button>
   </nav>
 </header>
 
 <main>
-<!-- ============ DATOS ============ -->
+<!-- 1 · DATOS -->
 <section id="tab-datos" class="tab active">
   <div class="card">
-    <h2>Subir base de datos</h2>
-    <p class="muted">Archivos <b>CSV</b> (coma, punto y coma o tabulador) o <b>Excel (.xlsx)</b>, una fila por participante (o por medición en datos longitudinales) y una columna por variable. Los datos no salen de tu computadora: todo se calcula en el navegador.</p>
-    <div class="drop" id="drop">
-      <input type="file" id="file" accept=".csv,.txt,.tsv,.xlsx,.xls">
-      <label for="file"><b>Elegir archivo</b> o arrastrarlo aquí</label>
-    </div>
-    <div class="row gap wrap">
-      <span class="muted">Ejemplos (datos simulados):</span>
-      <button class="ghost" data-example="examples/dolor_depresion.csv">Transversal · dolor crónico y depresión</button>
-      <button class="ghost" data-example="examples/cohorte_supervivencia.csv">Cohorte · supervivencia</button>
-      <button class="ghost" data-example="examples/longitudinal_presion.csv">Longitudinal · presión arterial</button>
-    </div>
+    <h2>Cargar la base de datos</h2>
+    <div class="howto"><div><b>Qué se hace</b>Se lee su archivo CSV o Excel: una fila por paciente (o por visita en datos longitudinales) y una columna por variable.</div><div><b>Para qué</b>Todo el análisis se hace en su navegador; los datos no se envían a ningún servidor.</div><div><b>Consejo</b>Use nombres de variables claros (p. ej., «Albúmina (g/dL)»): aparecerán tal cual en las tablas y figuras. Puede corregirlos abajo.</div></div>
+    <div class="drop" id="drop"><input type="file" id="file" accept=".csv,.txt,.tsv,.xlsx,.xls"><label for="file"><b>Elegir archivo</b> o arrastrarlo aquí</label></div>
+    <h3>O pruebe con una base de ejemplo de nefrología <span class="sub">(datos simulados)</span></h3>
+    <div class="examples" id="examples"></div>
     <div id="load-msg"></div>
   </div>
-
-  <div class="card" id="vars-card" hidden>
-    <div class="row between wrap gap"><h2>Variables</h2><div class="row gap wrap"><label class="inline">Hoja <select id="sheet"></select></label><label class="inline">Códigos de dato perdido <input id="na-codes" value="NA, ., -, 999, 9999" size="22" title="Valores que se tratarán como perdidos (además de las celdas vacías)"></label><button id="na-apply" class="ghost">Aplicar</button></div></div>
-    <p class="muted">Revise el tipo de cada variable, la <b>categoría de referencia</b> (fila «Referencia» de las tablas) y, para desenlaces binarios, la categoría que indica el <b>evento</b>.</p>
+  <div class="card has-data" hidden>
+    <div class="row between wrap gap"><h2>Revisar y configurar las variables</h2><div class="row gap wrap"><label class="inline">Hoja <select id="sheet"></select></label><label class="inline">Códigos de dato perdido <input id="na-codes" value="NA, ., -, 999, 9999" size="20"></label><button id="na-apply" class="ghost">Aplicar</button></div></div>
+    <div class="howto"><div><b>Qué se hace</b>Se indica el tipo de cada variable, su nombre para las tablas y, en las categóricas, la categoría de referencia y la de evento.</div><div><b>Para qué</b>La <b>referencia</b> es el grupo con el que se compara (aparece como «Referencia» en las tablas). El <b>evento</b> es la categoría que se cuenta como desenlace (p. ej., «Sí»).</div><div><b>Cómo decidir</b>Cuantitativa: números con sentido de cantidad (edad, albúmina). Categórica: grupos (sexo, diabetes, estadio). Identificador: códigos de paciente.</div></div>
     <div class="tablewrap tall"><table class="data" id="vartable"></table></div>
-    <details class="mt"><summary>Vista previa de los datos</summary><div class="tablewrap" id="preview"></div></details>
-  </div>
-
-  <div class="card" id="t1-card" hidden>
-    <h2>Tabla 1 · Características de la población</h2>
-    <div class="row gap wrap"><label class="inline">Comparar según <select id="t1-group"><option value="">— sin grupos —</option></select></label><button id="t1-run" class="primary">Generar</button><span class="grow"></span><button id="t1-doc" class="ghost">Word</button><button id="t1-csv" class="ghost">CSV</button></div>
-    <div id="t1-out"></div>
+    <div class="stepnav"><span></span><button class="primary" data-go="base">Siguiente: ver la base de datos →</button></div>
   </div>
 </section>
 
-<!-- ============ PERDIDOS ============ -->
+<!-- 2 · BASE -->
+<section id="tab-base" class="tab">
+  <div class="card need-data"><p class="muted">Primero cargue una base de datos en el paso 1.</p></div>
+  <div class="card has-data" hidden>
+    <h2>Base de datos completa</h2>
+    <div class="howto"><div><b>Qué se ve</b>Todas las filas, ya con los tipos y nombres que configuró. Las celdas sombreadas en burdeos son datos perdidos.</div><div><b>Para qué</b>Detectar valores imposibles, errores de digitación o categorías mal escritas antes de analizar.</div><div><b>Si hay errores</b>Corríjalos en su archivo original o renombre/agrupe categorías en el paso 1.</div></div>
+    <div class="row gap wrap"><label class="inline"><input type="checkbox" id="db-miss"> Solo filas con datos perdidos</label><label class="inline">Buscar <input id="db-q" size="16" placeholder="texto o número"></label><span class="grow"></span><span id="db-info" class="sub"></span></div>
+    <div class="tablewrap tall" id="db-table"></div>
+    <div class="pager" id="db-pager"></div>
+    <div class="stepnav"><button class="ghost" data-go="datos">← Variables</button><button class="primary" data-go="pregunta">Siguiente: pregunta de investigación →</button></div>
+  </div>
+</section>
+
+<!-- 3 · PREGUNTA -->
+<section id="tab-pregunta" class="tab">
+  <div class="card need-data"><p class="muted">Primero cargue una base de datos en el paso 1.</p></div>
+  <div class="card has-data" hidden>
+    <h2>¿Cuál es el objetivo del análisis?</h2>
+    <div class="howto"><div><b>Qué se hace</b>Se define si busca estimar el efecto de una intervención (causal), describir factores asociados o predecir un desenlace.</div><div><b>Para qué</b>El objetivo cambia cómo se eligen las covariables y cómo se interpretan los resultados.</div><div><b>Regla de oro</b>En preguntas causales, las covariables se eligen por conocimiento previo (confusores), no por su valor p.</div></div>
+    <div class="choices" id="objective"></div>
+    <div id="obj-msg" class="explain"></div>
+  </div>
+  <div class="card has-data" hidden>
+    <h2>Tipo de desenlace y modelo</h2>
+    <div class="howto"><div><b>Qué se hace</b>Se elige el modelo según cómo se midió el desenlace.</div><div><b>Guía rápida</b>Número continuo → lineal. Sí/No → logística (OR) o Poisson robusta (RP/RR, preferible si el desenlace es frecuente). Tiempo hasta un evento → supervivencia. Varias mediciones por paciente → longitudinal.</div><div><b>Ayuda</b>Al elegir el desenlace se muestra una recomendación.</div></div>
+    <div class="types" id="types">
+      <button data-type="linear"><b>Regresión lineal</b><small>Desenlace cuantitativo (hemoglobina, PHQ-9) · β</small></button>
+      <button data-type="logistic"><b>Regresión logística</b><small>Desenlace Sí/No poco frecuente o casos y controles · OR</small></button>
+      <button data-type="poisson"><b>Poisson con varianza robusta</b><small>Sí/No frecuente (RP, RR) o conteos con persona-tiempo (RTI)</small></button>
+      <button data-type="cox"><b>Supervivencia</b><small>Tiempo hasta muerte o pérdida del injerto · Kaplan-Meier y Cox (HR)</small></button>
+      <button data-type="gee"><b>Longitudinal · GEE</b><small>Mediciones repetidas · efecto promedio poblacional</small></button>
+      <button data-type="lmm"><b>Longitudinal · modelo mixto</b><small>Mediciones repetidas · trayectoria por paciente (REML)</small></button>
+    </div>
+    <div id="spec-form" class="mt"></div>
+    <div id="spec-hint" class="explain"></div>
+    <div class="stepnav"><button class="ghost" data-go="base">← Base de datos</button><button class="primary" id="q-next">Guardar y continuar: descriptivo →</button></div>
+  </div>
+</section>
+
+<!-- 4 · DESCRIPTIVO -->
+<section id="tab-descriptivo" class="tab">
+  <div class="card need-data"><p class="muted">Primero cargue una base de datos en el paso 1.</p></div>
+  <div class="card has-data" hidden>
+    <h2>Tabla 1 · Características de los participantes</h2>
+    <div class="howto"><div><b>Qué se hace</b>Se resume cada variable: n (%) para categóricas; media ± DE o mediana [RIC] para cuantitativas (según su distribución).</div><div><b>Para qué</b>Describir la población y comparar los grupos de la exposición o del desenlace.</div><div><b>Cómo interpretar</b>El valor p indica si los grupos difieren; en ensayos aleatorizados no se recomienda reportarlo (las diferencias basales son por azar).</div></div>
+    <div class="row gap wrap"><label class="inline">Comparar según <select id="t1-group"><option value="">— sin grupos —</option></select></label><label class="inline"><input type="checkbox" id="t1-p" checked> Mostrar valores p</label><button id="t1-run" class="primary">Generar</button><span class="grow"></span><button id="t1-doc" class="ghost">Word</button><button id="t1-csv" class="ghost">CSV</button></div>
+    <div id="t1-out"></div>
+    <div class="stepnav"><button class="ghost" data-go="pregunta">← Pregunta</button><button class="primary" data-go="perdidos">Siguiente: datos perdidos →</button></div>
+  </div>
+</section>
+
+<!-- 5 · PERDIDOS -->
 <section id="tab-perdidos" class="tab">
   <div class="card need-data"><p class="muted">Primero cargue una base de datos en el paso 1.</p></div>
   <div class="card has-data" hidden>
-    <h2>Magnitud y patrones de datos perdidos</h2>
+    <h2>¿Cuántos datos faltan y dónde?</h2>
+    <div class="howto"><div><b>Qué se hace</b>Se cuenta el porcentaje de datos perdidos por variable y las combinaciones (patrones) en que faltan.</div><div><b>Para qué</b>Si se analizan solo los casos completos se pierde información y, si la pérdida no es al azar, los resultados pueden sesgarse.</div><div><b>Cómo interpretar</b>&lt; 5 % suele ser poco problemático; &gt; 10–20 % o pérdida en el desenlace o la exposición exige evaluar el mecanismo e imputar.</div></div>
     <div id="miss-kpis" class="kpis"></div>
     <div class="cols2"><div id="miss-bar"></div><div id="miss-pat"></div></div>
   </div>
   <div class="card has-data" hidden>
+    <h2>Pérdida según la exposición y el desenlace</h2>
+    <div class="howto"><div><b>Qué se hace</b>Se compara el porcentaje de perdidos de cada variable entre los grupos de la exposición y del desenlace definidos en el paso 3.</div><div><b>Para qué</b>Si falta más información en un grupo, la pérdida depende de los datos (no es MCAR) y el análisis de casos completos puede sesgar la comparación.</div><div><b>Cómo interpretar</b>Barras de altura parecida = pérdida similar entre grupos. p &lt; 0.05 = la pérdida difiere entre grupos.</div></div>
+    <div class="plots" id="miss-groups"></div>
+  </div>
+  <div class="card has-data" hidden>
     <h2>Mecanismo de pérdida: ¿MCAR, MAR o MNAR?</h2>
+    <div class="howto"><div><b>MCAR</b>Completamente al azar: la pérdida no depende de nada (p. ej., un tubo de muestra que se rompió).</div><div><b>MAR</b>Al azar condicional: depende de variables observadas (p. ej., falta más la albúmina en pacientes mayores). La imputación múltiple corrige el sesgo.</div><div><b>MNAR</b>No al azar: depende del propio valor perdido (p. ej., los más deprimidos no responden el PHQ-9). No se puede probar; se hace análisis de sensibilidad.</div></div>
     <div class="cols2">
-      <div>
-        <h3>1. Prueba MCAR de Little</h3>
-        <p class="muted small">H₀: los datos son perdidos completamente al azar (MCAR). Usa variables cuantitativas y binarias (codificadas 0/1) y el algoritmo EM para la normal multivariante.</p>
-        <div id="mcar-vars" class="checks"></div>
-        <button id="mcar-run" class="primary">Calcular</button>
-        <div id="mcar-out"></div>
-      </div>
-      <div>
-        <h3>2. ¿De qué depende la pérdida? (exploración MAR)</h3>
-        <p class="muted small">Compara a quienes tienen y no tienen el dato y modela la probabilidad de pérdida con regresión logística.</p>
-        <label class="inline">Variable con perdidos <select id="mar-target"></select></label>
-        <div id="mar-out"></div>
-      </div>
+      <div><h3>1. Prueba MCAR de Little</h3><p class="sub">H₀: los datos son MCAR. Usa las variables cuantitativas y binarias marcadas.</p><div id="mcar-vars" class="checks"></div><button id="mcar-run" class="primary">Calcular</button><div id="mcar-out"></div></div>
+      <div><h3>2. ¿De qué depende la pérdida? (exploración MAR)</h3><p class="sub">Compara a quienes tienen y no tienen el dato y modela la probabilidad de pérdida.</p><label class="inline">Variable con perdidos <select id="mar-target"></select></label><div id="mar-out"></div></div>
     </div>
     <div id="mech-msg" class="explain"></div>
   </div>
   <div class="card has-data" hidden>
-    <h2>Imputación múltiple por ecuaciones encadenadas (MICE)</h2>
-    <p class="muted small">PMM para cuantitativas, regresión logística para binarias y logística multinomial para politómicas. Incluya en el modelo de imputación el desenlace, la exposición, las covariables y las variables auxiliares que predicen la pérdida.</p>
+    <h2>Imputación múltiple (MICE)</h2>
+    <div class="howto"><div><b>Qué se hace</b>Se crean varias bases completas (m) rellenando cada dato perdido con valores plausibles predichos por las demás variables, con variación aleatoria.</div><div><b>Para qué</b>Usar a todos los pacientes y reflejar la incertidumbre de no conocer el dato. Los resultados de las m bases se combinan con las reglas de Rubin.</div><div><b>Recomendaciones</b>Incluya el desenlace, la exposición, las covariables y las variables que predicen la pérdida. Use m ≥ % de casos incompletos (20 suele bastar).</div></div>
     <div id="mi-vars" class="checks"></div>
+    <details class="mt" open><summary>Método de imputación por variable</summary><div id="mi-methods" class="form mt"></div></details>
     <div class="form mt">
       <label>Imputaciones (m) <input id="mi-m" type="number" min="2" max="100" value="20"></label>
       <label>Iteraciones <input id="mi-it" type="number" min="1" max="50" value="10"></label>
-      <label>Semilla <input id="mi-seed" type="number" value="2024"></label>
+      <label>Semilla (reproducibilidad) <input id="mi-seed" type="number" value="2024"></label>
       <label>Donantes PMM <input id="mi-donors" type="number" min="1" max="20" value="5"></label>
     </div>
-    <div class="row gap mt"><button id="mi-run" class="primary">Imputar</button><progress id="mi-prog" max="1" value="0" hidden></progress><span id="mi-status" class="muted"></span><span class="grow"></span><button id="mi-dl" class="ghost" hidden>Descargar datos imputados (CSV largo)</button></div>
+    <div class="row gap mt wrap"><button id="mi-run" class="primary">Imputar</button><progress id="mi-prog" max="1" value="0" hidden></progress><span id="mi-status" class="muted"></span><span class="grow"></span><button id="mi-dl" class="ghost" hidden>Descargar datos imputados (CSV)</button></div>
     <div id="mi-out"></div>
+    <div class="stepnav"><button class="ghost" data-go="descriptivo">← Descriptivo</button><button class="primary" data-go="modelos">Siguiente: ajustar el modelo →</button></div>
   </div>
 </section>
 
-<!-- ============ MODELOS ============ -->
+<!-- 6 · RESULTADOS -->
 <section id="tab-modelos" class="tab">
   <div class="card need-data"><p class="muted">Primero cargue una base de datos en el paso 1.</p></div>
   <div class="card has-data" hidden>
-    <h2>Tipo de análisis</h2>
-    <div class="types" id="types">
-      <button data-type="linear"><b>Regresión lineal</b><small>Desenlace cuantitativo · β</small></button>
-      <button data-type="logistic"><b>Regresión logística</b><small>Desenlace binario · OR</small></button>
-      <button data-type="poisson"><b>Poisson con varianza robusta</b><small>Binario frecuente o conteo · RP / RR / RTI</small></button>
-      <button data-type="cox"><b>Supervivencia</b><small>Kaplan-Meier, log-rank, Cox · HR</small></button>
-      <button data-type="gee"><b>Longitudinal · GEE</b><small>Medidas repetidas · efecto poblacional</small></button>
-      <button data-type="lmm"><b>Longitudinal · modelo mixto</b><small>Intercepto aleatorio · REML</small></button>
-    </div>
-    <div id="spec-form" class="mt"></div>
+    <h2>¿Cómo tratar los datos perdidos en el modelo?</h2>
+    <div class="howto"><div><b>Qué se hace</b>Se elige qué base usar: solo pacientes con todos los datos, una imputación simple o la imputación múltiple del paso 5.</div><div><b>Recomendación</b>Imputación múltiple como análisis principal si hay más del 5 % de perdidos o si la pérdida es MAR; compárela con casos completos.</div><div><b>Imputación simple</b>Rellena con un único valor: subestima la incertidumbre (IC demasiado estrechos). Úsela solo como sensibilidad.</div></div>
+    <div class="choices" id="sources"></div>
+    <label class="mt"><input type="checkbox" id="cmp-cc" checked> Comparar también con el análisis de casos completos (modelar con y sin imputación)</label>
+    <div class="row gap mt"><button id="sp-run" class="primary">Ejecutar análisis</button><span id="sp-msg" class="muted small"></span></div>
   </div>
   <div id="model-out"></div>
 </section>
 
-<!-- ============ MODELIZACION ============ -->
+<!-- 7 · MODELIZACIÓN -->
 <section id="tab-modelizacion" class="tab">
-  <div class="card need-model"><p class="muted">Defina y ejecute primero un modelo en el paso 3 (desenlace, exposición y covariables candidatas).</p></div>
+  <div class="card need-model"><p class="muted">Ejecute primero un modelo en el paso 6.</p></div>
   <div class="card has-model" hidden>
-    <h2>Estrategia de modelización</h2>
-    <p class="muted small" id="sel-ctx"></p>
+    <h2>Selección de covariables</h2>
+    <div class="howto"><div><b>Qué se hace</b>Se prueban estrategias para decidir qué covariables quedan en el modelo.</div><div><b>Para qué</b>Útil en modelos explicativos y predictivos con muchas candidatas.</div><div><b>Precaución</b>En modelos <b>causales</b> no seleccione confusores por valor p: use el diagrama causal (DAG) y la sección de confusión de abajo.</div></div>
+    <p class="sub" id="sel-ctx"></p>
     <div class="form">
-      <label>Estrategia <select id="sel-strategy">
-        <option value="purposeful">Selección intencionada (Hosmer-Lemeshow / Bursac)</option>
-        <option value="aic">Eliminación hacia atrás por AIC (QIC en GEE)</option>
-        <option value="p">Eliminación hacia atrás por valor p</option>
-      </select></label>
+      <label>Estrategia <select id="sel-strategy"><option value="purposeful">Selección intencionada (Hosmer-Lemeshow)</option><option value="aic">Eliminación hacia atrás por AIC (QIC en GEE)</option><option value="p">Eliminación hacia atrás por valor p</option></select></label>
       <label>p de entrada (bivariado) <input id="sel-pin" type="number" step="0.01" value="0.25"></label>
       <label>p de permanencia <input id="sel-pout" type="number" step="0.01" value="0.10"></label>
       <label>Cambio Δβ para confusión <input id="sel-delta" type="number" step="0.05" value="0.20"></label>
     </div>
-    <div class="row gap mt"><button id="sel-run" class="primary">Ejecutar selección</button><span class="grow"></span><button id="sel-apply" class="ghost" hidden>Usar el modelo seleccionado en el paso 3</button></div>
+    <div class="row gap mt"><button id="sel-run" class="primary">Ejecutar selección</button><span class="grow"></span><button id="sel-apply" class="ghost" hidden>Usar el modelo seleccionado</button></div>
     <div id="sel-out"></div>
   </div>
   <div class="card has-model" hidden>
     <h2>Confusión: cambio en el estimado de la exposición</h2>
-    <p class="muted small">Cambio relativo del efecto de la exposición al retirar cada covariable del modelo completo. Un cambio ≥ 10 % sugiere confusión (Greenland 1989; Maldonado y Greenland 1993).</p>
+    <div class="howto"><div><b>Qué se hace</b>Se retira cada covariable del modelo y se mide cuánto cambia el efecto de la exposición.</div><div><b>Para qué</b>Identificar confusores empíricos: si el efecto cambia ≥ 10 %, esa variable confunde la relación.</div><div><b>Cómo interpretar</b>Mantenga los confusores en el modelo, aunque su valor p sea alto.</div></div>
     <div class="row gap"><label class="inline">Umbral <input id="cie-thr" type="number" step="0.05" value="0.10" size="5"></label><button id="cie-run" class="primary">Calcular</button></div>
     <div id="cie-out"></div>
   </div>
   <div class="card has-model" hidden>
     <h2>Modificación de efecto (interacción)</h2>
-    <p class="muted small">Para cada covariable se añade el término exposición × covariable; se informa la prueba de Wald del término y el efecto de la exposición en cada estrato.</p>
+    <div class="howto"><div><b>Qué se hace</b>Se evalúa si el efecto de la exposición es distinto según otra variable (p. ej., en diabéticos y no diabéticos).</div><div><b>Para qué</b>Si hay modificación, conviene reportar el efecto por estrato en lugar de uno solo.</div><div><b>Cómo interpretar</b>p de interacción &lt; 0.05 (o &lt; 0.10–0.20 si hay poca potencia) junto con plausibilidad clínica.</div></div>
     <button id="em-run" class="primary">Evaluar interacciones</button>
     <div id="em-out"></div>
   </div>
-  <div class="card has-model" hidden>
-    <h2>Comparación de modelos</h2>
-    <div id="cmp-out"></div>
-  </div>
+  <div class="card has-model" hidden><h2>Comparación de modelos</h2><div class="howto"><div><b>Qué se ve</b>Ajuste del modelo crudo, completo y seleccionado.</div><div><b>Cómo interpretar</b>Menor AIC/BIC = mejor equilibrio entre ajuste y complejidad (diferencias &lt; 2 son irrelevantes).</div><div><b>LRT</b>p &lt; 0.05: las covariables omitidas mejoran el ajuste.</div></div><div id="cmp-out"></div></div>
 </section>
 
-<!-- ============ REPORTE ============ -->
+<!-- 8 · REPORTE -->
 <section id="tab-reporte" class="tab">
-  <div class="card need-model"><p class="muted">Ejecute un modelo en el paso 3 para generar el reporte.</p></div>
+  <div class="card need-model"><p class="muted">Ejecute un modelo en el paso 6 para generar el reporte.</p></div>
   <div class="card has-model" hidden>
     <h2>Texto de métodos</h2>
     <div class="row gap"><button class="ghost" data-lang="es">Español</button><button class="ghost" data-lang="en">English</button><span class="grow"></span><button id="meth-copy" class="ghost">Copiar</button></div>
     <textarea id="methods" rows="12"></textarea>
   </div>
-  <div class="card has-model" hidden>
-    <h2>Tabla de resultados</h2>
-    <div class="row gap"><button id="rep-doc" class="ghost">Word (.doc)</button><button id="rep-csv" class="ghost">CSV</button></div>
-    <div id="rep-table"></div>
-  </div>
+  <div class="card has-model" hidden><h2>Tabla de resultados</h2><div class="row gap"><button id="rep-doc" class="ghost">Word (.doc)</button><button id="rep-csv" class="ghost">CSV</button></div><div id="rep-table"></div></div>
   <div class="card">
     <h2>Formato de figuras</h2>
-    <p class="muted small">Se aplica a las descargas SVG/PNG/TIFF de todas las figuras.</p>
+    <p class="sub">Se aplica a las descargas SVG/PNG/TIFF de todas las figuras.</p>
     <div class="form">
       <label>Ancho <select id="fig-width"><option value="single">1 columna (85 mm)</option><option value="onehalf">1,5 columnas (120 mm)</option><option value="double" selected>2 columnas (174 mm)</option><option value="custom">Personalizado</option></select></label>
       <label>Ancho personalizado (mm) <input id="fig-mm" type="number" value="174"></label>
@@ -176,10 +204,9 @@
   </div>
 </section>
 
-<!-- ============ AYUDA ============ -->
 <section id="tab-ayuda" class="tab"><div class="card prose" id="help"></div></section>
 </main>
-<footer class="foot">EPI-DATA · © Daniel Fernández-Guzmán · CC BY-NC-ND 4.0 · Los cálculos se realizan en tu navegador; ningún dato se envía a servidores. · v2026.10.16-1</footer>
-<script type="module" src="js/app.js?v=2026.10.16-1"></script>
+<footer class="foot">EPI-DATA · un módulo de EPI-LAB · © Daniel Fernández-Guzmán · CC BY-NC-ND 4.0 · Los cálculos se realizan en su navegador; ningún dato se envía a servidores. · v2026.10.16-2</footer>
+<script type="module" src="js/app.js?v=2026.10.16-2"></script>
 </body>
 </html>

@@ -1,9 +1,9 @@
 // Datos perdidos: patrones, prueba MCAR de Little, exploración MAR, imputación múltiple (MICE) y reglas de Rubin.
-import { isMiss, design, levelsOf } from './data.js?v=2026.10.16-1';
-import { crossW, crossWv, symInv, mv, dot, chol, zeros, sub, quadForm, logdet } from './linalg.js?v=2026.10.16-1';
-import { fitGLM } from './models.js?v=2026.10.16-1';
-import { rng, pchisqU, pfU, qt, p2t } from './dist.js?v=2026.10.16-1';
-import { welch, chisqTest } from './tests.js?v=2026.10.16-1';
+import { isMiss, design, levelsOf } from './data.js?v=2026.10.16-2';
+import { crossW, crossWv, symInv, mv, dot, chol, zeros, sub, quadForm, logdet } from './linalg.js?v=2026.10.16-2';
+import { fitGLM } from './models.js?v=2026.10.16-2';
+import { rng, pchisqU, pfU, qt, p2t } from './dist.js?v=2026.10.16-2';
+import { welch, chisqTest } from './tests.js?v=2026.10.16-2';
 
 // ---------------- resumen y patrones ----------------
 export function missingSummary(ds, vars) {
@@ -93,6 +93,54 @@ export function auc(score, y) {
 }
 
 // ---------------- imputación simple ----------------
+// imputación simple: mean (media/moda), median (mediana/moda), knn (k vecinos), locf (última observación, datos longitudinales), missind (categoría «Perdido»)
+export function singleImpute(ds, meta, vars, method = 'mean', { id = null, tvar = null, k = 5 } = {}) {
+  if (method === 'mean') return simpleImpute(ds, meta, vars);
+  const cols = { ...ds.cols };
+  if (method === 'median' || method === 'missind') {
+    for (const v of vars) {
+      const c = ds.cols[v], m = meta[v];
+      if (m.type === 'num') { const o = Array.from(c).filter(isFinite).sort((a, b) => a - b), md = o.length % 2 ? o[(o.length - 1) / 2] : (o[o.length / 2 - 1] + o[o.length / 2]) / 2; cols[v] = Float64Array.from(c, x => (isFinite(x) ? x : md)); }
+      else if (method === 'missind') cols[v] = c.map(x => x ?? 'Perdido');
+      else { const cnt = {}; c.forEach(x => x != null && (cnt[x] = (cnt[x] || 0) + 1)); const mode = Object.entries(cnt).sort((a, b) => b[1] - a[1])[0]?.[0]; cols[v] = c.map(x => x ?? mode); }
+    }
+    return { n: ds.n, cols };
+  }
+  if (method === 'locf') {
+    if (!id) throw new Error('LOCF requiere un identificador de sujeto (datos longitudinales).');
+    const order = Array.from({ length: ds.n }, (_, i) => i).sort((a, b) => String(ds.cols[id][a]).localeCompare(String(ds.cols[id][b]), 'es', { numeric: true }) || (tvar ? ds.cols[tvar][a] - ds.cols[tvar][b] : a - b));
+    for (const v of vars) {
+      const c = ds.cols[v], o = c instanceof Float64Array ? Float64Array.from(c) : c.slice();
+      let prevId = null, last = null;
+      for (const i of order) { if (ds.cols[id][i] !== prevId) { prevId = ds.cols[id][i]; last = null; } if (isMiss(o[i])) { if (last != null) o[i] = last; } else last = o[i]; }
+      cols[v] = o;
+    }
+    return { n: ds.n, cols };
+  }
+  if (method === 'knn') {
+    // distancia de Gower entre filas usando las variables observadas en ambas
+    const num = vars.filter(v => meta[v].type === 'num'), rng_ = Object.fromEntries(num.map(v => { const o = Array.from(ds.cols[v]).filter(isFinite); return [v, (Math.max(...o) - Math.min(...o)) || 1]; }));
+    if (ds.n > 6000) throw new Error('kNN está limitado a 6000 filas; use MICE.');
+    const out = Object.fromEntries(vars.map(v => [v, ds.cols[v] instanceof Float64Array ? Float64Array.from(ds.cols[v]) : ds.cols[v].slice()]));
+    for (let i = 0; i < ds.n; i++) {
+      const miss_ = vars.filter(v => isMiss(ds.cols[v][i])); if (!miss_.length) continue;
+      const dist = [];
+      for (let j = 0; j < ds.n; j++) {
+        if (j === i) continue; let d = 0, w = 0;
+        for (const v of vars) { const a = ds.cols[v][i], b = ds.cols[v][j]; if (isMiss(a) || isMiss(b)) continue; d += meta[v].type === 'num' ? Math.abs(a - b) / rng_[v] : a === b ? 0 : 1; w++; }
+        if (w) dist.push([d / w, j]);
+      }
+      dist.sort((a, b) => a[0] - b[0]);
+      for (const v of miss_) {
+        const don = []; for (const [, j] of dist) { if (!isMiss(ds.cols[v][j])) don.push(ds.cols[v][j]); if (don.length >= k) break; }
+        if (!don.length) continue;
+        if (meta[v].type === 'num') out[v][i] = mean(don); else { const cnt = {}; don.forEach(x => (cnt[x] = (cnt[x] || 0) + 1)); out[v][i] = Object.entries(cnt).sort((a, b) => b[1] - a[1])[0][0]; }
+      }
+    }
+    Object.assign(cols, out); return { n: ds.n, cols };
+  }
+  throw new Error('Método de imputación desconocido: ' + method);
+}
 export function simpleImpute(ds, meta, vars) {
   const cols = { ...ds.cols };
   for (const v of vars) {
@@ -105,12 +153,13 @@ export function simpleImpute(ds, meta, vars) {
 
 // ---------------- MICE ----------------
 // opts: {vars, m, maxit, seed, donors, delta:{v, value}, onProgress}
-export async function mice(ds, meta, { vars, m = 20, maxit = 10, seed = 2024, donors = 5, delta = null, predictors = null, onProgress = null } = {}) {
+// methods: {var: 'pmm'|'norm'|'mean'|'sample'|'logreg'|'polyreg'} (por defecto pmm / logreg / polyreg)
+export async function mice(ds, meta, { vars, m = 20, maxit = 10, seed = 2024, donors = 5, delta = null, predictors = null, methods = {}, onProgress = null } = {}) {
   const R = rng(seed), target = vars.filter(v => ds.cols[v].some(isMiss));
   const missIdx = Object.fromEntries(target.map(v => [v, Array.from(ds.cols[v].keys()).filter(i => isMiss(ds.cols[v][i]))]));
   const obsIdx = Object.fromEntries(target.map(v => [v, Array.from(ds.cols[v].keys()).filter(i => !isMiss(ds.cols[v][i]))]));
   const order = [...target].sort((a, b) => missIdx[a].length - missIdx[b].length);
-  const method = Object.fromEntries(target.map(v => [v, meta[v].type === 'num' ? 'pmm' : meta[v].levels.length === 2 ? 'logreg' : 'polyreg']));
+  const method = Object.fromEntries(target.map(v => [v, methods[v] || defaultMethod(meta[v])]));
   const all = Array.from({ length: ds.n }, (_, i) => i), imps = [], trace = Object.fromEntries(target.map(v => [v, []]));
   for (let k = 0; k < m; k++) {
     const cols = { ...ds.cols };
@@ -124,8 +173,12 @@ export async function mice(ds, meta, { vars, m = 20, maxit = 10, seed = 2024, do
         const D = design(cur, meta, pv.map(w => ({ vars: [w] })), all);
         const Xo = obsIdx[v].map(i => D.X[i]), Xm = missIdx[v].map(i => D.X[i]);
         const dv = delta && delta.v === v ? delta.value : 0;
-        if (method[v] === 'pmm') {
-          const yo = obsIdx[v].map(i => ds.cols[v][i]), vals = pmm(Xo, yo, Xm, R, donors);
+        if (method[v] === 'sample') {
+          missIdx[v].forEach(i => { cols[v][i] = ds.cols[v][obsIdx[v][R.int(obsIdx[v].length)]]; if (meta[v].type === 'num') cols[v][i] += dv; });
+        } else if (method[v] === 'mean') {
+          const yo = obsIdx[v].map(i => ds.cols[v][i]), mu = mean(yo); missIdx[v].forEach(i => { cols[v][i] = mu + dv; });
+        } else if (method[v] === 'pmm' || method[v] === 'norm') {
+          const yo = obsIdx[v].map(i => ds.cols[v][i]), vals = method[v] === 'pmm' ? pmm(Xo, yo, Xm, R, donors) : normDraw(Xo, yo, Xm, R);
           missIdx[v].forEach((i, j) => { cols[v][i] = vals[j] + dv; });
         } else {
           const L = levelsOf(meta[v]), yo = obsIdx[v].map(i => L.indexOf(ds.cols[v][i]));
@@ -141,6 +194,21 @@ export async function mice(ds, meta, { vars, m = 20, maxit = 10, seed = 2024, do
     if (onProgress) { onProgress((k + 1) / m); await new Promise(r => setTimeout(r, 0)); }
   }
   return { imps, m, maxit, seed, target, method, trace, missIdx, vars, delta };
+}
+export const defaultMethod = m => (m.type === 'num' ? 'pmm' : m.levels.length === 2 ? 'logreg' : 'polyreg');
+export const METHODS = {
+  pmm: 'Emparejamiento por media predictiva (PMM)', norm: 'Regresión lineal bayesiana (norm)', mean: 'Media (no recomendado)', sample: 'Muestra aleatoria de observados',
+  logreg: 'Regresión logística', polyreg: 'Logística multinomial',
+};
+export const methodsFor = m => (m.type === 'num' ? ['pmm', 'norm', 'sample', 'mean'] : m.levels.length === 2 ? ['logreg', 'sample'] : ['polyreg', 'sample']);
+// regresión lineal bayesiana: valores = predicción con parámetros extraídos + error aleatorio (mice.impute.norm)
+function normDraw(Xo, yo, Xm, R) {
+  const p = Xo[0].length, xtx = crossW(Xo); for (let j = 0; j < p; j++) xtx[j][j] *= 1 + 1e-5;
+  const V = symInv(xtx), coef = mv(V, crossWv(Xo, null, yo));
+  let rss = 0; for (let i = 0; i < Xo.length; i++) rss += (yo[i] - dot(Xo[i], coef)) ** 2;
+  const sig = Math.sqrt(rss / R.chisq(Math.max(Xo.length - p, 1))), L = chol(V) || chol(V.map((r, a) => r.map((v, b) => v + (a === b ? 1e-8 : 0))));
+  const z = Array.from({ length: p }, () => R.norm()), b = coef.map((c, a) => c + sig * L[a].reduce((s, l, k) => s + l * z[k], 0));
+  return Xm.map(x => dot(x, b) + sig * R.norm());
 }
 // regresión lineal bayesiana (norm.draw de mice) + emparejamiento por media predictiva
 function pmm(Xo, yo, Xm, R, donors) {

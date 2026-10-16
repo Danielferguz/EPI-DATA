@@ -1,6 +1,6 @@
 # EPI-DATA
 
-Aplicación web para el **análisis epidemiológico de bases de datos propias** (CSV o Excel): regresión lineal, logística, Poisson con varianza robusta, supervivencia, análisis longitudinal, datos perdidos y modelización multivariable, con **evaluación de supuestos** y **forest plots de modelos crudo y ajustado**.
+Módulo de **EPI-LAB** para el **análisis epidemiológico de bases de datos clínicas propias** (CSV o Excel), con ejemplos de nefrología y una guía paso a paso pensada para personas sin formación estadística: regresión lineal, logística, Poisson con varianza robusta, supervivencia, análisis longitudinal, datos perdidos y modelización multivariable, con **evaluación de supuestos** y **forest plots de modelos crudo y ajustado**.
 
 Todo se calcula en el navegador: los datos no salen de tu computadora. No requiere instalación ni servidor (sitio estático, compatible con GitHub Pages o Cloudflare Pages).
 
@@ -8,15 +8,16 @@ Todo se calcula en el navegador: los datos no salen de tu computadora. No requie
 
 | Módulo | Contenido |
 |---|---|
-| Datos | CSV/XLSX; detección de tipo de variable; categoría de referencia y de evento; códigos de dato perdido; Tabla 1 con pruebas (χ², Fisher, Welch, ANOVA, Mann-Whitney, Kruskal-Wallis) elegidas según normalidad |
-| Datos perdidos | Porcentaje por variable y patrones; prueba MCAR de Little (EM); exploración MAR (comparaciones y regresión logística del indicador de pérdida); interpretación MCAR/MAR/MNAR; MICE (PMM, logística, multinomial) con gráficos de convergencia y observados vs imputados; descarga de datos imputados; reglas de Rubin (gl de Barnard-Rubin, FMI, Wald D1); sensibilidad MNAR por ajuste δ con gráfico de punto de inflexión |
+| Datos | CSV/XLSX; renombrar variables y agrupar categorías; vista de la base completa con perdidos resaltados; detección de tipo de variable; categoría de referencia y de evento; códigos de dato perdido; Tabla 1 con pruebas (χ², Fisher, Welch, ANOVA, Mann-Whitney, Kruskal-Wallis) elegidas según normalidad |
+| Datos perdidos | Porcentaje por variable y patrones; pérdida según exposición y desenlace; prueba MCAR de Little (EM); exploración MAR (comparaciones y regresión logística del indicador de pérdida); interpretación MCAR/MAR/MNAR; MICE con método por variable (PMM, regresión bayesiana, muestra aleatoria, logística, multinomial); imputación simple (media, mediana, kNN, LOCF, categoría «Perdido»); modelos con y sin imputación con gráficos de convergencia y observados vs imputados; descarga de datos imputados; reglas de Rubin (gl de Barnard-Rubin, FMI, Wald D1); sensibilidad MNAR por ajuste δ con gráfico de punto de inflexión |
 | Regresión lineal | MCO, EE robustos HC0/HC1/HC3; Shapiro-Wilk, Breusch-Pagan, RESET, GVIF, Cook, residuos parciales |
 | Regresión logística | OR; EPV, separación, Box-Tidwell, Hosmer-Lemeshow, calibración, AUC-ROC |
 | Poisson robusta | RP / RR / RTI con varianza sándwich; offset; predicciones > 1, linealidad, sobredispersión |
 | Supervivencia | Kaplan-Meier con IC y número en riesgo, mediana, log-rank; Cox (Efron); Schoenfeld (Grambsch-Therneau) por término y global con gráficos β(t); C de Harrell |
 | Longitudinal | GEE (gaussiana, binomial, Poisson; independiente, intercambiable, AR-1) con QIC; modelo mixto con intercepto aleatorio (REML), CCI y LRT; perfiles medios y trayectorias |
 | Modelización | Selección intencionada (Hosmer-Lemeshow/Bursac), hacia atrás por AIC/QIC o p; confusión por cambio en el estimado; modificación de efecto con efectos por estrato; comparación de modelos (AIC, BIC, LRT) |
-| Salidas | Forest crudo vs ajustado estilo artículo; tablas Word/CSV; figuras SVG/PNG/TIFF con DPI; texto de métodos en español e inglés |
+| Resultados | Interpretación en lenguaje sencillo del efecto de la exposición o intervención; aviso de la falacia de la Tabla 2 en modelos causales; supuestos al final con explicación y gráficos de diagnóstico |
+| Salidas | Forest crudo vs ajustado con n y resumen del desenlace por grupo (n/N (%), media ± DE o mediana (P25–P75)), sin p global; tablas Word/CSV; figuras SVG/PNG/TIFF con DPI; texto de métodos en español e inglés |
 
 ## Uso
 
@@ -24,7 +25,18 @@ Todo se calcula en el navegador: los datos no salen de tu computadora. No requie
 python3 -m http.server 8000   # luego http://localhost:8000
 ```
 
-Ejemplos con datos simulados en `examples/` (transversal, cohorte de supervivencia y longitudinal).
+Ejemplos de nefrología con datos **simulados** en `examples/` (generados con `tools/make_examples.py`):
+
+| Archivo | Diseño | Análisis sugerido |
+|---|---|---|
+| `hemodialisis_depresion.csv` | Transversal | Poisson robusta (RP), logística, lineal (PHQ-9) |
+| `hemodialisis_mortalidad.csv` | Cohorte | Kaplan-Meier, log-rank, Cox |
+| `erc_tfge_longitudinal.csv` | Longitudinal | Modelo mixto, GEE |
+| `lesion_renal_aguda.csv` | Cohorte | Poisson robusta (RR), logística |
+| `trasplante_injerto.csv` | Cohorte | Supervivencia del injerto (Cox) |
+| `dialisis_peritonitis.csv` | Cohorte con persona-tiempo | Poisson robusta con offset (RTI) |
+
+Flujo en 8 pasos: datos → base de datos completa → pregunta (causal, explicativa o predictiva) y modelo → descriptivo → datos perdidos → resultados → modelización → reporte. Cada paso explica qué se hace, para qué y cómo interpretarlo.
 
 ## Validación
 

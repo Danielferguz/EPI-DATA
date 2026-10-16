@@ -1,10 +1,10 @@
 // Evaluación de supuestos: colinealidad (GVIF), normalidad y homocedasticidad de residuos, especificación,
 // bondad de ajuste (Hosmer-Lemeshow), discriminación (AUC), linealidad del logit (Box-Tidwell), riesgos proporcionales.
-import { fitOLS, fitGLM, coxZph, concordance, waldTerm } from './models.js?v=2026.10.16-1';
-import { shapiro } from './tests.js?v=2026.10.16-1';
-import { logdet, sub } from './linalg.js?v=2026.10.16-1';
-import { pchisqU, pfU, qnorm } from './dist.js?v=2026.10.16-1';
-import { auc } from './missing.js?v=2026.10.16-1';
+import { fitOLS, fitGLM, coxZph, concordance, waldTerm } from './models.js?v=2026.10.16-2';
+import { shapiro } from './tests.js?v=2026.10.16-2';
+import { logdet, sub } from './linalg.js?v=2026.10.16-2';
+import { pchisqU, pfU, qnorm } from './dist.js?v=2026.10.16-2';
+import { auc } from './missing.js?v=2026.10.16-2';
 
 // GVIF por término (Fox y Monette 1992); con 1 gl equivale al VIF clásico
 export function gvif(D) {

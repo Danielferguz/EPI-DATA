@@ -1,9 +1,10 @@
 // Orquestación: especificación del modelo → ajuste crudo y ajustado (casos completos o imputación múltiple) → tabla para el forest.
-import { design, response, completeRows, levelsOf, levelCounts } from './data.js?v=2026.10.16-1';
-import { fitOLS, fitGLM, fitCox, fitGEE, fitLMM, ciOf, waldTerm } from './models.js?v=2026.10.16-1';
-import { pool, poolWald, pooledCI } from './missing.js?v=2026.10.16-1';
-import { quadForm } from './linalg.js?v=2026.10.16-1';
-import { qnorm, qt, p2z, p2t } from './dist.js?v=2026.10.16-1';
+import { design, response, completeRows, levelsOf, levelCounts, isMiss } from './data.js?v=2026.10.16-2';
+import { fitOLS, fitGLM, fitCox, fitGEE, fitLMM, ciOf, waldTerm } from './models.js?v=2026.10.16-2';
+import { pool, poolWald, pooledCI } from './missing.js?v=2026.10.16-2';
+import { shapiro, mean as avg, sd as sdv, quantile } from './tests.js?v=2026.10.16-2';
+import { quadForm } from './linalg.js?v=2026.10.16-2';
+import { qnorm, qt, p2z, p2t } from './dist.js?v=2026.10.16-2';
 
 export const TYPES = {
   linear: { label: 'Regresión lineal', short: 'Lineal', exp: false, measure: 'β', measureLong: 'Coeficiente β' },
@@ -60,7 +61,7 @@ export const coefCI = (est, j) => (est.pooled ? pooledCI(est, j) : ciOf(est, j))
 export const termTest = (est, idx) => (est.pooled ? poolWald(est, idx) : waldTerm(est, idx));
 
 // análisis completo: modelo ajustado + modelos crudos (una variable a la vez) en la misma muestra
-export function runAnalysis(spec, meta, sets) {
+export function runAnalysis(spec, meta, sets, obs = sets[0]) {
   const vars = modelVars(spec), rows = completeRows(sets[0], vars);
   if (spec.type === 'cox' && rows.some(i => !(sets[0].cols[spec.time][i] > 0))) throw new Error('El tiempo de seguimiento debe ser > 0 en todas las filas.');
   if (rows.length < 10) throw new Error(`Solo ${rows.length} filas completas para las variables del modelo.`);
@@ -68,7 +69,7 @@ export function runAnalysis(spec, meta, sets) {
   const crude = {};
   for (const v of [spec.exposure, ...spec.covs].filter(Boolean)) crude[v] = fitPooled(spec, sets, meta, [{ vars: [v] }], rows);
   const M = measureOf(spec);
-  return { spec, M, rows, n: rows.length, adj, crude, table: buildTable(spec, meta, sets[0], rows, adj, crude, M), mi: sets.length > 1, m: sets.length };
+  return { spec, M, rows, n: rows.length, adj, crude, table: buildTable(spec, meta, sets[0], rows, adj, crude, M, obs, sets.length === 1 && obs === sets[0] ? rows : null), sumHead: summaryHead(spec, meta, obs), mi: sets.length > 1, m: sets.length };
 }
 
 function effect(est, D, j, M) {
@@ -76,30 +77,46 @@ function effect(est, D, j, M) {
   const [lo, hi] = coefCI(est, j), b = est.beta[j], tr = M.exp ? Math.exp : v => v;
   return { b, est: tr(b), lo: tr(lo), hi: tr(hi), p: est.p[j], se: est.se[j], fmi: est.fmi?.[j] };
 }
-function buildTable(spec, meta, ds, rows, adj, crude, M) {
-  const out = [];
+// resumen descriptivo del desenlace en cada grupo (columna del forest): n/N (%) o media ± DE / mediana (P25–P75)
+const outKind = (spec, meta) => (spec.type === 'cox' ? 'bin' : meta[spec.y].type === 'cat' ? 'bin' : 'num');
+const normalish = a => { if (a.length < 3) return true; const sw = shapiro(a.slice(0, 5000)), m = avg(a), s = sdv(a), sk = a.reduce((t, v) => t + ((v - m) / s) ** 3, 0) / a.length; return sw.p >= 0.05 || (a.length > 200 && Math.abs(sk) < 1); };
+const f1 = v => (Math.abs(v) >= 100 ? v.toFixed(0) : v.toFixed(1));
+const descr = (a, normal) => (!a.length ? '–' : normal ? `${f1(avg(a))} ± ${a.length > 1 ? f1(sdv(a)) : '–'}` : `${f1(quantile(a, 0.5))} (${f1(quantile(a, 0.25))}–${f1(quantile(a, 0.75))})`);
+function summaryHead(spec, meta, obs) {
+  const yv = spec.type === 'cox' ? spec.status : spec.y, m = meta[yv];
+  if (outKind(spec, meta) === 'bin') return `${String(m.event).length <= 3 ? `${yv} = ${m.event}` : m.event}, n/N (%)`;
+  const y = Array.from(obs.cols[yv]).filter(v => !isMiss(v));
+  return normalish(y) ? 'Media ± DE' : 'Mediana (P25–P75)';
+}
+function groupSummary(spec, meta, obs, v, level, sub = null) {
+  const yv = spec.type === 'cox' ? spec.status : spec.y, ym = meta[yv], yc = obs.cols[yv], xc = obs.cols[v];
+  const idx = []; for (const i of sub || obs.cols[yv].keys()) if (!isMiss(yc[i]) && !isMiss(xc[i]) && (level == null || xc[i] === level)) idx.push(i);
+  if (meta[v].type === 'num') { const x = idx.map(i => xc[i]); return { text: descr(x, normalish(x)), ofVar: true }; }
+  if (outKind(spec, meta) === 'bin') { const e = idx.filter(i => String(yc[i]) === String(ym.event)).length; return { text: `${e}/${idx.length} (${idx.length ? (100 * e / idx.length).toFixed(1) : '–'}%)` }; }
+  const all = []; for (let i = 0; i < obs.n; i++) if (!isMiss(yc[i])) all.push(yc[i]);
+  return { text: descr(idx.map(i => yc[i]), normalish(all)) };
+}
+function buildTable(spec, meta, ds, rows, adj, crude, M, obs = ds, sub = null) {
+  const out = [], gs = (v, l) => { try { return groupSummary(spec, meta, obs, v, l, sub); } catch { return null; } };
   for (const v of [spec.exposure, ...spec.covs].filter(Boolean)) {
     const m = meta[v], C = crude[v], tA = adj.D.terms.find(t => t.name === v), tC = C.D.terms.find(t => t.name === v);
-    const head = { kind: 'head', v, label: v, exposure: v === spec.exposure, pAdj: tA && tA.idx.length > 1 ? termTest(adj.est, tA.idx).p : NaN, pCrude: tC && tC.idx.length > 1 ? termTest(C.est, tC.idx).p : NaN };
+    const head = { kind: 'head', v, label: v, exposure: v === spec.exposure };
     out.push(head);
     if (m.type === 'num') {
-      out.push({ kind: 'row', v, label: `por 1 unidad`, n: rows.length, crude: effect(C.est, C.D, C.D.cols.findIndex(c => c.term === v), M), adj: effect(adj.est, adj.D, adj.D.cols.findIndex(c => c.term === v), M) });
+      out.push({ kind: 'row', v, label: `por 1 unidad`, n: rows.length, sum: gs(v, null), crude: effect(C.est, C.D, C.D.cols.findIndex(c => c.term === v), M), adj: effect(adj.est, adj.D, adj.D.cols.findIndex(c => c.term === v), M) });
     } else {
       const cnt = levelCounts(ds, m, rows);
       levelsOf(m).forEach((l, k) => {
-        if (k === 0) { out.push({ kind: 'row', v, label: l, n: cnt[l] || 0, ref: true }); return; }
+        if (k === 0) { out.push({ kind: 'row', v, label: l, n: cnt[l] || 0, ref: true, sum: gs(v, l) }); return; }
         const jC = C.D.cols.findIndex(c => c.term === v && c.levels[0] === l), jA = adj.D.cols.findIndex(c => c.term === v && c.levels[0] === l);
-        out.push({ kind: 'row', v, label: l, n: cnt[l] || 0, crude: effect(C.est, C.D, jC, M), adj: effect(adj.est, adj.D, jA, M) });
+        out.push({ kind: 'row', v, label: l, n: cnt[l] || 0, sum: gs(v, l), crude: effect(C.est, C.D, jC, M), adj: effect(adj.est, adj.D, jA, M) });
       });
     }
   }
   const inter = adj.D.terms.filter(t => t.vars.length > 1);
   if (inter.length) {
-    out.push({ kind: 'head', v: '_inter', label: 'Interacciones', pAdj: NaN, pCrude: NaN });
+    out.push({ kind: 'head', v: '_inter', label: 'Interacciones' });
     inter.forEach(t => t.idx.forEach(j => out.push({ kind: 'row', v: t.name, label: adj.D.cols[j].label, n: NaN, crude: null, adj: effect(adj.est, adj.D, j, M), inter: true })));
-  }
-  if (spec.type === 'gee' || spec.type === 'lmm') {
-    // otros términos (p. ej., tiempo) ya están en covs; nada más que añadir
   }
   return out;
 }

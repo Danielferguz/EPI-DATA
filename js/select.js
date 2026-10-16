@@ -1,9 +1,9 @@
 // Modelización multivariable: selección intencionada, eliminación hacia atrás (AIC/QIC o p),
 // cambio en el estimado (confusión) y modificación de efecto (interacciones).
-import { fitModel, termsOf, measureOf, lincom } from './analysis.js?v=2026.10.16-1';
-import { waldTerm } from './models.js?v=2026.10.16-1';
-import { levelsOf } from './data.js?v=2026.10.16-1';
-import { quantile } from './tests.js?v=2026.10.16-1';
+import { fitModel, termsOf, measureOf, lincom } from './analysis.js?v=2026.10.16-2';
+import { waldTerm } from './models.js?v=2026.10.16-2';
+import { levelsOf } from './data.js?v=2026.10.16-2';
+import { quantile } from './tests.js?v=2026.10.16-2';
 
 const termP = (R, v) => { const t = R.D.terms.find(t => t.name === v); return t ? waldTerm(R.fit, t.idx).p : NaN; };
 const crit = (spec, R) => (spec.type === 'gee' ? R.fit.qic : spec.type === 'lmm' ? NaN : R.fit.aic);

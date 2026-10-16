@@ -1,10 +1,11 @@
 // Gráficos SVG: forest crudo vs ajustado, Kaplan-Meier, residuos, QQ, ROC, calibración, Schoenfeld,
 // patrones de perdidos, convergencia de MICE, observados vs imputados, punto de inflexión (δ) y perfiles longitudinales.
-import { qnorm } from './dist.js?v=2026.10.16-1';
+import { qnorm } from './dist.js?v=2026.10.16-2';
 
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-export const PAL = ['#2166AC', '#D6604D', '#4D9221', '#8073AC', '#E08214', '#35978F', '#C51B7D', '#7F7F7F'];
-const BLUE = '#2166AC', GREY = '#BFC5CE';
+// paleta EPI-LAB: azul verdoso (conocimiento), burdeos (rigor), carbón (método), gris claro
+export const PAL = ['#2E7F90', '#8B2E3B', '#4D4D4D', '#5BA7B8', '#C46B78', '#8FA9AF', '#B08D57', '#9A9A9A'];
+const BLUE = '#2E7F90', GREY = '#B9BDBF', RED = '#8B2E3B';
 const STYLE = '<style>text{font:12px system-ui,sans-serif;fill:currentColor}.h{font-weight:600}.m{fill:var(--muted,#666)}.s{font-size:11px}</style>';
 const num = (v, d = 2) => (!isFinite(v) ? '–' : Math.abs(v) >= 1000 ? v.toFixed(0) : v.toFixed(d));
 const fpv = p => (!isFinite(p) ? '' : p < 0.001 ? '<0.001' : p.toFixed(3));
@@ -24,11 +25,11 @@ export function niceTicks(lo, hi, log, n = 5) {
 const scale = (lo, hi, a, b, log) => { const f = log ? Math.log : v => v, A = f(lo), B = f(hi); return v => a + (f(v) - A) / ((B - A) || 1) * (b - a); };
 
 // ---------------- forest crudo vs ajustado (estilo tabla) ----------------
-export function forestTable({ rows, measure, exp, showCrude = true, title = '', cLabel = 'Modelo crudo', aLabel = 'Modelo ajustado' }) {
-  const rowH = 20, top = title ? 46 : 28;
+export function forestTable({ rows, measure, exp, showCrude = true, title = '', cLabel = 'Modelo crudo', aLabel = 'Modelo ajustado', sumHead = '', legend = ['Ajustado', 'Crudo'], exposure = null, expTag = '' }) {
+  const rowH = 20, top = title ? 46 : 28, sw = sumHead ? 140 : 0;
   const lw = Math.max(150, Math.min(300, 7.2 * Math.max(...rows.map(r => String(r.label).length + (r.kind === 'row' ? 2 : 0)), 10)));
-  const nX = lw + 34, x0 = nX + 18, x1 = x0 + 300, cw = 150, pw = 58;
-  const cX = x1 + 22, cpX = cX + cw, aX = showCrude ? cpX + pw + 18 : cX, apX = aX + cw, W = apX + pw + 6, n = rows.length, H = top + n * rowH + (showCrude ? 62 : 44);
+  const nX = lw + 34, sX = nX + 12, x0 = nX + 18 + sw, x1 = x0 + 300, cw = 150, pw = 58;
+  const cX = x1 + 22, cpX = cX + cw, aX = showCrude ? cpX + pw + 18 : cX, apX = aX + cw, W = apX + pw + 6, n = rows.length, H = top + n * rowH + (showCrude ? 62 : 44) + 10;
   const all = rows.flatMap(r => [r.crude, r.adj]).filter(e => e && isFinite(e.lo) && isFinite(e.hi)).flatMap(e => [e.lo, e.hi]);
   let lo = Math.min(...all, exp ? 1 : 0), hi = Math.max(...all, exp ? 1 : 0);
   if (exp) { lo = Math.max(lo / 1.05, 0.01); hi = Math.min(hi * 1.05, 100); } else { const pad = (hi - lo) * 0.06 || 1; lo -= pad; hi += pad; }
@@ -36,17 +37,19 @@ export function forestTable({ rows, measure, exp, showCrude = true, title = '', 
   let s = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" class="plot" role="img" aria-label="Forest plot">${STYLE}`;
   if (title) s += `<text x="6" y="16" class="h">${esc(title)}</text>`;
   const hy = top - 10;
+  if (sumHead) s += `<text x="${sX}" y="${hy}" class="h s">${esc(sumHead.length > 26 ? sumHead.slice(0, 25) + '…' : sumHead)}<title>${esc(sumHead)}</title></text>`;
   s += `<text x="6" y="${hy}" class="h">Variables</text><text x="${nX}" y="${hy}" class="h" text-anchor="end">n</text><text x="${(x0 + x1) / 2}" y="${hy}" class="h" text-anchor="middle">${esc(measure)} (IC 95%)</text>`;
   if (showCrude) s += `<text x="${cX}" y="${hy}" class="h">${esc(cLabel)}</text><text x="${cpX + pw - 4}" y="${hy}" class="h" text-anchor="end">valor p</text>`;
   s += `<text x="${aX}" y="${hy}" class="h">${esc(aLabel)}</text><text x="${apX + pw - 4}" y="${hy}" class="h" text-anchor="end">valor p</text>`;
   const yb = top + n * rowH;
   s += `<line x1="0" x2="${W}" y1="${top - 4}" y2="${top - 4}" stroke="currentColor"/><line x1="0" x2="${W}" y1="${yb + 2}" y2="${yb + 2}" stroke="currentColor"/>`;
-  [nX + 8, x1 + 12, ...(showCrude ? [cpX + pw + 8] : [])].forEach(x => (s += `<line x1="${x}" x2="${x}" y1="${top - 20}" y2="${yb + 2}" stroke="currentColor" stroke-width=".6"/>`));
+  [nX + 8, ...(sw ? [x0 - 8] : []), x1 + 12, ...(showCrude ? [cpX + pw + 8] : [])].forEach(x => (s += `<line x1="${x}" x2="${x}" y1="${top - 20}" y2="${yb + 2}" stroke="currentColor" stroke-width=".6"/>`));
   s += `<line x1="${sx(ref)}" x2="${sx(ref)}" y1="${top - 4}" y2="${yb + 2}" stroke="currentColor" stroke-dasharray="4 3"/>`;
   rows.forEach((r, i) => {
     const y = top + i * rowH + 13;
-    if (r.kind === 'head') { s += `<text x="6" y="${y}" class="h">${esc(r.label)}</text>`; if (isFinite(r.pAdj)) s += `<text x="${apX + pw - 4}" y="${y}" text-anchor="end" class="m s">global ${fpv(r.pAdj)}</text>`; if (showCrude && isFinite(r.pCrude)) s += `<text x="${cpX + pw - 4}" y="${y}" text-anchor="end" class="m s">global ${fpv(r.pCrude)}</text>`; return; }
+    if (r.kind === 'head') { const ex = exposure && r.v === exposure; s += `${ex ? `<rect x="0" y="${y - 14}" width="${W}" height="${rowH}" fill="${BLUE}" fill-opacity=".08"/>` : ''}<text x="6" y="${y}" class="h"${ex ? ` fill="${BLUE}"` : ''}>${esc(r.label)}${ex && expTag ? ` (${esc(expTag)})` : ''}</text>`; return; }
     s += `<text x="18" y="${y}">${esc(r.label)}</text>`;
+    if (sw && r.sum) s += `<text x="${sX}" y="${y}" class="s${r.sum.ofVar ? ' m' : ''}">${esc(r.sum.text)}${r.sum.ofVar ? '*' : ''}</text>`;
     if (isFinite(r.n)) s += `<text x="${nX}" y="${y}" text-anchor="end">${r.n}</text>`;
     if (r.ref) {
       if (showCrude) s += `<rect x="${sx(ref) - 4}" y="${y - 12}" width="8" height="8" fill="${GREY}"/><text x="${cX}" y="${y}">Referencia</text>`;
@@ -61,15 +64,17 @@ export function forestTable({ rows, measure, exp, showCrude = true, title = '', 
   });
   // eje
   s += niceTicks(lo, hi, exp).map(v => `<line x1="${sx(v)}" x2="${sx(v)}" y1="${yb + 2}" y2="${yb + 6}" stroke="currentColor"/><text x="${sx(v)}" y="${yb + 19}" text-anchor="middle" class="s">${v}</text>`).join('');
-  if (showCrude) { const ly = yb + 32, lx = (x0 + x1) / 2 - 80; s += `<rect x="${lx}" y="${ly}" width="9" height="9" fill="${BLUE}"/><text x="${lx + 14}" y="${ly + 9}" class="s">Ajustado</text><rect x="${lx + 90}" y="${ly}" width="9" height="9" fill="${GREY}"/><text x="${lx + 104}" y="${ly + 9}" class="s">Crudo</text>`; }
+  if (showCrude) { const ly = yb + 32, lx = x0; s += `<rect x="${lx}" y="${ly}" width="9" height="9" fill="${BLUE}"/><text x="${lx + 14}" y="${ly + 9}" class="s">${esc(legend[0])}</text><rect x="${lx + 150}" y="${ly}" width="9" height="9" fill="${GREY}"/><text x="${lx + 164}" y="${ly + 9}" class="s">${esc(legend[1])}</text>`; }
+  if (sw && rows.some(r => r.sum?.ofVar)) s += `<text x="6" y="${H - 4}" class="s m">* Variable cuantitativa: distribución de la propia variable.</text>`;
   return s + '</svg>';
 }
 
 // ---------------- marco genérico para gráficos x-y ----------------
-function frame({ W = 560, H = 380, xdom, ydom, xlab = '', ylab = '', xlog = false, title = '', ml = 56, mb = 46 }) {
-  const m = { l: ml, r: 16, t: title ? 30 : 14, b: mb }, sx = scale(xdom[0], xdom[1], m.l, W - m.r, xlog), sy = scale(ydom[0], ydom[1], H - m.b, m.t, false);
+function frame({ W = 560, H = 380, xdom, ydom, xlab = '', ylab = '', xlog = false, title = '', sub = '', ml = 56, mb = 46 }) {
+  const m = { l: ml, r: 16, t: (title ? 30 : 14) + (sub ? 16 : 0), b: mb }, sx = scale(xdom[0], xdom[1], m.l, W - m.r, xlog), sy = scale(ydom[0], ydom[1], H - m.b, m.t, false);
   let s = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" class="plot" role="img">${STYLE}`;
   if (title) s += `<text x="8" y="18" class="h">${esc(title)}</text>`;
+  if (sub) s += `<text x="8" y="34" class="s m">${esc(sub)}</text>`;
   s += `<rect x="${m.l}" y="${m.t}" width="${W - m.l - m.r}" height="${H - m.t - m.b}" fill="none" stroke="currentColor" stroke-width=".7"/>`;
   niceTicks(xdom[0], xdom[1], xlog).filter(v => v >= xdom[0] - 1e-9 && v <= xdom[1] + 1e-9).forEach(v => (s += `<line x1="${sx(v)}" x2="${sx(v)}" y1="${H - m.b}" y2="${H - m.b + 4}" stroke="currentColor"/><text x="${sx(v)}" y="${H - m.b + 17}" text-anchor="middle" class="s">${+v.toPrecision(6)}</text>`));
   niceTicks(ydom[0], ydom[1], false).filter(v => v >= ydom[0] - 1e-9 && v <= ydom[1] + 1e-9).forEach(v => (s += `<line x1="${m.l - 4}" x2="${m.l}" y1="${sy(v)}" y2="${sy(v)}" stroke="currentColor"/><text x="${m.l - 7}" y="${sy(v) + 4}" text-anchor="end" class="s">${+v.toPrecision(6)}</text>`));
@@ -80,18 +85,18 @@ const ext = (a, pad = 0.05) => { const v = a.filter(isFinite); let lo = Math.min
 const path = (pts, sx, sy) => pts.filter(p => isFinite(p[0]) && isFinite(p[1])).map((p, i) => `${i ? 'L' : 'M'}${sx(p[0]).toFixed(1)},${sy(p[1]).toFixed(1)}`).join('');
 const thin = (n, max = 4000) => (n > max ? Math.ceil(n / max) : 1);
 
-export function scatterPlot({ x, y, xlab, ylab, title, hline = null, smooth = null, line = null, color = BLUE, ydom = null }) {
-  const F = frame({ xdom: ext(Array.from(x)), ydom: ydom || ext([...Array.from(y), ...(hline != null ? [hline] : [])]), xlab, ylab, title }); let s = F.s; const k = thin(x.length);
+export function scatterPlot({ x, y, xlab, ylab, title, sub = '', hline = null, smooth = null, line = null, color = BLUE, ydom = null }) {
+  const F = frame({ xdom: ext(Array.from(x)), ydom: ydom || ext([...Array.from(y), ...(hline != null ? [hline] : [])]), xlab, ylab, title, sub }); let s = F.s; const k = thin(x.length);
   if (hline != null) s += `<line x1="${F.m.l}" x2="${F.W - F.m.r}" y1="${F.sy(hline)}" y2="${F.sy(hline)}" stroke="currentColor" stroke-dasharray="4 3"/>`;
   for (let i = 0; i < x.length; i += k) if (isFinite(x[i]) && isFinite(y[i])) s += `<circle cx="${F.sx(x[i]).toFixed(1)}" cy="${F.sy(y[i]).toFixed(1)}" r="2.4" fill="${color}" fill-opacity=".45"/>`;
   if (line) s += `<path d="${path(line, F.sx, F.sy)}" fill="none" stroke="#555" stroke-width="1.2"/>`;
-  if (smooth?.length) s += `<path d="${path(smooth, F.sx, F.sy)}" fill="none" stroke="${PAL[1]}" stroke-width="2"/>`;
+  if (smooth?.length) s += `<path d="${path(smooth, F.sx, F.sy)}" fill="none" stroke="${RED}" stroke-width="2"/>`;
   return s + '</svg>';
 }
-export function qqPlot(r, title = 'Q-Q normal de residuos estandarizados') {
+export function qqPlot(r, title = 'Normalidad de residuos (Q-Q)', sub = 'Los puntos deben seguir la línea') {
   const v = Float64Array.from(r).filter(isFinite).sort(), n = v.length, th = Array.from(v, (_, i) => qnorm((i + 0.5) / n));
   const lim = ext([...th, ...v]);
-  return scatterPlot({ x: th, y: v, xlab: 'Cuantiles teóricos', ylab: 'Cuantiles observados', title, line: [[lim[0], lim[0]], [lim[1], lim[1]]], ydom: lim });
+  return scatterPlot({ x: th, y: v, xlab: 'Cuantiles teóricos (normal)', ylab: 'Cuantiles observados', title, sub, line: [[lim[0], lim[0]], [lim[1], lim[1]]], ydom: lim });
 }
 export function histPlot(v, { xlab = '', title = '', bins = 0, normal = true } = {}) {
   v = Array.from(v).filter(isFinite); const n = v.length; bins = bins || Math.min(40, Math.max(8, Math.ceil(Math.log2(n) + 1) * 2));
@@ -162,7 +167,7 @@ export function patternPlot(pats, vars, maxRows = 30) {
   let s = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" class="plot" role="img">${STYLE}<text x="8" y="16" class="h">Patrones de datos perdidos</text>`;
   vars.forEach((v, j) => (s += `<text transform="translate(${lw + j * cw + cw / 2 + 4} ${top - 6}) rotate(-55)" class="s">${esc(v.slice(0, 18))}</text>`));
   s += `<text x="${lw - 6}" y="${top - 6}" text-anchor="end" class="s h">n</text><text x="${lw + vars.length * cw + 6}" y="${top - 6}" class="s h">n.º perd.</text>`;
-  P.forEach((p, i) => { const y = top + i * rh; s += `<text x="${lw - 6}" y="${y + 13}" text-anchor="end" class="s">${p.n}</text>`; p.obs.forEach((o, j) => (s += `<rect x="${lw + j * cw}" y="${y}" width="${cw - 1}" height="${rh - 1}" fill="${o ? '#7FA7D3' : '#D6604D'}"/>`)); s += `<text x="${lw + vars.length * cw + 6}" y="${y + 13}" class="s">${p.nmiss}</text>`; });
+  P.forEach((p, i) => { const y = top + i * rh; s += `<text x="${lw - 6}" y="${y + 13}" text-anchor="end" class="s">${p.n}</text>`; p.obs.forEach((o, j) => (s += `<rect x="${lw + j * cw}" y="${y}" width="${cw - 1}" height="${rh - 1}" fill="${o ? '#8FC3CF' : '#8B2E3B'}"/>`)); s += `<text x="${lw + vars.length * cw + 6}" y="${y + 13}" class="s">${p.nmiss}</text>`; });
   return s + `<text x="8" y="${H - 2}" class="s m">${pats.length > maxRows ? `Se muestran ${maxRows} de ${pats.length} patrones. ` : ''}Azul = observado · rojo = perdido</text></svg>`;
 }
 export function tracePlot(trace, v, isNum) {
@@ -213,4 +218,59 @@ export function spaghettiPlot(lines, { xlab, ylab }) {
   const groups = [...new Set(lines.map(l => l.g))];
   lines.slice(0, 400).forEach(l => (s += `<path d="${path(l.pts, F.sx, F.sy)}" fill="none" stroke="${PAL[groups.indexOf(l.g) % PAL.length]}" stroke-opacity=".35"/>`));
   return s + '</svg>';
+}
+
+// ---------------- panel de supuestos (al estilo de performance::check_model) ----------------
+export function densityPlot(v, { title = 'Normalidad de residuos (densidad)', sub = 'La distribución debe parecerse a la curva normal', xlab = 'Residuo' } = {}) {
+  v = Array.from(v).filter(isFinite); const n = v.length, m = v.reduce((a, b) => a + b, 0) / n, s = Math.sqrt(v.reduce((a, b) => a + (b - m) ** 2, 0) / (n - 1));
+  const sorted = [...v].sort((a, b) => a - b), iqr = sorted[Math.floor(0.75 * n)] - sorted[Math.floor(0.25 * n)], bw = 0.9 * Math.min(s, iqr / 1.34 || s) * Math.pow(n, -0.2) || 1;
+  const [lo, hi] = ext(v, 0.08), xs = Array.from({ length: 120 }, (_, k) => lo + (hi - lo) * k / 119);
+  const kd = xs.map(x => [x, v.reduce((a, xi) => a + Math.exp(-0.5 * ((x - xi) / bw) ** 2), 0) / (n * bw * Math.sqrt(2 * Math.PI))]);
+  const nd = xs.map(x => [x, Math.exp(-((x - m) ** 2) / (2 * s * s)) / (s * Math.sqrt(2 * Math.PI))]);
+  const F = frame({ xdom: [lo, hi], ydom: [0, Math.max(...kd.map(p => p[1]), ...nd.map(p => p[1])) * 1.08], xlab, ylab: 'Densidad', title, sub }); let o = F.s;
+  o += `<path d="${path(kd, F.sx, F.sy)}L${F.sx(hi)},${F.sy(0)}L${F.sx(lo)},${F.sy(0)}Z" fill="${PAL[3]}" fill-opacity=".35" stroke="none"/>`;
+  return o + `<path d="${path(nd, F.sx, F.sy)}" fill="none" stroke="${RED}" stroke-width="2"/></svg>`;
+}
+export function vifPlot(vif) {
+  const v = vif.map(x => ({ t: x.term, val: x.adj ** 2 })), W = 560, H = 360, mx = Math.max(10, ...v.map(x => x.val)) * 1.05;
+  const F = frame({ W, H, xdom: [0, v.length], ydom: [0, mx], xlab: '', ylab: 'VIF', title: 'Colinealidad', sub: 'Barras > 5 indican posible colinealidad', mb: 74 }); let o = F.s;
+  const bw = (F.sx(1) - F.sx(0)) * 0.6;
+  [5, 10].forEach(c => (o += `<line x1="${F.m.l}" x2="${W - F.m.r}" y1="${F.sy(c)}" y2="${F.sy(c)}" stroke="${c === 5 ? PAL[6] : RED}" stroke-dasharray="4 3"/>`));
+  v.forEach((x, k) => { const col = x.val < 5 ? BLUE : x.val < 10 ? PAL[6] : RED; o += `<rect x="${F.sx(k + 0.5) - bw / 2}" y="${F.sy(x.val)}" width="${bw}" height="${F.sy(0) - F.sy(x.val)}" fill="${col}"/><text transform="translate(${F.sx(k + 0.5)} ${H - F.m.b + 14}) rotate(-25)" text-anchor="end" class="s">${esc(x.t.length > 18 ? x.t.slice(0, 17) + '…' : x.t)}</text>`; });
+  o += `<rect x="${F.m.l}" y="${H - 16}" width="9" height="9" fill="${BLUE}"/><text x="${F.m.l + 13}" y="${H - 8}" class="s">bajo (&lt; 5)</text><rect x="${F.m.l + 100}" y="${H - 16}" width="9" height="9" fill="${PAL[6]}"/><text x="${F.m.l + 113}" y="${H - 8}" class="s">moderado (&lt; 10)</text><rect x="${F.m.l + 230}" y="${H - 16}" width="9" height="9" fill="${RED}"/><text x="${F.m.l + 243}" y="${H - 8}" class="s">alto (≥ 10)</text>`;
+  return o + '</svg>';
+}
+// residuos estandarizados vs apalancamiento con contornos de la distancia de Cook (0.5 y 1)
+export function leveragePlot(hat, rstd, p) {
+  const h = Array.from(hat), r = Array.from(rstd), hmax = Math.max(...h) * 1.08, rmax = Math.max(4, ...r.map(Math.abs)) * 1.1;
+  const F = frame({ xdom: [0, hmax], ydom: [-rmax, rmax], xlab: 'Apalancamiento (hᵢᵢ)', ylab: 'Residuo estandarizado', title: 'Observaciones influyentes', sub: 'Los puntos deben quedar dentro de las curvas de Cook (0.5 y 1)' }); let o = F.s;
+  [0.5, 1].forEach(c => [1, -1].forEach(sg => { const pts = Array.from({ length: 60 }, (_, k) => { const hh = hmax * (k + 1) / 60; return [hh, sg * Math.sqrt(c * p * (1 - hh) / hh)]; }).filter(q => Math.abs(q[1]) <= rmax); o += `<path d="${path(pts, F.sx, F.sy)}" fill="none" stroke="${c === 1 ? RED : PAL[6]}" stroke-dasharray="5 4"/>`; }));
+  o += `<line x1="${F.m.l}" x2="${F.W - F.m.r}" y1="${F.sy(0)}" y2="${F.sy(0)}" stroke="currentColor" stroke-dasharray="3 3"/>`;
+  const cook = h.map((hh, i) => (r[i] ** 2 / p) * hh / (1 - hh)), top = cook.map((c, i) => [c, i]).sort((a, b) => b[0] - a[0]).slice(0, 4).map(x => x[1]);
+  const k = thin(h.length); for (let i = 0; i < h.length; i += k) o += `<circle cx="${F.sx(h[i]).toFixed(1)}" cy="${F.sy(r[i]).toFixed(1)}" r="2.4" fill="${cook[i] > 0.5 ? RED : BLUE}" fill-opacity=".55"/>`;
+  top.forEach(i => (o += `<text x="${F.sx(h[i]) + 4}" y="${F.sy(r[i]) - 4}" class="s" fill="${BLUE}">${i + 1}</text>`));
+  return o + '</svg>';
+}
+// residuos agrupados (Gelman y Hill) para regresión logística
+export function binnedResidPlot(fitted, y) {
+  const idx = Array.from(fitted.keys()).sort((a, b) => fitted[a] - fitted[b]), n = idx.length, nb = Math.max(5, Math.min(30, Math.round(Math.sqrt(n)))), pts = [];
+  for (let b = 0; b < nb; b++) { const s = idx.slice(Math.round(b * n / nb), Math.round((b + 1) * n / nb)); if (!s.length) continue; const pm = s.reduce((a, i) => a + fitted[i], 0) / s.length, r = s.reduce((a, i) => a + (y[i] - fitted[i]), 0) / s.length, se = 2 * Math.sqrt(pm * (1 - pm) / s.length); pts.push({ x: pm, r, se }); }
+  const lim = Math.max(...pts.map(q => Math.max(Math.abs(q.r), q.se))) * 1.2;
+  const F = frame({ xdom: [0, Math.min(1, Math.max(...pts.map(q => q.x)) * 1.08)], ydom: [-lim, lim], xlab: 'Probabilidad predicha', ylab: 'Residuo promedio', title: 'Residuos agrupados', sub: 'Los puntos deben quedar dentro de las bandas (±2 EE)' }); let o = F.s;
+  o += `<path d="${path(pts.map(q => [q.x, q.se]), F.sx, F.sy)}" fill="none" stroke="${PAL[2]}" stroke-dasharray="4 3"/><path d="${path(pts.map(q => [q.x, -q.se]), F.sx, F.sy)}" fill="none" stroke="${PAL[2]}" stroke-dasharray="4 3"/><line x1="${F.m.l}" x2="${F.W - F.m.r}" y1="${F.sy(0)}" y2="${F.sy(0)}" stroke="currentColor" stroke-width=".6"/>`;
+  pts.forEach(q => (o += `<circle cx="${F.sx(q.x)}" cy="${F.sy(q.r)}" r="3.5" fill="${Math.abs(q.r) > q.se ? RED : BLUE}"/>`));
+  return o + '</svg>';
+}
+// porcentaje de perdidos de cada variable según los grupos de la exposición o del desenlace
+export function missByGroupPlot(vars, groups, pct, { title, groupVar, pvals = {} }) {
+  const rowH = 14 * groups.length + 10, lw = Math.min(230, 7 * Math.max(...vars.map(v => v.length), 8)), W = lw + 430, H = 46 + vars.length * rowH + 30, x0 = lw + 10, x1 = W - 120;
+  const mx = Math.max(0.05, ...vars.flatMap(v => groups.map(g => pct[v][g] || 0)));
+  let s = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" class="plot" role="img">${STYLE}<text x="8" y="16" class="h">${esc(title)}</text>`;
+  groups.forEach((g, k) => (s += `<rect x="${x0 + k * 140}" y="26" width="9" height="9" fill="${PAL[k % PAL.length]}"/><text x="${x0 + k * 140 + 13}" y="34" class="s">${esc(groupVar)}: ${esc(String(g).slice(0, 16))}</text>`));
+  vars.forEach((v, i) => {
+    const y = 46 + i * rowH; s += `<text x="${lw}" y="${y + rowH / 2 + 3}" text-anchor="end">${esc(v)}</text>`;
+    groups.forEach((g, k) => { const p = pct[v][g] || 0; s += `<rect x="${x0}" y="${y + 3 + k * 14}" width="${(x1 - x0) * p / mx}" height="11" fill="${PAL[k % PAL.length]}"/><text x="${x0 + (x1 - x0) * p / mx + 4}" y="${y + 12 + k * 14}" class="s">${(100 * p).toFixed(1)}%</text>`; });
+    if (isFinite(pvals[v])) s += `<text x="${W - 6}" y="${y + rowH / 2 + 3}" text-anchor="end" class="s${pvals[v] < 0.05 ? ' h' : ' m'}">p ${pvals[v] < 0.001 ? '<0.001' : '= ' + pvals[v].toFixed(3)}</text>`;
+  });
+  return s + `<text x="8" y="${H - 6}" class="s m">p: prueba χ² de la proporción de perdidos entre grupos (p &lt; 0.05 sugiere que la pérdida no es MCAR).</text></svg>`;
 }

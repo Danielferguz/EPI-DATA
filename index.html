@@ -7,7 +7,7 @@
 <meta name="description" content="EPI-DATA (EPI-LAB): análisis de bases de datos clínicas y de nefrología en el navegador. Regresión lineal, logística, Poisson robusta, supervivencia, análisis longitudinal, datos perdidos e imputación, con guía paso a paso y evaluación de supuestos.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700&family=Source+Sans+3:wght@400;600&display=swap">
-<link rel="stylesheet" href="css/style.css?v=2026.10.16-2">
+<link rel="stylesheet" href="css/style.css?v=2026.10.26-1">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" defer></script>
 </head>
 <body>
@@ -23,7 +23,7 @@
     <button role="tab" data-tab="descriptivo"><span class="n">4</span>Descriptivo</button>
     <button role="tab" data-tab="perdidos"><span class="n">5</span>Datos perdidos</button>
     <button role="tab" data-tab="modelos"><span class="n">6</span>Resultados</button>
-    <button role="tab" data-tab="modelizacion"><span class="n">7</span>Modelización</button>
+    <button role="tab" data-tab="modelizacion"><span class="n">7</span>Confusión e interacción</button>
     <button role="tab" data-tab="reporte"><span class="n">8</span>Reporte</button>
     <button role="tab" data-tab="ayuda"><span class="n">?</span>Ayuda</button>
   </nav>
@@ -32,6 +32,7 @@
 <main>
 <!-- 1 · DATOS -->
 <section id="tab-datos" class="tab active">
+  <div class="card" id="qmap"></div>
   <div class="card">
     <h2>Cargar la base de datos</h2>
     <div class="howto"><div><b>Qué se hace</b>Se lee su archivo CSV o Excel: una fila por paciente (o por visita en datos longitudinales) y una columna por variable.</div><div><b>Para qué</b>Todo el análisis se hace en su navegador; los datos no se envían a ningún servidor.</div><div><b>Consejo</b>Use nombres de variables claros (p. ej., «Albúmina (g/dL)»): aparecerán tal cual en las tablas y figuras. Puede corregirlos abajo.</div></div>
@@ -54,7 +55,7 @@
   <div class="card has-data" hidden>
     <h2>Base de datos completa</h2>
     <div class="howto"><div><b>Qué se ve</b>Todas las filas, ya con los tipos y nombres que configuró. Las celdas sombreadas en burdeos son datos perdidos.</div><div><b>Para qué</b>Detectar valores imposibles, errores de digitación o categorías mal escritas antes de analizar.</div><div><b>Si hay errores</b>Corríjalos en su archivo original o renombre/agrupe categorías en el paso 1.</div></div>
-    <div class="row gap wrap"><label class="inline"><input type="checkbox" id="db-miss"> Solo filas con datos perdidos</label><label class="inline">Buscar <input id="db-q" size="16" placeholder="texto o número"></label><span class="grow"></span><span id="db-info" class="sub"></span></div>
+    <div class="row gap wrap"><label class="inline"><input type="checkbox" id="db-miss"> Solo filas con datos perdidos</label><label class="inline">Buscar <input id="db-q" size="16" placeholder="texto o número"></label><span class="grow"></span><button class="ghost" id="db-dl" title="CSV con los nombres, categorías y tipos que configuró; para cargarlo en otra aplicación EPI">Descargar base limpia (CSV)</button><span id="db-info" class="sub"></span></div>
     <div class="tablewrap tall" id="db-table"></div>
     <div class="pager" id="db-pager"></div>
     <div class="stepnav"><button class="ghost" data-go="datos">← Variables</button><button class="primary" data-go="pregunta">Siguiente: pregunta de investigación →</button></div>
@@ -69,17 +70,44 @@
     <div class="howto"><div><b>Qué se hace</b>Se define si busca estimar el efecto de una intervención (causal), describir factores asociados o predecir un desenlace.</div><div><b>Para qué</b>El objetivo cambia cómo se eligen las covariables y cómo se interpretan los resultados.</div><div><b>Regla de oro</b>En preguntas causales, las covariables se eligen por conocimiento previo (confusores), no por su valor p.</div></div>
     <div class="choices" id="objective"></div>
     <div id="obj-msg" class="explain"></div>
+    <p class="sub">¿Su pregunta es <b>predecir</b> el riesgo de cada paciente (discriminación, calibración, C de Harrell, comparación de modelos)? Eso se hace en <a href="../EPI-PREDIC/" target="_blank" rel="noopener">EPI-PREDIC</a> (regresión) o <a href="../EPI-Maching-Learning/" target="_blank" rel="noopener">EPI-Maching-Learning</a> (algoritmos flexibles); aquí se estiman asociaciones y efectos.</p>
   </div>
   <div class="card has-data" hidden>
     <h2>Tipo de desenlace y modelo</h2>
     <div class="howto"><div><b>Qué se hace</b>Se elige el modelo según cómo se midió el desenlace.</div><div><b>Guía rápida</b>Número continuo → lineal. Sí/No → logística (OR) o Poisson robusta (RP/RR, preferible si el desenlace es frecuente). Tiempo hasta un evento → supervivencia. Varias mediciones por paciente → longitudinal.</div><div><b>Ayuda</b>Al elegir el desenlace se muestra una recomendación.</div></div>
+    <details class="mt"><summary>Guía de modelos para conteos y desenlaces continuos positivos (con ejemplos)</summary>
+      <div class="tablewrap"><table class="data"><thead><tr><th>Tipo de desenlace</th><th>Modelo base</th><th>Si hay exceso de ceros</th><th>Ejemplos</th></tr></thead><tbody>
+        <tr><td>Conteos (discretos)</td><td>Poisson</td><td>Poisson inflada en ceros (ZIP)</td><td>Consultas médicas, número de accidentes, episodios de peritonitis</td></tr>
+        <tr><td>Conteos sobredispersos (varianza ≫ media)</td><td>Binomial negativa</td><td>Binomial negativa inflada en ceros (ZINB)</td><td>Reclamos de seguros, fallos de máquinas, ingresos hospitalarios</td></tr>
+        <tr><td>Continuos positivos y asimétricos</td><td>Gamma (enlace log)</td><td>Hurdle-Gamma (parte logística + parte Gamma)</td><td>Gasto en salud, consumo eléctrico, duraciones, estancia hospitalaria</td></tr>
+        <tr><td>Categorías ordenadas</td><td>Ordinal (odds proporcionales)</td><td>—</td><td>Gravedad leve/moderada/grave, estadio de ERC, escala de Likert</td></tr>
+        <tr><td>Categorías sin orden</td><td>Multinomial</td><td>—</td><td>Tipo de acceso vascular, causa de muerte, modalidad de diálisis</td></tr>
+        <tr><td>Pacientes dentro de centros / mediciones repetidas</td><td>Multinivel (intercepto aleatorio)</td><td>—</td><td>Pacientes dentro de hospitales, visitas dentro de pacientes</td></tr>
+      </tbody></table></div>
+      <p class="notes">Un <b>cero estructural</b> (la persona nunca podría tener el evento) se modela con ZIP/ZINB; un cero que simplemente es «ninguno» entra en la distribución de conteos. En el hurdle-Gamma todos los ceros se tratan como una decisión previa («¿gasta algo?») y los positivos se modelan aparte. Para <b>predecir</b> con estos modelos y valorar su rendimiento use EPI-PREDIC o EPI-ML.</p>
+    </details>
     <div class="types" id="types">
-      <button data-type="linear"><b>Regresión lineal</b><small>Desenlace cuantitativo (hemoglobina, PHQ-9) · β</small></button>
-      <button data-type="logistic"><b>Regresión logística</b><small>Desenlace Sí/No poco frecuente o casos y controles · OR</small></button>
-      <button data-type="poisson"><b>Poisson con varianza robusta</b><small>Sí/No frecuente (RP, RR) o conteos con persona-tiempo (RTI)</small></button>
-      <button data-type="cox"><b>Supervivencia</b><small>Tiempo hasta muerte o pérdida del injerto · Kaplan-Meier y Cox (HR)</small></button>
-      <button data-type="gee"><b>Longitudinal · GEE</b><small>Mediciones repetidas · efecto promedio poblacional</small></button>
-      <button data-type="lmm"><b>Longitudinal · modelo mixto</b><small>Mediciones repetidas · trayectoria por paciente (REML)</small></button>
+      <h4>Desenlace cuantitativo</h4>
+      <button data-type="linear"><b>Regresión lineal</b><small>Hemoglobina, PHQ-9 · β</small></button>
+      <button data-type="gamma"><b>Gamma (positivo asimétrico)</b><small>Gasto, duración, consumo · razón de medias</small></button>
+      <button data-type="hgamma"><b>Hurdle-Gamma</b><small>Positivo con muchos ceros · OR de gastar + razón de medias</small></button>
+      <h4>Desenlace Sí/No</h4>
+      <button data-type="logistic"><b>Regresión logística</b><small>Sí/No poco frecuente o casos y controles · OR</small></button>
+      <button data-type="poisson"><b>Poisson con varianza robusta</b><small>Sí/No frecuente (RP, RR) o conteos con persona-tiempo</small></button>
+      <h4>Desenlace con más de dos categorías</h4>
+      <button data-type="ordinal"><b>Regresión ordinal</b><small>Categorías ordenadas · odds ratio acumulado</small></button>
+      <button data-type="multinom"><b>Regresión multinomial</b><small>Categorías sin orden · RRR frente a una referencia</small></button>
+      <h4>Conteos</h4>
+      <button data-type="count"><b>Poisson (conteos)</b><small>Varianza de Poisson · razón de tasas (IRR)</small></button>
+      <button data-type="nb"><b>Binomial negativa</b><small>Conteos sobredispersos · IRR</small></button>
+      <button data-type="zip"><b>ZIP</b><small>Poisson con exceso de ceros · IRR + OR de cero estructural</small></button>
+      <button data-type="zinb"><b>ZINB</b><small>Binomial negativa con exceso de ceros</small></button>
+      <h4>Tiempo hasta un evento</h4>
+      <button data-type="cox"><b>Supervivencia</b><small>Kaplan-Meier y Cox (HR)</small></button>
+      <h4>Mediciones repetidas y conglomerados</h4>
+      <button data-type="gee"><b>Longitudinal · GEE</b><small>Efecto promedio poblacional</small></button>
+      <button data-type="lmm"><b>Mixto lineal (multinivel)</b><small>Desenlace continuo · trayectoria por paciente (REML)</small></button>
+      <button data-type="glmm"><b>Multinivel binario o de conteo</b><small>Intercepto aleatorio · OR/RTI condicional, CCI y MOR</small></button>
     </div>
     <div id="spec-form" class="mt"></div>
     <div id="spec-hint" class="explain"></div>
@@ -156,16 +184,15 @@
 <section id="tab-modelizacion" class="tab">
   <div class="card need-model"><p class="muted">Ejecute primero un modelo en el paso 6.</p></div>
   <div class="card has-model" hidden>
-    <h2>Selección de covariables</h2>
-    <div class="howto"><div><b>Qué se hace</b>Se prueban estrategias para decidir qué covariables quedan en el modelo.</div><div><b>Para qué</b>Útil en modelos explicativos y predictivos con muchas candidatas.</div><div><b>Precaución</b>En modelos <b>causales</b> no seleccione confusores por valor p: use el diagrama causal (DAG) y la sección de confusión de abajo.</div></div>
+    <h2>Evaluación de confusión: selección intencionada de covariables</h2>
+    <div class="howto"><div><b>Qué se hace</b>Estrategia de selección intencionada (Hosmer-Lemeshow, Bursac 2008): se parte de las variables con p &lt; 0.25 en el análisis bivariado, se retiran las no significativas <b>solo si no cambian</b> el efecto de la exposición más de Δ%, y se reevalúan las excluidas.</div><div><b>Para qué</b>Documentar qué covariables son necesarias para controlar confusión en un modelo explicativo.</div><div><b>Precaución</b>En modelos <b>causales</b> no seleccione confusores por valor p: use el diagrama causal (DAG) y la sección de confusión de abajo. La selección automática por AIC/QIC y la comparación de modelos para <b>predecir</b> están en <a href="../EPI-PREDIC/" target="_blank" rel="noopener">EPI-PREDIC</a>.</div></div>
     <p class="sub" id="sel-ctx"></p>
     <div class="form">
-      <label>Estrategia <select id="sel-strategy"><option value="purposeful">Selección intencionada (Hosmer-Lemeshow)</option><option value="aic">Eliminación hacia atrás por AIC (QIC en GEE)</option><option value="p">Eliminación hacia atrás por valor p</option></select></label>
       <label>p de entrada (bivariado) <input id="sel-pin" type="number" step="0.01" value="0.25"></label>
       <label>p de permanencia <input id="sel-pout" type="number" step="0.01" value="0.10"></label>
       <label>Cambio Δβ para confusión <input id="sel-delta" type="number" step="0.05" value="0.20"></label>
     </div>
-    <div class="row gap mt"><button id="sel-run" class="primary">Ejecutar selección</button><span class="grow"></span><button id="sel-apply" class="ghost" hidden>Usar el modelo seleccionado</button></div>
+    <div class="row gap mt"><button id="sel-run" class="primary">Ejecutar selección intencionada</button><span class="grow"></span><button id="sel-apply" class="ghost" hidden>Usar el modelo seleccionado</button></div>
     <div id="sel-out"></div>
   </div>
   <div class="card has-model" hidden>
@@ -180,7 +207,6 @@
     <button id="em-run" class="primary">Evaluar interacciones</button>
     <div id="em-out"></div>
   </div>
-  <div class="card has-model" hidden><h2>Comparación de modelos</h2><div class="howto"><div><b>Qué se ve</b>Ajuste del modelo crudo, completo y seleccionado.</div><div><b>Cómo interpretar</b>Menor AIC/BIC = mejor equilibrio entre ajuste y complejidad (diferencias &lt; 2 son irrelevantes).</div><div><b>LRT</b>p &lt; 0.05: las covariables omitidas mejoran el ajuste.</div></div><div id="cmp-out"></div></div>
 </section>
 
 <!-- 8 · REPORTE -->
@@ -206,7 +232,7 @@
 
 <section id="tab-ayuda" class="tab"><div class="card prose" id="help"></div></section>
 </main>
-<footer class="foot">EPI-DATA · un módulo de EPI-LAB · © Daniel Fernández-Guzmán · CC BY-NC-ND 4.0 · Los cálculos se realizan en su navegador; ningún dato se envía a servidores. · v2026.10.16-2</footer>
-<script type="module" src="js/app.js?v=2026.10.16-2"></script>
+<footer class="foot">EPI-DATA · un módulo de EPI-LAB · © Daniel Fernández-Guzmán · CC BY-NC-ND 4.0 · Los cálculos se realizan en su navegador; ningún dato se envía a servidores. · v2026.10.26-1</footer>
+<script type="module" src="js/app.js?v=2026.10.26-1"></script>
 </body>
 </html>

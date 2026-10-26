@@ -7,8 +7,11 @@ const lc = s => (/^[A-ZÁÉÍÓÚÑ][a-záéíóúñ]/.test(s) ? s.charAt(0).toL
 function what(R, meta) {
   const s = R.spec, M = R.M, yv = s.type === 'cox' ? s.status : s.y, ev = meta[yv]?.event, y = lc(yv);
   const ev_ = meta[yv]?.type === 'cat' ? `${y} (${ev})` : y;
+  if (s.type === 'ordinal') return `las odds de estar en una categoría más alta de ${y} (odds proporcionales)`;
+  if (s.type === 'multinom') return `las odds de ${y} = «${s.yFocus}» frente a «${s.yRef || meta[yv].ref}»`;
+  if (s.type === 'gamma' || s.type === 'hgamma') return `la media de ${y}${s.type === 'hgamma' ? ' entre quienes tienen un valor positivo' : ''}`;
   return {
-    OR: `las odds (posibilidades) de ${ev_}`, RP: `la prevalencia de ${ev_}`, RR: `el riesgo de ${ev_}`, RTI: `la tasa de ${y}`,
+    OR: `las odds (posibilidades) de ${ev_}`, RP: `la prevalencia de ${ev_}`, RR: `el riesgo de ${ev_}`, RTI: `${['zip', 'zinb'].includes(s.type) ? 'la tasa de ' + y + ' (parte de conteo)' : 'la tasa de ' + y}`, RM: `la media de ${y}`, RRR: `las odds de ${ev_}`,
     HR: `el riesgo instantáneo (hazard) de ${ev_} a lo largo del seguimiento`, 'β': `${y}`,
   }[M.measure] || y;
 }
@@ -33,7 +36,7 @@ export function interpretExposure(R, meta) {
   const s = R.spec; if (!s.exposure) return '';
   const rows = R.table.filter(r => r.kind === 'row' && r.v === s.exposure && !r.ref && r.adj);
   const ref = R.table.find(r => r.kind === 'row' && r.v === s.exposure && r.ref);
-  const causal = s.objective === 'causal', pred = s.objective === 'prediccion';
+  const causal = s.objective === 'causal';
   let h = `<p><b>${causal ? 'Variable de intervención' : 'Exposición principal'}: ${esc(s.exposure)}.</b> ${ref ? `Categoría de referencia: «${esc(ref.label)}».` : 'Variable cuantitativa: el efecto se expresa por cada unidad.'}</p><ul>`;
   for (const r of rows) {
     h += `<li><b>${esc(r.label)}</b>: ${esc(sentence(R, meta, r, r.adj, true))}`;
@@ -45,10 +48,16 @@ export function interpretExposure(R, meta) {
   }
   h += '</ul>';
   if (s.inter?.some(p => p.includes(s.exposure))) h += '<p class="warn">El modelo incluye una interacción con la exposición: el efecto mostrado corresponde a la categoría de referencia (o al valor 0) de la otra variable. Consulte los efectos por estrato en el paso «Modelización multivariable».</p>';
-  if (R.M.measure === 'OR') h += '<p class="sub">El OR se aproxima al riesgo relativo solo si el desenlace es poco frecuente (&lt; 10 %). Con desenlaces frecuentes, interprete como «odds» o use Poisson con varianza robusta.</p>';
+  const T = s.type;
+  if (T === 'zip' || T === 'zinb') h += '<p class="sub">El efecto mostrado es el de la <b>parte de conteo</b> (entre quienes pueden presentar el evento). El efecto sobre la probabilidad de ser un cero estructural (OR) está en la tabla «Parte de ceros».</p>';
+  if (T === 'hgamma') h += '<p class="sub">El efecto mostrado es la razón de medias <b>entre los valores positivos</b>. El efecto sobre la probabilidad de tener un valor positivo (OR) está en la tabla «Parte ¿es positivo?».</p>';
+  if (T === 'gamma') h += '<p class="sub">La razón de medias (RM) es multiplicativa: RM = 1.20 significa una media 20 % mayor.</p>';
+  if (T === 'ordinal') h += '<p class="sub">Un único OR resume el desplazamiento hacia categorías más altas en <b>todos</b> los puntos de corte (supuesto de odds proporcionales; ver supuestos).</p>';
+  if (T === 'multinom') h += '<p class="sub">Cada RRR compara una categoría del desenlace con la de referencia; la tabla «Todas las categorías» muestra los demás contrastes.</p>';
+  if (T === 'glmm') h += '<p class="sub">El efecto es <b>condicional</b>: compara personas del mismo conglomerado; es más extremo que el efecto marginal (GEE) cuando hay variación entre conglomerados.</p>';
+  if (R.M.measure === 'OR' && T !== 'ordinal' && T !== 'glmm') h += '<p class="sub">El OR se aproxima al riesgo relativo solo si el desenlace es poco frecuente (&lt; 10 %). Con desenlaces frecuentes, interprete como «odds» o use Poisson con varianza robusta.</p>';
   if (R.M.measure === 'HR') h += '<p class="sub">El HR compara la velocidad con que ocurre el evento entre grupos, suponiendo que esa razón es constante en el tiempo (riesgos proporcionales; ver supuestos).</p>';
   if (causal) h += '<p class="sub">Interpretación causal válida solo si se cumplen: (1) no hay confusión no medida (todas las causas comunes de intervención y desenlace están ajustadas), (2) no se ajustó por mediadores ni colisionadores, (3) positividad (hay participantes en todos los niveles de la intervención en cada perfil de covariables) y (4) consistencia (la intervención está bien definida).</p>';
-  if (pred) h += '<p class="sub">En un modelo predictivo, los coeficientes no tienen interpretación causal; valore el modelo por su discriminación y calibración (ver supuestos).</p>';
   if (R.mi) h += `<p class="sub">Estimados combinados de ${R.m} conjuntos imputados (reglas de Rubin).</p>`;
   return h;
 }

@@ -11,11 +11,15 @@ Todo se calcula en el navegador: los datos no salen de tu computadora. No requie
 | Datos | CSV/XLSX; renombrar variables y agrupar categorías; vista de la base completa con perdidos resaltados; detección de tipo de variable; categoría de referencia y de evento; códigos de dato perdido; Tabla 1 con pruebas (χ², Fisher, Welch, ANOVA, Mann-Whitney, Kruskal-Wallis) elegidas según normalidad |
 | Datos perdidos | Porcentaje por variable y patrones; pérdida según exposición y desenlace; prueba MCAR de Little (EM); exploración MAR (comparaciones y regresión logística del indicador de pérdida); interpretación MCAR/MAR/MNAR; MICE con método por variable (PMM, regresión bayesiana, muestra aleatoria, logística, multinomial); imputación simple (media, mediana, kNN, LOCF, categoría «Perdido»); modelos con y sin imputación con gráficos de convergencia y observados vs imputados; descarga de datos imputados; reglas de Rubin (gl de Barnard-Rubin, FMI, Wald D1); sensibilidad MNAR por ajuste δ con gráfico de punto de inflexión |
 | Regresión lineal | MCO, EE robustos HC0/HC1/HC3; Shapiro-Wilk, Breusch-Pagan, RESET, GVIF, Cook, residuos parciales |
-| Regresión logística | OR; EPV, separación, Box-Tidwell, Hosmer-Lemeshow, calibración, AUC-ROC |
+| Regresión logística | OR; EPV, separación, Box-Tidwell, prevalencia del desenlace |
 | Poisson robusta | RP / RR / RTI con varianza sándwich; offset; predicciones > 1, linealidad, sobredispersión |
-| Supervivencia | Kaplan-Meier con IC y número en riesgo, mediana, log-rank; Cox (Efron); Schoenfeld (Grambsch-Therneau) por término y global con gráficos β(t); C de Harrell |
+| Conteos | Poisson (varianza de Poisson), binomial negativa (NB2), ZIP y ZINB; sobredispersión (Pearson, LRT de α), ceros observados vs esperados, Vuong; tabla de la parte de ceros |
+| Continuos positivos | Gamma (enlace log) y hurdle-Gamma (logística + Gamma) |
+| Categóricos | Ordinal de odds proporcionales (umbrales, OR por punto de corte) y multinomial (todas las categorías, Wald conjunto) |
+| Multinivel | Logística/Poisson con intercepto aleatorio (Gauss-Hermite adaptativa): CCI, MOR, LRT; mixto lineal (REML) |
+| Supervivencia | Kaplan-Meier con IC y número en riesgo, mediana, log-rank; Cox (Efron); Schoenfeld (Grambsch-Therneau) por término y global con gráficos β(t) |
 | Longitudinal | GEE (gaussiana, binomial, Poisson; independiente, intercambiable, AR-1) con QIC; modelo mixto con intercepto aleatorio (REML), CCI y LRT; perfiles medios y trayectorias |
-| Modelización | Selección intencionada (Hosmer-Lemeshow/Bursac), hacia atrás por AIC/QIC o p; confusión por cambio en el estimado; modificación de efecto con efectos por estrato; comparación de modelos (AIC, BIC, LRT) |
+| Modelización | Selección intencionada (Hosmer-Lemeshow/Bursac), confusión por cambio en el estimado; modificación de efecto con efectos por estrato |
 | Resultados | Interpretación en lenguaje sencillo del efecto de la exposición o intervención; aviso de la falacia de la Tabla 2 en modelos causales; supuestos al final con explicación y gráficos de diagnóstico |
 | Salidas | Forest crudo vs ajustado con n y resumen del desenlace por grupo (n/N (%), media ± DE o mediana (P25–P75)), sin p global; tablas Word/CSV; figuras SVG/PNG/TIFF con DPI; texto de métodos en español e inglés |
 
@@ -36,7 +40,7 @@ Ejemplos de nefrología con datos **simulados** en `examples/` (generados con `t
 | `trasplante_injerto.csv` | Cohorte | Supervivencia del injerto (Cox) |
 | `dialisis_peritonitis.csv` | Cohorte con persona-tiempo | Poisson robusta con offset (RTI) |
 
-Flujo en 8 pasos: datos → base de datos completa → pregunta (causal, explicativa o predictiva) y modelo → descriptivo → datos perdidos → resultados → modelización → reporte. Cada paso explica qué se hace, para qué y cómo interpretarlo.
+Flujo en 8 pasos: datos → base de datos completa → pregunta (causal o explicativa; la predicción está en EPI-PREDIC y EPI-Maching-Learning) y modelo → descriptivo → datos perdidos → resultados → modelización → reporte. Cada paso explica qué se hace, para qué y cómo interpretarlo.
 
 ## Validación
 

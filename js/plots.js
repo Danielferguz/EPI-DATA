@@ -1,6 +1,6 @@
 // Gráficos SVG: forest crudo vs ajustado, Kaplan-Meier, residuos, QQ, ROC, calibración, Schoenfeld,
 // patrones de perdidos, convergencia de MICE, observados vs imputados, punto de inflexión (δ) y perfiles longitudinales.
-import { qnorm } from './dist.js?v=2026.10.16-2';
+import { qnorm } from './dist.js?v=2026.10.26-1';
 
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 // paleta EPI-LAB: azul verdoso (conocimiento), burdeos (rigor), carbón (método), gris claro
@@ -113,17 +113,6 @@ export function cookPlot(cook, title = 'Distancia de Cook') {
   s += `<line x1="${F.m.l}" x2="${F.W - F.m.r}" y1="${F.sy(4 / n)}" y2="${F.sy(4 / n)}" stroke="${PAL[1]}" stroke-dasharray="4 3"/><text x="${F.W - F.m.r - 4}" y="${F.sy(4 / n) - 4}" text-anchor="end" class="s m">4/n</text>`;
   const k = thin(n, 3000); for (let i = 0; i < n; i += k) s += `<line x1="${F.sx(i + 1)}" x2="${F.sx(i + 1)}" y1="${F.sy(0)}" y2="${F.sy(cook[i])}" stroke="${cook[i] > 4 / n ? PAL[1] : BLUE}"/>`;
   return s + '</svg>';
-}
-export function rocPlot(pts, aucTxt) {
-  const F = frame({ W: 420, H: 400, xdom: [0, 1], ydom: [0, 1], xlab: '1 − Especificidad', ylab: 'Sensibilidad', title: `Curva ROC (${aucTxt})` }); let s = F.s;
-  s += `<line x1="${F.sx(0)}" y1="${F.sy(0)}" x2="${F.sx(1)}" y2="${F.sy(1)}" stroke="currentColor" stroke-dasharray="4 3"/>`;
-  return s + `<path d="${path(pts, F.sx, F.sy)}" fill="none" stroke="${BLUE}" stroke-width="2"/></svg>`;
-}
-export function calibPlot(hl) {
-  const mx = Math.max(...hl.rows.flatMap(r => [r.pobs, r.pexp]), 0.05) * 1.05, F = frame({ W: 420, H: 400, xdom: [0, mx], ydom: [0, mx], xlab: 'Probabilidad predicha', ylab: 'Proporción observada', title: 'Calibración por deciles de riesgo' }); let s = F.s;
-  s += `<line x1="${F.sx(0)}" y1="${F.sy(0)}" x2="${F.sx(mx)}" y2="${F.sy(mx)}" stroke="currentColor" stroke-dasharray="4 3"/>`;
-  hl.rows.forEach(r => (s += `<circle cx="${F.sx(r.pexp)}" cy="${F.sy(r.pobs)}" r="4.5" fill="${BLUE}"/>`));
-  return s + `<path d="${path(hl.rows.map(r => [r.pexp, r.pobs]), F.sx, F.sy)}" fill="none" stroke="${BLUE}"/></svg>`;
 }
 export function schoenfeldPlot(z, j, label, smooth) {
   const y = z.scaled.map(r => r[j]), x = z.times;

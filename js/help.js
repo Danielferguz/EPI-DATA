@@ -4,7 +4,7 @@ export const HELP_HTML = `
 <ol>
 <li><b>Datos:</b> cargue su base o un ejemplo de nefrología; corrija nombres, tipos, categoría de referencia y de evento; renombre o agrupe categorías.</li>
 <li><b>Base de datos:</b> revise todas las filas; los datos perdidos aparecen sombreados.</li>
-<li><b>Pregunta y modelo:</b> elija el objetivo (causal, explicativo o predictivo), el desenlace, la exposición o variable de intervención y las covariables.</li>
+<li><b>Pregunta y modelo:</b> elija el objetivo (causal o explicativo; para predecir use EPI-PREDIC o EPI-Maching-Learning), el desenlace, la exposición o variable de intervención y las covariables.</li>
 <li><b>Descriptivo:</b> Tabla 1 por grupos.</li>
 <li><b>Datos perdidos:</b> magnitud, pérdida según exposición y desenlace, MCAR/MAR/MNAR e imputación múltiple con método por variable.</li>
 <li><b>Resultados:</b> elija cómo tratar los perdidos (casos completos, imputación simple o múltiple) y compare con y sin imputación; forest con n, resumen del desenlace por grupo y estimados crudo y ajustado; interpretación en lenguaje sencillo; supuestos al final con explicación.</li>
@@ -28,7 +28,13 @@ export const HELP_HTML = `
 <tr><td>Binario poco frecuente (&lt; 10 %) o casos y controles</td><td>Cualquiera</td><td>Regresión logística</td><td>OR</td></tr>
 <tr><td>Binario frecuente</td><td>Transversal</td><td>Poisson con varianza robusta</td><td>Razón de prevalencias (RP)</td></tr>
 <tr><td>Binario frecuente</td><td>Cohorte con seguimiento fijo</td><td>Poisson con varianza robusta</td><td>Riesgo relativo (RR)</td></tr>
-<tr><td>Conteo / tasa</td><td>Persona-tiempo</td><td>Poisson robusta con offset log(tiempo)</td><td>Razón de tasas (RTI)</td></tr>
+<tr><td>Conteo / tasa</td><td>Persona-tiempo</td><td>Poisson (o Poisson robusta) con offset log(tiempo)</td><td>Razón de tasas (RTI)</td></tr>
+<tr><td>Conteo con varianza ≫ media</td><td>Cualquiera</td><td>Binomial negativa (NB2)</td><td>RTI</td></tr>
+<tr><td>Conteo con exceso de ceros</td><td>Cualquiera</td><td>ZIP (Poisson) o ZINB (binomial negativa)</td><td>RTI (conteo) + OR (cero estructural)</td></tr>
+<tr><td>Continuo positivo y asimétrico (gasto, duración)</td><td>Cualquiera</td><td>Gamma con enlace log; hurdle-Gamma si hay ceros</td><td>Razón de medias (RM) + OR de valor positivo</td></tr>
+<tr><td>Categórico ordenado (≥ 3 niveles)</td><td>Cualquiera</td><td>Regresión ordinal de odds proporcionales</td><td>OR acumulado</td></tr>
+<tr><td>Categórico sin orden (≥ 3 niveles)</td><td>Cualquiera</td><td>Regresión multinomial</td><td>RRR frente a una referencia</td></tr>
+<tr><td>Pacientes dentro de centros</td><td>Multinivel</td><td>Logística / Poisson con intercepto aleatorio; mixto lineal si es continuo</td><td>OR / RTI condicional, CCI, MOR</td></tr>
 <tr><td>Tiempo hasta el evento (con censura)</td><td>Cohorte</td><td>Kaplan-Meier, log-rank, Cox</td><td>HR</td></tr>
 <tr><td>Medidas repetidas</td><td>Longitudinal</td><td>GEE (efecto poblacional) o modelo mixto (efecto condicional)</td><td>β, OR o RR</td></tr>
 </tbody></table>
@@ -42,6 +48,12 @@ export const HELP_HTML = `
 <p>Modelo log-lineal de Poisson con estimador sándwich (HC0, como <code>sandwich::vcovHC(type="HC0")</code> en R o <code>vce(robust)</code> sin corrección en Stata) que corrige la varianza cuando el desenlace es binario (Zou 2004; Barros y Hirakata 2003). Estima RP o RR directamente. Se informan predicciones &gt; 1, linealidad en la escala log, colinealidad, influencia y, en conteos, sobredispersión. Admite offset log(persona-tiempo).</p>
 <h3>Supervivencia</h3>
 <p>Kaplan-Meier con IC de Greenwood en escala log (como <code>survfit</code> de R), mediana de supervivencia, prueba de log-rank para k grupos y tabla de número en riesgo. Regresión de Cox con empates de Efron. Supuestos: <b>riesgos proporcionales</b> mediante residuos de Schoenfeld escalados con prueba de Grambsch-Therneau por término y global (transformación Kaplan-Meier del tiempo) y gráficos β(t) con lowess; <b>EPV</b>; discriminación con el índice C de Harrell.</p>
+<h3>Conteos: Poisson, binomial negativa, ZIP y ZINB</h3>
+<p><b>Poisson</b> (varianza = media; IRLS) con sobredispersión evaluada por χ² de Pearson/gl y por la razón de verosimilitudes frente a la binomial negativa (mezcla 50:50 de χ²). <b>Binomial negativa NB2</b> (varianza μ + αμ²) por máxima verosimilitud, como <code>statsmodels.NegativeBinomial</code>; EE de la hessiana completa. <b>ZIP/ZINB</b>: mezcla de un cero estructural (logística) y un conteo (Poisson o NB2); se informan dos tablas (conteo y ceros). Supuestos: ceros observados vs esperados, prueba de Vuong frente al modelo sin inflar, convergencia e identificabilidad. Ejemplos: consultas de urgencias, ingresos hospitalarios, peritonitis.</p>
+<h3>Continuos positivos: Gamma y hurdle-Gamma</h3>
+<p>Gamma con enlace log (IRLS; dispersión de Pearson como <code>GLM(Gamma(log))</code> de statsmodels; forma por máxima verosimilitud). <b>Hurdle-Gamma</b>: logística para P(Y &gt; 0) + Gamma para los positivos; la media global no se reporta como un único coeficiente.</p>
+<h3>Ordinal, multinomial y multinivel</h3>
+<p><b>Ordinal</b>: odds proporcionales (logit acumulado; umbrales y OR, ordenable por el usuario); la comprobación del supuesto compara el OR de cada punto de corte (comprobación informal, no la prueba de Brant). <b>Multinomial</b>: logit multinomial, una categoría de referencia, tabla de todas las categorías y Wald conjunto por variable. <b>Multinivel binario/conteo</b>: intercepto aleatorio por conglomerado, máxima verosimilitud con cuadratura de Gauss-Hermite adaptativa de 15 puntos; CCI en la escala latente (binario), MOR y LRT del efecto aleatorio. No incluye pendientes aleatorias ni más de dos niveles.</p>
 <h3>Análisis longitudinal</h3>
 <p><b>GEE</b> (Liang y Zeger 1986): familias gaussiana, binomial (logit) y Poisson (log), correlación de trabajo independiente, intercambiable o AR(1) (estimadores de momentos como statsmodels/geepack) y errores estándar robustos sándwich; comparación de estructuras con <b>QIC</b> (Pan 2001). Recomendado con ≥ 40 sujetos. <b>Modelo lineal mixto</b> con intercepto aleatorio por sujeto, estimado por REML; se informa la varianza entre sujetos, el coeficiente de correlación intraclase (CCI) y la prueba de razón de verosimilitud del efecto aleatorio (mezcla χ²₀:χ²₁). Para estimar si la evolución difiere entre grupos, incluya la interacción <i>grupo × tiempo</i>. Se grafican el perfil medio con IC 95 % y las trayectorias individuales.</p>
 
@@ -55,13 +67,12 @@ export const HELP_HTML = `
 <p><b>MICE.</b> Imputación múltiple por ecuaciones encadenadas (van Buuren y Groothuis-Oudshoorn 2011): emparejamiento por media predictiva (PMM, 5 donantes, regresión bayesiana como <code>mice.impute.pmm</code>) para cuantitativas, regresión logística con extracción de parámetros para binarias y logística multinomial con bootstrap para politómicas. Se muestran gráficos de convergencia y de observados vs imputados, y puede descargarse el conjunto imputado en formato largo (<code>.imp</code>, <code>.id</code>). Los modelos se ajustan en cada imputación y se combinan con las <b>reglas de Rubin</b>, con grados de libertad de Barnard-Rubin, fracción de información perdida (FMI) y prueba de Wald multiparámetro D1 para variables con varias categorías. Como regla práctica, use m ≥ porcentaje de casos incompletos. En datos longitudinales en formato largo, MICE no modela la correlación intra-sujeto: úsela con cautela o impute en formato ancho; el modelo mixto y GEE con casos disponibles son válidos bajo MAR/MCAR respectivamente.</p>
 <p><b>Sensibilidad δ (MNAR).</b> Se repite MICE sumando δ a los valores imputados de una variable (o δ al log-odds en binarias) y se grafica el efecto de la exposición frente a δ para identificar el punto de inflexión en que la conclusión cambiaría.</p>
 
-<h2>Modelización multivariable</h2>
+<h2>Confusión e interacción</h2>
+<p class="sub">La selección automática por AIC/QIC, la comparación de modelos para predecir y las medidas de rendimiento (AUC, calibración, C de Harrell) se hacen en EPI-PREDIC y EPI-Maching-Learning.</p>
 <ul>
 <li><b>Selección intencionada</b> (Hosmer, Lemeshow y Sturdivant 2013; Bursac et al. 2008): candidatas con p &lt; 0.25 en el análisis bivariado; eliminación iterativa de variables con p &gt; 0.10 salvo que su retiro cambie algún coeficiente más de 20 % (confusión); reingreso de no candidatas con p &lt; 0.15. La exposición principal se mantiene siempre.</li>
-<li><b>Eliminación hacia atrás</b> por AIC (QIC en GEE) o por valor p (prueba de Wald del término completo).</li>
 <li><b>Confusión</b>: cambio relativo del efecto de la exposición al retirar cada covariable (criterio del 10 %).</li>
 <li><b>Modificación de efecto</b>: término exposición × covariable, prueba de Wald y efectos de la exposición por estrato (combinaciones lineales; para covariables cuantitativas en sus percentiles 25, 50 y 75).</li>
-<li><b>Comparación de modelos</b>: AIC, BIC y prueba de razón de verosimilitud.</li>
 </ul>
 <p class="warn">La selección automática no reemplaza el razonamiento causal. Para estimar el efecto de una exposición, elija las covariables por conocimiento previo (p. ej., un diagrama causal / DAG) y use estas herramientas como apoyo.</p>
 
@@ -74,7 +85,7 @@ export const HELP_HTML = `
 </ul>
 
 <h2>Validación</h2>
-<p>Los motores se comparan con statsmodels y scipy (MCO y HC3, logística, Poisson robusta HC0, Cox de Efron, GEE gaussiana y binomial intercambiables, modelo mixto REML, Kaplan-Meier, log-rank, Shapiro-Wilk, χ², Fisher, Welch, Mann-Whitney, Kruskal-Wallis) y con una implementación independiente de la prueba de Little: <code>node tests/validate.mjs</code>. Diferencias &lt; 1e-5 (1e-4 en GEE y modelo mixto).</p>
+<p>Los motores se comparan con statsmodels y scipy (binomial negativa, ZIP/ZINB, Gamma, ordinal, multinomial y una verosimilitud por cuadratura independiente para el modelo multinivel; MCO y HC3, MCO y HC3, logística, Poisson robusta HC0, Cox de Efron, GEE gaussiana y binomial intercambiables, modelo mixto REML, Kaplan-Meier, log-rank, Shapiro-Wilk, χ², Fisher, Welch, Mann-Whitney, Kruskal-Wallis) y con una implementación independiente de la prueba de Little: <code>node tests/validate.mjs</code>. Diferencias &lt; 1e-5 (1e-4 en GEE y modelo mixto).</p>
 
 <h2>Referencias</h2>
 <p class="small">Barros AJD, Hirakata VN. BMC Med Res Methodol 2003;3:21 · Zou G. Am J Epidemiol 2004;159:702-6 · Hosmer DW, Lemeshow S, Sturdivant RX. Applied Logistic Regression, 3.ª ed. Wiley 2013 · Bursac Z, et al. Source Code Biol Med 2008;3:17 · Greenland S. Am J Public Health 1989;79:340-9 · Maldonado G, Greenland S. Am J Epidemiol 1993;138:923-36 · Fox J, Monette G. J Am Stat Assoc 1992;87:178-83 · Grambsch PM, Therneau TM. Biometrika 1994;81:515-26 · Liang KY, Zeger SL. Biometrika 1986;73:13-22 · Pan W. Biometrics 2001;57:120-5 · Little RJA. J Am Stat Assoc 1988;83:1198-202 · Rubin DB. Multiple Imputation for Nonresponse in Surveys. Wiley 1987 · Barnard J, Rubin DB. Biometrika 1999;86:948-55 · van Buuren S, Groothuis-Oudshoorn K. J Stat Softw 2011;45(3) · van Buuren S. Flexible Imputation of Missing Data, 2.ª ed. CRC 2018 · Sterne JAC, et al. BMJ 2009;338:b2393 · Westreich D, Greenland S. Am J Epidemiol 2013;177:292-8 · Gelman A, Hill J. Data Analysis Using Regression and Multilevel/Hierarchical Models. Cambridge 2007 · Lüdecke D, et al. performance: J Open Source Softw 2021;6:3139 · Royston P. Appl Stat 1995;44:547-51.</p>

@@ -1,12 +1,11 @@
 // Modelización multivariable: selección intencionada, eliminación hacia atrás (AIC/QIC o p),
 // cambio en el estimado (confusión) y modificación de efecto (interacciones).
-import { fitModel, termsOf, measureOf, lincom } from './analysis.js?v=2026.10.16-2';
-import { waldTerm } from './models.js?v=2026.10.16-2';
-import { levelsOf } from './data.js?v=2026.10.16-2';
-import { quantile } from './tests.js?v=2026.10.16-2';
+import { fitModel, termsOf, measureOf, lincom } from './analysis.js?v=2026.10.26-1';
+import { waldTerm } from './models.js?v=2026.10.26-1';
+import { levelsOf } from './data.js?v=2026.10.26-1';
+import { quantile } from './tests.js?v=2026.10.26-1';
 
 const termP = (R, v) => { const t = R.D.terms.find(t => t.name === v); return t ? waldTerm(R.fit, t.idx).p : NaN; };
-const crit = (spec, R) => (spec.type === 'gee' ? R.fit.qic : spec.type === 'lmm' ? NaN : R.fit.aic);
 const coefMap = R => Object.fromEntries(R.D.cols.map((c, j) => [c.label, R.fit.beta[j]]).filter(([k]) => k !== '(Intercepto)'));
 const fp = p => (!isFinite(p) ? '–' : p < 0.001 ? '<0.001' : p.toFixed(3));
 
@@ -32,27 +31,6 @@ export function purposeful(spec, ds, meta, rows, { pEnter = 0.25, pStay = 0.10, 
     if (p < pNonCand) { cur.push(v); log.push({ step: 3, text: `Se reincorpora ${v}: p = ${fp(p)} en el modelo multivariable (< ${pNonCand}).` }); }
   }
   log.push({ step: 4, text: `Modelo preliminar de efectos principales: ${[spec.exposure, ...cur].filter(Boolean).join(', ')}. Evalúe a continuación la linealidad de las variables cuantitativas y las interacciones clínicamente plausibles.` });
-  return { covs: cur, log };
-}
-
-export function backward(spec, ds, meta, rows, { by = 'aic', pOut = 0.10 } = {}) {
-  const log = [], fit = covs => fitModel(spec, ds, meta, termsOf({ ...spec, inter: [] }, covs), rows);
-  let cur = [...spec.covs], R = fit(cur);
-  if (by === 'aic' && spec.type === 'lmm') by = 'p';
-  const name = spec.type === 'gee' ? 'QIC' : 'AIC';
-  log.push({ text: by === 'aic' ? `Modelo completo: ${name} = ${crit(spec, R).toFixed(2)}.` : `Modelo completo; umbral de salida p > ${pOut}.` });
-  for (let guard = 0; guard < 60 && cur.length; guard++) {
-    if (by === 'aic') {
-      const c0 = crit(spec, R), tries = cur.map(v => { const r = fit(cur.filter(w => w !== v)); return { v, r, c: crit(spec, r) }; }).sort((a, b) => a.c - b.c);
-      if (tries[0].c < c0) { cur = cur.filter(w => w !== tries[0].v); R = tries[0].r; log.push({ text: `Se elimina ${tries[0].v}: ${name} ${c0.toFixed(2)} → ${tries[0].c.toFixed(2)}.` }); }
-      else break;
-    } else {
-      const ps = cur.map(v => ({ v, p: termP(R, v) })).sort((a, b) => b.p - a.p);
-      if (ps[0].p > pOut) { cur = cur.filter(w => w !== ps[0].v); R = fit(cur); log.push({ text: `Se elimina ${ps[0].v} (p = ${fp(ps[0].p)}).` }); }
-      else break;
-    }
-  }
-  log.push({ text: `Modelo final: ${[spec.exposure, ...cur].filter(Boolean).join(', ')}.` });
   return { covs: cur, log };
 }
 

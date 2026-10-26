@@ -1,26 +1,41 @@
 // Orquestación: especificación del modelo → ajuste crudo y ajustado (casos completos o imputación múltiple) → tabla para el forest.
-import { design, response, completeRows, levelsOf, levelCounts, isMiss } from './data.js?v=2026.10.16-2';
-import { fitOLS, fitGLM, fitCox, fitGEE, fitLMM, ciOf, waldTerm } from './models.js?v=2026.10.16-2';
-import { pool, poolWald, pooledCI } from './missing.js?v=2026.10.16-2';
-import { shapiro, mean as avg, sd as sdv, quantile } from './tests.js?v=2026.10.16-2';
-import { quadForm } from './linalg.js?v=2026.10.16-2';
-import { qnorm, qt, p2z, p2t } from './dist.js?v=2026.10.16-2';
+import { design, response, completeRows, levelsOf, levelCounts, isMiss } from './data.js?v=2026.10.26-1';
+import { fitOLS, fitGLM, fitCox, fitGEE, fitLMM, ciOf, waldTerm } from './models.js?v=2026.10.26-1';
+import { fitCount, fitGamma, fitHurdleGamma, fitOrdinal, fitMultinomial, fitGLMM } from './models2.js?v=2026.10.26-1';
+import { pool, poolWald, pooledCI } from './missing.js?v=2026.10.26-1';
+import { shapiro, mean as avg, sd as sdv, quantile } from './tests.js?v=2026.10.26-1';
+import { quadForm } from './linalg.js?v=2026.10.26-1';
+import { qnorm, qt, p2z, p2t } from './dist.js?v=2026.10.26-1';
 
 export const TYPES = {
   linear: { label: 'Regresión lineal', short: 'Lineal', exp: false, measure: 'β', measureLong: 'Coeficiente β' },
   logistic: { label: 'Regresión logística', short: 'Logística', exp: true, measure: 'OR', measureLong: 'Odds ratio' },
   poisson: { label: 'Poisson con varianza robusta', short: 'Poisson robusta', exp: true, measure: 'RP', measureLong: 'Razón de prevalencias' },
   cox: { label: 'Supervivencia: regresión de Cox', short: 'Cox', exp: true, measure: 'HR', measureLong: 'Hazard ratio' },
+  count: { label: 'Conteos: Poisson (varianza de Poisson)', short: 'Poisson (conteos)', exp: true, measure: 'RTI', measureLong: 'Razón de tasas de incidencia' },
+  nb: { label: 'Conteos sobredispersos: binomial negativa', short: 'Binomial negativa', exp: true, measure: 'RTI', measureLong: 'Razón de tasas de incidencia' },
+  zip: { label: 'Conteos con exceso de ceros: Poisson inflada en ceros (ZIP)', short: 'ZIP', exp: true, measure: 'RTI', measureLong: 'Razón de tasas de incidencia (parte de conteo)' },
+  zinb: { label: 'Conteos sobredispersos con exceso de ceros: ZINB', short: 'ZINB', exp: true, measure: 'RTI', measureLong: 'Razón de tasas de incidencia (parte de conteo)' },
+  gamma: { label: 'Continuo positivo: Gamma (enlace log)', short: 'Gamma', exp: true, measure: 'RM', measureLong: 'Razón de medias' },
+  hgamma: { label: 'Continuo positivo con ceros: hurdle-Gamma', short: 'Hurdle-Gamma', exp: true, measure: 'RM', measureLong: 'Razón de medias (entre los positivos)' },
+  ordinal: { label: 'Desenlace ordinal: odds proporcionales', short: 'Ordinal', exp: true, measure: 'OR', measureLong: 'Odds ratio acumulado' },
+  multinom: { label: 'Desenlace nominal: regresión multinomial', short: 'Multinomial', exp: true, measure: 'RRR', measureLong: 'Razón de riesgos relativos (OR multinomial)' },
+  glmm: { label: 'Multinivel: intercepto aleatorio (binario o conteo)', short: 'Multinivel', exp: true, measure: 'OR', measureLong: 'Odds ratio condicional' },
   gee: { label: 'Longitudinal: GEE', short: 'GEE', exp: null, measure: null, measureLong: null },
-  lmm: { label: 'Longitudinal: modelo lineal mixto', short: 'Modelo mixto', exp: false, measure: 'β', measureLong: 'Coeficiente β (efectos fijos)' },
+  lmm: { label: 'Multinivel / longitudinal continuo: modelo lineal mixto', short: 'Modelo mixto', exp: false, measure: 'β', measureLong: 'Coeficiente β (efectos fijos)' },
 };
 export function measureOf(spec) {
   if (spec.type === 'gee') return spec.family === 'gaussian' ? { exp: false, measure: 'β', long: 'Coeficiente β' } : spec.family === 'binomial' ? { exp: true, measure: 'OR', long: 'Odds ratio' } : { exp: true, measure: spec.measureLabel || 'RR', long: 'Razón de tasas/riesgos' };
   if (spec.type === 'poisson') { const m = spec.measureLabel || 'RP'; return { exp: true, measure: m, long: { RP: 'Razón de prevalencias', RR: 'Riesgo relativo', RTI: 'Razón de tasas de incidencia' }[m] }; }
+  if (spec.type === 'glmm') return spec.family === 'poisson' ? { exp: true, measure: 'RTI', long: 'Razón de tasas condicional' } : { exp: true, measure: 'OR', long: 'Odds ratio condicional' };
   const t = TYPES[spec.type]; return { exp: t.exp, measure: t.measure, long: t.measureLong };
 }
 
 export const modelVars = spec => [...new Set([spec.y, spec.time, spec.status, spec.id, spec.tvar, spec.offset, spec.exposure, ...(spec.covs || []), ...(spec.inter || []).flat()].filter(Boolean))];
+export const CAT_OUT = ['ordinal', 'multinom'], ZERO_TYPES = ['zip', 'zinb', 'hgamma'];
+// orden de las categorías del desenlace: ordinal = spec.yOrder (de menor a mayor); multinomial = referencia primero
+export const outLevels = (spec, meta) => (spec.type === 'ordinal' ? (spec.yOrder?.length === meta[spec.y].levels.length ? spec.yOrder : meta[spec.y].levels) : levelsOf({ ...meta[spec.y], ref: spec.yRef || meta[spec.y].ref }));
+const zeroTermsOf = (spec, terms) => (spec.zeroMode === 'const' ? [] : spec.zeroMode === 'custom' ? terms.filter(t => t.vars.every(v => (spec.zeroVars || []).includes(v))) : terms);
 export const termsOf = (spec, covs = spec.covs) => [...(spec.exposure ? [spec.exposure] : []), ...covs].map(v => ({ vars: [v] })).concat((spec.inter || []).filter(p => p.every(v => v === spec.exposure || covs.includes(v))).map(p => ({ vars: p })));
 
 // ajuste de un modelo en un conjunto de datos y filas
@@ -31,20 +46,33 @@ export function fitModel(spec, ds, meta, terms, rows) {
     rows = [...rows].sort((a, b) => (String(id[a]) < String(id[b]) ? -1 : String(id[a]) > String(id[b]) ? 1 : t ? (+t[a] || 0) - (+t[b] || 0) : a - b));
   }
   const D = design(ds, meta, terms, rows, { intercept: spec.type !== 'cox' });
-  let fit, y = null, time = null, status = null;
+  let fit, y = null, time = null, status = null, Dz = null, off = null;
   if (spec.type === 'cox') {
     time = response(ds, meta[spec.time], rows); status = response(ds, meta[spec.status], rows);
     if (!terms.length) return { fit: null, D, time, status, rows };
     fit = fitCox(D.X, time, status);
+  } else if (CAT_OUT.includes(spec.type)) {
+    const lv = outLevels(spec, meta), col = ds.cols[spec.y]; y = Int32Array.from(rows, i => lv.indexOf(col[i]));
+    fit = spec.type === 'ordinal' ? fitOrdinal(D.X, y, lv.length) : fitMultinomial(D.X, y, lv.length, Math.max(1, lv.indexOf(spec.yFocus || lv[1])));
+    if (spec.type === 'ordinal') D.cols[0] = { ...D.cols[0], label: `Umbral 1 (${lv[0]} | ${lv[1]})` };
+    else D.cols[0] = { ...D.cols[0], label: `(Intercepto) · ${lv[Math.max(1, lv.indexOf(spec.yFocus || lv[1]))]} vs ${lv[0]}` };
   } else {
     y = response(ds, meta[spec.y], rows);
+    off = spec.offset ? Float64Array.from(rows, i => Math.log(ds.cols[spec.offset][i])) : null;
+    if (ZERO_TYPES.includes(spec.type)) Dz = design(ds, meta, zeroTermsOf(spec, terms), rows);
     if (spec.type === 'linear') fit = fitOLS(D.X, y, { robust: spec.robust || 'none' });
     else if (spec.type === 'logistic') fit = fitGLM(D.X, y, 'binomial');
     else if (spec.type === 'poisson') fit = fitGLM(D.X, y, 'poisson', { robust: true, offset: spec.offset ? Float64Array.from(rows, i => Math.log(ds.cols[spec.offset][i])) : null });
+    else if (spec.type === 'count') fit = fitGLM(D.X, y, 'poisson', { offset: off });
+    else if (spec.type === 'nb') fit = fitCount(D.X, y, { nb: true, offset: off });
+    else if (spec.type === 'zip' || spec.type === 'zinb') fit = fitCount(D.X, y, { nb: spec.type === 'zinb', Z: Dz.X, offset: off });
+    else if (spec.type === 'gamma') fit = fitGamma(D.X, y, { offset: off });
+    else if (spec.type === 'hgamma') fit = fitHurdleGamma(D.X, Dz.X, y);
+    else if (spec.type === 'glmm') fit = fitGLMM(D.X, y, rows.map(i => ds.cols[spec.id][i]), spec.family === 'poisson' ? 'poisson' : 'binomial', { offset: off });
     else if (spec.type === 'gee') fit = fitGEE(D.X, y, rows.map(i => ds.cols[spec.id][i]), spec.family || 'gaussian', spec.corstr || 'exchangeable');
     else if (spec.type === 'lmm') fit = fitLMM(D.X, y, rows.map(i => ds.cols[spec.id][i]));
   }
-  return { fit, D, y, time, status, rows };
+  return { fit, D, Dz, y, off, time, status, rows };
 }
 
 // gl de datos completos para Rubin (como mice: gl residuales de MCO/MLG)
@@ -55,6 +83,7 @@ export function fitPooled(spec, sets, meta, terms, rows) {
   const Rs = sets.map(ds => fitModel(spec, ds, meta, terms, rows));
   if (Rs.length === 1) return { ...Rs[0], est: Rs[0].fit, all: Rs };
   const P = pool(Rs.map(r => r.fit), dfcom(spec, Rs[0]));
+  if (Rs[0].fit.zero) P.zero = pool(Rs.map(r => r.fit.zero));
   return { ...Rs[0], est: P, all: Rs };
 }
 export const coefCI = (est, j) => (est.pooled ? pooledCI(est, j) : ciOf(est, j));
@@ -139,6 +168,13 @@ export const fitStats = R => {
     const lr = 2 * (f.ll - f.ll0), n = R.n; s.push(['Log-verosimilitud', f.ll.toFixed(2)], ['χ² de razón de verosimilitud vs nulo', lr.toFixed(2)], ['AIC', f.aic.toFixed(1)], ['BIC', f.bic.toFixed(1)]);
     if (f.model === 'binomial') { const mcf = 1 - f.ll / f.ll0, cs = 1 - Math.exp(-lr / n), nag = cs / (1 - Math.exp(2 * f.ll0 / n)); s.push(['R² de McFadden', mcf.toFixed(3)], ['R² de Nagelkerke', nag.toFixed(3)]); }
   }
+  const ic = [['AIC', f.aic?.toFixed(1)], ['BIC', f.bic?.toFixed(1)]];
+  if (f.model === 'poisson' && R.spec.type === 'count') s.push(['Dispersión (χ² de Pearson / gl)', (f.pres.reduce((a, r) => a + r * r, 0) / (R.n - f.beta.length)).toFixed(2)]);
+  if (f.model === 'count') s.push(['Log-verosimilitud', f.ll.toFixed(2)], ...(f.alpha != null ? [['α (sobredispersión)', `${f.alpha.toFixed(3)} (EE ${f.alphaSE.toFixed(3)})`]] : []), ['Ceros observados / esperados por el modelo', `${f.zeroObs} / ${f.zeroExp.toFixed(1)}`], ...ic);
+  if (f.model === 'gamma' || f.model === 'hgamma') s.push(['Log-verosimilitud', f.ll.toFixed(2)], ['Dispersión φ (Pearson)', f.phi.toFixed(3)], ['Forma ν = 1/φ (ML)', f.shape.toFixed(2)], ...(f.model === 'hgamma' ? [['Positivos / total', `${f.nPos} / ${f.n}`]] : []), ...ic);
+  if (f.model === 'ordinal') s.push(['Categorías', f.K], ['Log-verosimilitud', f.ll.toFixed(2)], ['R² de McFadden', (1 - f.ll / f.ll0).toFixed(3)], ...ic);
+  if (f.model === 'multinom') s.push(['Categorías', f.K], ['Log-verosimilitud', f.ll.toFixed(2)], ['R² de McFadden', (1 - f.ll / f.ll0).toFixed(3)], ...ic);
+  if (f.model === 'glmm') s.push(['Conglomerados', f.nclust], ['σ² del intercepto aleatorio', f.tau2.toFixed(3)], ...(isFinite(f.icc) ? [['CCI (escala latente)', f.icc.toFixed(3)]] : []), ['OR/RT mediano (MOR)', f.mor.toFixed(2)], ['LRT del efecto aleatorio (p)', f.lrtP < 0.001 ? '<0.001' : f.lrtP.toFixed(3)], ['Log-verosimilitud', f.ll.toFixed(2)], ...ic);
   if (f.model === 'cox') s.push(['Eventos', f.nevent], ['Log-verosimilitud parcial', f.ll.toFixed(2)], ['Razón de verosimilitud (p)', `${f.lr.toFixed(2)} (${f.lrP < 0.001 ? '<0.001' : f.lrP.toFixed(3)})`], ['Score / log-rank (p)', `${f.score.toFixed(2)} (${f.scoreP < 0.001 ? '<0.001' : f.scoreP.toFixed(3)})`], ['AIC', f.aic.toFixed(1)]);
   if (f.model === 'gee') s.push(['Sujetos (conglomerados)', f.nclust], ['Correlación de trabajo', `${f.corstr} (α = ${f.alpha.toFixed(3)})`], ['Escala φ', f.phi.toFixed(3)], ['QIC', f.qic.toFixed(1)], ['QICu', f.qicu.toFixed(1)]);
   if (f.model === 'lmm') s.push(['Sujetos', f.nclust], ['σ² entre sujetos (τ²)', f.tau2.toFixed(3)], ['σ² residual', f.sigma2.toFixed(3)], ['CCI', f.icc.toFixed(3)], ['Log-verosimilitud REML', f.llREML.toFixed(2)], ['AIC (REML)', f.aic.toFixed(1)]);

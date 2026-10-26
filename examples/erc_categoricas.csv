@@ -1,0 +1,601 @@
+ID,Edad,Sexo,Diabetes,Apoyo familiar,Albuminuria alta (≥ 300 mg/g),Años de estudio,Estadio de ERC,Calidad de vida,Modalidad elegida
+1,33.0,Masculino,No,Insuficiente,No,8.0,G3 (moderada),2 Regular,Trasplante
+2,41.0,Femenino,No,Adecuado,No,12.0,G3 (moderada),2 Regular,Hemodiálisis
+3,55.0,Femenino,No,Insuficiente,No,5.0,G4 (grave),3 Buena,Trasplante
+4,90.0,Femenino,No,Insuficiente,No,5.0,G4 (grave),2 Regular,Tratamiento conservador
+5,41.0,Femenino,No,Adecuado,Sí,8.0,G3 (moderada),3 Buena,Diálisis peritoneal
+6,41.0,Masculino,Sí,Adecuado,Sí,11.0,G4 (grave),1 Mala,Diálisis peritoneal
+7,52.0,Masculino,No,Insuficiente,No,7.0,G3 (moderada),2 Regular,Hemodiálisis
+8,42.0,Masculino,Sí,Adecuado,No,,G4 (grave),1 Mala,Diálisis peritoneal
+9,42.0,Masculino,No,Adecuado,No,11.0,G3 (moderada),1 Mala,Trasplante
+10,62.0,Femenino,Sí,Adecuado,Sí,16.0,G5 (falla renal),2 Regular,Diálisis peritoneal
+11,73.0,Femenino,Sí,Adecuado,Sí,7.0,G5 (falla renal),1 Mala,Tratamiento conservador
+12,64.0,Masculino,No,Adecuado,No,14.0,G3 (moderada),2 Regular,Diálisis peritoneal
+13,54.0,Masculino,Sí,Insuficiente,No,12.0,G4 (grave),1 Mala,Diálisis peritoneal
+14,67.0,Masculino,Sí,Insuficiente,No,16.0,G4 (grave),3 Buena,Tratamiento conservador
+15,87.0,Femenino,No,Insuficiente,No,10.0,G5 (falla renal),1 Mala,Hemodiálisis
+16,59.0,Masculino,Sí,Adecuado,No,10.0,G4 (grave),1 Mala,Diálisis peritoneal
+17,66.0,Masculino,Sí,Adecuado,Sí,12.0,G5 (falla renal),1 Mala,Trasplante
+18,75.0,Masculino,Sí,Adecuado,Sí,12.0,G4 (grave),1 Mala,Diálisis peritoneal
+19,63.0,Masculino,No,Insuficiente,Sí,15.0,G3 (moderada),3 Buena,Trasplante
+20,69.0,Masculino,No,Adecuado,No,16.0,G3 (moderada),2 Regular,Tratamiento conservador
+21,74.0,Masculino,No,Insuficiente,No,12.0,G4 (grave),1 Mala,Diálisis peritoneal
+22,59.0,Masculino,Sí,Adecuado,Sí,8.0,G5 (falla renal),3 Buena,Diálisis peritoneal
+23,68.0,Masculino,Sí,Adecuado,No,4.0,G3 (moderada),1 Mala,Diálisis peritoneal
+24,56.0,Femenino,No,Adecuado,No,14.0,G3 (moderada),4 Muy buena,Diálisis peritoneal
+25,78.0,Femenino,No,Adecuado,Sí,1.0,G3 (moderada),3 Buena,Diálisis peritoneal
+26,40.0,Masculino,Sí,Adecuado,No,9.0,G3 (moderada),2 Regular,Trasplante
+27,66.0,Femenino,No,Adecuado,Sí,-0.0,G4 (grave),3 Buena,Trasplante
+28,34.0,Femenino,Sí,Adecuado,Sí,9.0,G4 (grave),4 Muy buena,Diálisis peritoneal
+29,60.0,Femenino,Sí,Insuficiente,Sí,19.0,G3 (moderada),1 Mala,Tratamiento conservador
+30,63.0,Femenino,Sí,Insuficiente,No,5.0,G4 (grave),2 Regular,Tratamiento conservador
+31,72.0,Masculino,No,Adecuado,No,6.0,G4 (grave),2 Regular,Hemodiálisis
+32,74.0,Femenino,No,Adecuado,No,10.0,G3 (moderada),1 Mala,Diálisis peritoneal
+33,59.0,Femenino,No,Adecuado,No,9.0,G4 (grave),1 Mala,Trasplante
+34,92.0,Femenino,No,Adecuado,No,8.0,G4 (grave),3 Buena,Hemodiálisis
+35,50.0,Femenino,Sí,Adecuado,Sí,18.0,G5 (falla renal),1 Mala,Diálisis peritoneal
+36,58.0,Femenino,No,Adecuado,No,10.0,G3 (moderada),3 Buena,Diálisis peritoneal
+37,80.0,Masculino,No,Adecuado,Sí,12.0,G5 (falla renal),4 Muy buena,Diálisis peritoneal
+38,49.0,Femenino,No,Adecuado,No,14.0,G3 (moderada),2 Regular,Trasplante
+39,39.0,Masculino,Sí,Adecuado,No,14.0,G3 (moderada),3 Buena,Diálisis peritoneal
+40,54.0,Masculino,Sí,Adecuado,Sí,11.0,G4 (grave),3 Buena,Trasplante
+41,41.0,Femenino,No,Adecuado,No,12.0,G3 (moderada),3 Buena,Hemodiálisis
+42,43.0,Femenino,Sí,Adecuado,No,11.0,G3 (moderada),4 Muy buena,Hemodiálisis
+43,64.0,Femenino,Sí,Adecuado,No,5.0,G5 (falla renal),1 Mala,Diálisis peritoneal
+44,45.0,Masculino,Sí,Insuficiente,No,19.0,G4 (grave),1 Mala,Trasplante
+45,53.0,Femenino,No,Adecuado,Sí,10.0,G3 (moderada),2 Regular,Tratamiento conservador
+46,92.0,Femenino,Sí,Adecuado,No,4.0,G4 (grave),1 Mala,Tratamiento conservador
+47,46.0,Masculino,No,Adecuado,No,12.0,G3 (moderada),3 Buena,Trasplante
+48,79.0,Masculino,No,Insuficiente,No,5.0,G4 (grave),1 Mala,Hemodiálisis
+49,49.0,Femenino,Sí,Adecuado,Sí,20.0,G4 (grave),3 Buena,Hemodiálisis
+50,46.0,Femenino,No,Adecuado,No,9.0,G3 (moderada),2 Regular,Trasplante
+51,63.0,Masculino,No,Adecuado,Sí,5.0,G5 (falla renal),2 Regular,Hemodiálisis
+52,71.0,Masculino,Sí,Adecuado,No,3.0,G5 (falla renal),3 Buena,Hemodiálisis
+53,72.0,Masculino,No,Adecuado,No,11.0,G5 (falla renal),2 Regular,Hemodiálisis
+54,59.0,Femenino,No,Adecuado,No,11.0,G3 (moderada),3 Buena,Diálisis peritoneal
+55,48.0,Femenino,Sí,Adecuado,No,13.0,G3 (moderada),3 Buena,Tratamiento conservador
+56,66.0,Masculino,No,Insuficiente,Sí,4.0,G3 (moderada),3 Buena,Hemodiálisis
+57,71.0,Femenino,No,Adecuado,No,11.0,G4 (grave),1 Mala,Hemodiálisis
+58,31.0,Femenino,Sí,Adecuado,No,10.0,G3 (moderada),3 Buena,Trasplante
+59,61.0,Femenino,No,Insuficiente,Sí,5.0,G4 (grave),2 Regular,Diálisis peritoneal
+60,52.0,Masculino,No,Adecuado,No,11.0,G4 (grave),3 Buena,Diálisis peritoneal
+61,52.0,Masculino,No,Adecuado,No,10.0,G3 (moderada),4 Muy buena,Diálisis peritoneal
+62,38.0,Masculino,Sí,Insuficiente,No,10.0,G4 (grave),1 Mala,Trasplante
+63,70.0,Femenino,Sí,Adecuado,No,9.0,G5 (falla renal),2 Regular,Hemodiálisis
+64,42.0,Femenino,No,Insuficiente,No,9.0,G3 (moderada),4 Muy buena,Diálisis peritoneal
+65,63.0,Femenino,No,Adecuado,No,4.0,G4 (grave),2 Regular,Diálisis peritoneal
+66,58.0,Masculino,No,Adecuado,No,12.0,G4 (grave),3 Buena,Hemodiálisis
+67,66.0,Masculino,No,Adecuado,No,5.0,G5 (falla renal),2 Regular,Diálisis peritoneal
+68,59.0,Femenino,No,Adecuado,No,11.0,G3 (moderada),3 Buena,Hemodiálisis
+69,58.0,Femenino,Sí,Adecuado,No,15.0,G5 (falla renal),4 Muy buena,Trasplante
+70,84.0,Femenino,No,Insuficiente,No,5.0,G4 (grave),4 Muy buena,Hemodiálisis
+71,88.0,Femenino,Sí,Adecuado,No,11.0,G3 (moderada),2 Regular,Tratamiento conservador
+72,60.0,Masculino,Sí,Insuficiente,No,8.0,G3 (moderada),2 Regular,Hemodiálisis
+73,41.0,Masculino,Sí,Insuficiente,No,4.0,G4 (grave),1 Mala,Hemodiálisis
+74,51.0,Femenino,No,Adecuado,No,7.0,G3 (moderada),4 Muy buena,Trasplante
+75,48.0,Masculino,No,Adecuado,Sí,5.0,G5 (falla renal),3 Buena,Trasplante
+76,61.0,Masculino,Sí,Insuficiente,No,8.0,G5 (falla renal),3 Buena,Tratamiento conservador
+77,79.0,Masculino,Sí,Insuficiente,No,,G3 (moderada),1 Mala,Hemodiálisis
+78,61.0,Femenino,No,Adecuado,Sí,10.0,G4 (grave),2 Regular,Trasplante
+79,71.0,Masculino,No,Adecuado,Sí,12.0,G5 (falla renal),4 Muy buena,Hemodiálisis
+80,80.0,Masculino,No,Insuficiente,No,8.0,G3 (moderada),1 Mala,Tratamiento conservador
+81,64.0,Masculino,No,Adecuado,Sí,14.0,G5 (falla renal),2 Regular,Diálisis peritoneal
+82,76.0,Masculino,No,Insuficiente,No,14.0,G5 (falla renal),1 Mala,Hemodiálisis
+83,88.0,Femenino,No,Adecuado,Sí,7.0,G4 (grave),1 Mala,Tratamiento conservador
+84,74.0,Masculino,Sí,Adecuado,Sí,7.0,G5 (falla renal),2 Regular,Hemodiálisis
+85,71.0,Femenino,Sí,Adecuado,Sí,10.0,G3 (moderada),3 Buena,Hemodiálisis
+86,74.0,Masculino,Sí,Adecuado,Sí,8.0,G5 (falla renal),4 Muy buena,Diálisis peritoneal
+87,58.0,Masculino,Sí,Insuficiente,No,4.0,G3 (moderada),1 Mala,Tratamiento conservador
+88,64.0,Masculino,Sí,Insuficiente,No,11.0,G5 (falla renal),3 Buena,Diálisis peritoneal
+89,51.0,Femenino,No,Adecuado,No,5.0,G3 (moderada),1 Mala,Trasplante
+90,69.0,Masculino,No,Adecuado,No,7.0,G3 (moderada),3 Buena,Trasplante
+91,48.0,Femenino,No,Insuficiente,No,9.0,G4 (grave),2 Regular,Trasplante
+92,70.0,Masculino,Sí,Adecuado,No,4.0,G4 (grave),1 Mala,Diálisis peritoneal
+93,92.0,Masculino,No,Insuficiente,No,4.0,G4 (grave),2 Regular,Tratamiento conservador
+94,52.0,Femenino,No,Adecuado,No,10.0,G5 (falla renal),3 Buena,Tratamiento conservador
+95,57.0,Femenino,No,Insuficiente,No,12.0,G3 (moderada),1 Mala,Diálisis peritoneal
+96,63.0,Femenino,No,Adecuado,No,,G3 (moderada),2 Regular,Hemodiálisis
+97,71.0,Masculino,No,Insuficiente,Sí,15.0,G5 (falla renal),1 Mala,Diálisis peritoneal
+98,56.0,Masculino,No,Insuficiente,No,15.0,G5 (falla renal),2 Regular,Diálisis peritoneal
+99,81.0,Masculino,Sí,Adecuado,Sí,,G3 (moderada),4 Muy buena,Hemodiálisis
+100,59.0,Masculino,No,Insuficiente,Sí,12.0,G3 (moderada),2 Regular,Hemodiálisis
+101,49.0,Femenino,No,Insuficiente,No,11.0,G5 (falla renal),4 Muy buena,Diálisis peritoneal
+102,28.0,Masculino,Sí,Adecuado,No,8.0,G3 (moderada),2 Regular,Diálisis peritoneal
+103,54.0,Masculino,No,Adecuado,Sí,,G4 (grave),1 Mala,Tratamiento conservador
+104,52.0,Masculino,No,Adecuado,Sí,15.0,G4 (grave),2 Regular,Hemodiálisis
+105,92.0,Masculino,No,Adecuado,Sí,11.0,G3 (moderada),2 Regular,Hemodiálisis
+106,38.0,Femenino,Sí,Adecuado,No,17.0,G3 (moderada),3 Buena,Diálisis peritoneal
+107,69.0,Masculino,No,Insuficiente,No,,G3 (moderada),2 Regular,Hemodiálisis
+108,54.0,Masculino,Sí,Insuficiente,No,12.0,G4 (grave),1 Mala,Diálisis peritoneal
+109,79.0,Femenino,No,Adecuado,No,12.0,G3 (moderada),1 Mala,Tratamiento conservador
+110,63.0,Femenino,No,Adecuado,Sí,,G5 (falla renal),1 Mala,Trasplante
+111,62.0,Femenino,No,Adecuado,Sí,15.0,G4 (grave),2 Regular,Diálisis peritoneal
+112,48.0,Femenino,No,Adecuado,No,9.0,G3 (moderada),3 Buena,Trasplante
+113,61.0,Femenino,Sí,Adecuado,Sí,16.0,G5 (falla renal),2 Regular,Diálisis peritoneal
+114,64.0,Masculino,Sí,Insuficiente,No,11.0,G5 (falla renal),1 Mala,Diálisis peritoneal
+115,55.0,Femenino,Sí,Adecuado,No,7.0,G3 (moderada),1 Mala,Diálisis peritoneal
+116,76.0,Masculino,No,Insuficiente,Sí,10.0,G3 (moderada),2 Regular,Diálisis peritoneal
+117,78.0,Femenino,No,Adecuado,No,,G4 (grave),2 Regular,Hemodiálisis
+118,59.0,Femenino,No,Insuficiente,Sí,8.0,G4 (grave),1 Mala,Diálisis peritoneal
+119,89.0,Masculino,No,Adecuado,No,,G4 (grave),3 Buena,Diálisis peritoneal
+120,79.0,Femenino,No,Adecuado,Sí,5.0,G4 (grave),3 Buena,Hemodiálisis
+121,48.0,Masculino,No,Adecuado,Sí,8.0,G3 (moderada),3 Buena,Trasplante
+122,36.0,Femenino,Sí,Adecuado,Sí,7.0,G4 (grave),4 Muy buena,Diálisis peritoneal
+123,64.0,Femenino,Sí,Insuficiente,No,11.0,G5 (falla renal),1 Mala,Diálisis peritoneal
+124,92.0,Masculino,No,Adecuado,No,9.0,G3 (moderada),2 Regular,Hemodiálisis
+125,45.0,Femenino,No,Adecuado,No,13.0,G3 (moderada),1 Mala,Diálisis peritoneal
+126,65.0,Femenino,Sí,Adecuado,No,11.0,G5 (falla renal),2 Regular,Hemodiálisis
+127,54.0,Masculino,No,Insuficiente,No,12.0,G3 (moderada),4 Muy buena,Tratamiento conservador
+128,67.0,Masculino,No,Insuficiente,No,12.0,G3 (moderada),3 Buena,Hemodiálisis
+129,49.0,Femenino,Sí,Adecuado,Sí,10.0,G4 (grave),3 Buena,Diálisis peritoneal
+130,49.0,Femenino,Sí,Adecuado,Sí,12.0,G4 (grave),1 Mala,Trasplante
+131,43.0,Masculino,No,Insuficiente,Sí,6.0,G4 (grave),1 Mala,Trasplante
+132,65.0,Masculino,Sí,Insuficiente,No,12.0,G3 (moderada),2 Regular,Hemodiálisis
+133,81.0,Masculino,No,Insuficiente,Sí,13.0,G4 (grave),1 Mala,Tratamiento conservador
+134,56.0,Masculino,No,Adecuado,No,14.0,G3 (moderada),3 Buena,Trasplante
+135,57.0,Masculino,No,Insuficiente,No,11.0,G5 (falla renal),3 Buena,Trasplante
+136,56.0,Femenino,No,Insuficiente,No,8.0,G4 (grave),2 Regular,Tratamiento conservador
+137,52.0,Femenino,No,Adecuado,Sí,12.0,G3 (moderada),2 Regular,Hemodiálisis
+138,50.0,Masculino,No,Adecuado,No,3.0,G3 (moderada),2 Regular,Diálisis peritoneal
+139,88.0,Femenino,No,Adecuado,No,18.0,G3 (moderada),2 Regular,Trasplante
+140,52.0,Femenino,No,Adecuado,No,9.0,G3 (moderada),4 Muy buena,Trasplante
+141,78.0,Masculino,No,Adecuado,Sí,5.0,G5 (falla renal),1 Mala,Hemodiálisis
+142,52.0,Masculino,No,Insuficiente,Sí,11.0,G4 (grave),2 Regular,Trasplante
+143,76.0,Masculino,No,Adecuado,Sí,12.0,G4 (grave),2 Regular,Hemodiálisis
+144,51.0,Masculino,Sí,Adecuado,No,9.0,G4 (grave),3 Buena,Diálisis peritoneal
+145,43.0,Masculino,No,Adecuado,No,11.0,G3 (moderada),1 Mala,Trasplante
+146,59.0,Femenino,Sí,Insuficiente,No,10.0,G3 (moderada),1 Mala,Diálisis peritoneal
+147,74.0,Femenino,Sí,Insuficiente,Sí,10.0,G4 (grave),2 Regular,Tratamiento conservador
+148,70.0,Femenino,Sí,Insuficiente,Sí,5.0,G4 (grave),1 Mala,Tratamiento conservador
+149,72.0,Femenino,No,Adecuado,Sí,8.0,G4 (grave),3 Buena,Tratamiento conservador
+150,51.0,Masculino,Sí,Adecuado,No,5.0,G5 (falla renal),3 Buena,Tratamiento conservador
+151,52.0,Femenino,Sí,Adecuado,Sí,11.0,G4 (grave),1 Mala,Diálisis peritoneal
+152,46.0,Masculino,No,Adecuado,No,11.0,G3 (moderada),4 Muy buena,Tratamiento conservador
+153,73.0,Femenino,No,Insuficiente,Sí,9.0,G3 (moderada),2 Regular,Tratamiento conservador
+154,67.0,Masculino,No,Adecuado,No,3.0,G5 (falla renal),1 Mala,Diálisis peritoneal
+155,63.0,Femenino,No,Insuficiente,No,9.0,G5 (falla renal),2 Regular,Hemodiálisis
+156,57.0,Masculino,No,Insuficiente,No,12.0,G4 (grave),1 Mala,Tratamiento conservador
+157,72.0,Masculino,No,Insuficiente,No,14.0,G4 (grave),4 Muy buena,Trasplante
+158,52.0,Masculino,Sí,Adecuado,No,10.0,G3 (moderada),1 Mala,Diálisis peritoneal
+159,75.0,Femenino,No,Adecuado,No,18.0,G4 (grave),2 Regular,Diálisis peritoneal
+160,58.0,Masculino,No,Adecuado,Sí,15.0,G3 (moderada),1 Mala,Hemodiálisis
+161,49.0,Femenino,No,Adecuado,Sí,9.0,G5 (falla renal),2 Regular,Trasplante
+162,57.0,Masculino,No,Adecuado,No,8.0,G3 (moderada),3 Buena,Diálisis peritoneal
+163,50.0,Masculino,No,Adecuado,No,13.0,G5 (falla renal),3 Buena,Diálisis peritoneal
+164,73.0,Masculino,No,Adecuado,Sí,8.0,G5 (falla renal),4 Muy buena,Diálisis peritoneal
+165,83.0,Femenino,Sí,Adecuado,No,9.0,G5 (falla renal),4 Muy buena,Diálisis peritoneal
+166,42.0,Masculino,No,Insuficiente,No,4.0,G3 (moderada),1 Mala,Trasplante
+167,59.0,Masculino,No,Adecuado,No,16.0,G5 (falla renal),3 Buena,Diálisis peritoneal
+168,85.0,Femenino,Sí,Insuficiente,No,16.0,G5 (falla renal),1 Mala,Tratamiento conservador
+169,54.0,Masculino,Sí,Adecuado,No,9.0,G4 (grave),3 Buena,Diálisis peritoneal
+170,76.0,Masculino,No,Adecuado,No,5.0,G3 (moderada),3 Buena,Hemodiálisis
+171,46.0,Femenino,Sí,Insuficiente,No,14.0,G3 (moderada),1 Mala,Diálisis peritoneal
+172,66.0,Masculino,No,Adecuado,Sí,12.0,G3 (moderada),3 Buena,Diálisis peritoneal
+173,48.0,Femenino,No,Adecuado,No,12.0,G3 (moderada),1 Mala,Diálisis peritoneal
+174,74.0,Masculino,Sí,Adecuado,No,8.0,G5 (falla renal),1 Mala,Tratamiento conservador
+175,63.0,Masculino,No,Adecuado,No,12.0,G3 (moderada),3 Buena,Diálisis peritoneal
+176,58.0,Femenino,No,Adecuado,No,7.0,G3 (moderada),2 Regular,Diálisis peritoneal
+177,69.0,Femenino,Sí,Insuficiente,No,10.0,G3 (moderada),2 Regular,Tratamiento conservador
+178,42.0,Masculino,Sí,Adecuado,No,9.0,G4 (grave),3 Buena,Diálisis peritoneal
+179,73.0,Masculino,Sí,Adecuado,Sí,16.0,G4 (grave),3 Buena,Tratamiento conservador
+180,57.0,Femenino,No,Adecuado,No,12.0,G3 (moderada),2 Regular,Diálisis peritoneal
+181,50.0,Femenino,Sí,Adecuado,No,19.0,G3 (moderada),2 Regular,Hemodiálisis
+182,44.0,Masculino,Sí,Adecuado,No,9.0,G3 (moderada),4 Muy buena,Tratamiento conservador
+183,89.0,Femenino,No,Adecuado,No,15.0,G5 (falla renal),3 Buena,Hemodiálisis
+184,42.0,Femenino,No,Insuficiente,Sí,9.0,G3 (moderada),1 Mala,Diálisis peritoneal
+185,64.0,Masculino,No,Insuficiente,No,6.0,G4 (grave),1 Mala,Diálisis peritoneal
+186,69.0,Femenino,Sí,Insuficiente,Sí,4.0,G5 (falla renal),1 Mala,Tratamiento conservador
+187,77.0,Masculino,No,Adecuado,No,11.0,G3 (moderada),4 Muy buena,Diálisis peritoneal
+188,63.0,Femenino,Sí,Adecuado,Sí,14.0,G3 (moderada),1 Mala,Diálisis peritoneal
+189,40.0,Masculino,Sí,Adecuado,No,13.0,G4 (grave),4 Muy buena,Diálisis peritoneal
+190,41.0,Femenino,No,Adecuado,No,15.0,G5 (falla renal),3 Buena,Trasplante
+191,59.0,Femenino,Sí,Adecuado,Sí,9.0,G5 (falla renal),2 Regular,Diálisis peritoneal
+192,48.0,Femenino,No,Insuficiente,Sí,12.0,G3 (moderada),2 Regular,Diálisis peritoneal
+193,54.0,Femenino,Sí,Insuficiente,No,11.0,G5 (falla renal),2 Regular,Diálisis peritoneal
+194,68.0,Masculino,No,Adecuado,Sí,8.0,G4 (grave),1 Mala,Diálisis peritoneal
+195,76.0,Masculino,No,Adecuado,Sí,5.0,G3 (moderada),4 Muy buena,Hemodiálisis
+196,62.0,Femenino,Sí,Adecuado,No,,G3 (moderada),4 Muy buena,Diálisis peritoneal
+197,50.0,Masculino,No,Insuficiente,No,3.0,G4 (grave),1 Mala,Diálisis peritoneal
+198,69.0,Femenino,Sí,Adecuado,No,8.0,G5 (falla renal),3 Buena,Tratamiento conservador
+199,53.0,Masculino,No,Insuficiente,No,15.0,G3 (moderada),1 Mala,Trasplante
+200,58.0,Femenino,Sí,Adecuado,No,10.0,G3 (moderada),3 Buena,Tratamiento conservador
+201,71.0,Femenino,No,Adecuado,No,14.0,G4 (grave),2 Regular,Hemodiálisis
+202,76.0,Masculino,Sí,Adecuado,No,16.0,G4 (grave),4 Muy buena,Diálisis peritoneal
+203,59.0,Femenino,No,Adecuado,Sí,12.0,G4 (grave),4 Muy buena,Hemodiálisis
+204,68.0,Masculino,No,Adecuado,No,10.0,G3 (moderada),3 Buena,Trasplante
+205,59.0,Femenino,Sí,Adecuado,No,7.0,G4 (grave),2 Regular,Hemodiálisis
+206,48.0,Femenino,Sí,Adecuado,Sí,11.0,G4 (grave),3 Buena,Diálisis peritoneal
+207,77.0,Femenino,No,Insuficiente,Sí,8.0,G4 (grave),1 Mala,Diálisis peritoneal
+208,22.0,Femenino,Sí,Adecuado,No,19.0,G4 (grave),4 Muy buena,Diálisis peritoneal
+209,51.0,Femenino,Sí,Adecuado,No,12.0,G3 (moderada),4 Muy buena,Trasplante
+210,80.0,Femenino,No,Adecuado,Sí,2.0,G5 (falla renal),2 Regular,Tratamiento conservador
+211,77.0,Masculino,No,Adecuado,No,11.0,G3 (moderada),2 Regular,Diálisis peritoneal
+212,56.0,Masculino,No,Adecuado,No,6.0,G4 (grave),3 Buena,Trasplante
+213,84.0,Femenino,Sí,Adecuado,Sí,9.0,G4 (grave),1 Mala,Hemodiálisis
+214,69.0,Femenino,No,Adecuado,Sí,5.0,G3 (moderada),2 Regular,Hemodiálisis
+215,55.0,Femenino,Sí,Adecuado,Sí,8.0,G5 (falla renal),4 Muy buena,Tratamiento conservador
+216,81.0,Femenino,No,Adecuado,No,10.0,G5 (falla renal),2 Regular,Hemodiálisis
+217,50.0,Masculino,Sí,Adecuado,No,8.0,G4 (grave),4 Muy buena,Trasplante
+218,59.0,Masculino,Sí,Adecuado,No,11.0,G5 (falla renal),2 Regular,Diálisis peritoneal
+219,44.0,Masculino,Sí,Adecuado,No,13.0,G5 (falla renal),3 Buena,Tratamiento conservador
+220,71.0,Femenino,Sí,Adecuado,Sí,10.0,G4 (grave),1 Mala,Hemodiálisis
+221,70.0,Masculino,No,Adecuado,No,11.0,G4 (grave),4 Muy buena,Diálisis peritoneal
+222,69.0,Masculino,Sí,Adecuado,No,6.0,G3 (moderada),1 Mala,Tratamiento conservador
+223,63.0,Masculino,No,Adecuado,No,9.0,G3 (moderada),3 Buena,Trasplante
+224,64.0,Femenino,Sí,Adecuado,Sí,8.0,G5 (falla renal),1 Mala,Tratamiento conservador
+225,78.0,Masculino,No,Insuficiente,No,11.0,G5 (falla renal),2 Regular,Tratamiento conservador
+226,73.0,Femenino,No,Insuficiente,Sí,5.0,G4 (grave),1 Mala,Hemodiálisis
+227,56.0,Masculino,No,Insuficiente,No,9.0,G3 (moderada),2 Regular,Tratamiento conservador
+228,64.0,Masculino,No,Adecuado,Sí,13.0,G3 (moderada),4 Muy buena,Diálisis peritoneal
+229,55.0,Femenino,No,Adecuado,No,4.0,G3 (moderada),3 Buena,Tratamiento conservador
+230,53.0,Masculino,No,Insuficiente,No,9.0,G3 (moderada),1 Mala,Tratamiento conservador
+231,43.0,Masculino,Sí,Insuficiente,Sí,10.0,G4 (grave),2 Regular,Diálisis peritoneal
+232,50.0,Femenino,Sí,Adecuado,Sí,16.0,G5 (falla renal),1 Mala,Hemodiálisis
+233,62.0,Masculino,Sí,Adecuado,No,15.0,G3 (moderada),1 Mala,Diálisis peritoneal
+234,74.0,Femenino,No,Insuficiente,No,9.0,G3 (moderada),1 Mala,Hemodiálisis
+235,63.0,Masculino,No,Adecuado,No,15.0,G4 (grave),1 Mala,Diálisis peritoneal
+236,54.0,Masculino,Sí,Adecuado,No,8.0,G4 (grave),1 Mala,Diálisis peritoneal
+237,52.0,Femenino,No,Insuficiente,Sí,13.0,G4 (grave),2 Regular,Hemodiálisis
+238,66.0,Masculino,Sí,Adecuado,Sí,13.0,G4 (grave),4 Muy buena,Hemodiálisis
+239,59.0,Masculino,Sí,Insuficiente,No,9.0,G3 (moderada),4 Muy buena,Diálisis peritoneal
+240,74.0,Masculino,No,Adecuado,Sí,13.0,G4 (grave),3 Buena,Tratamiento conservador
+241,75.0,Masculino,Sí,Insuficiente,Sí,14.0,G5 (falla renal),2 Regular,Tratamiento conservador
+242,71.0,Femenino,No,Insuficiente,No,13.0,G3 (moderada),1 Mala,Hemodiálisis
+243,52.0,Masculino,No,Adecuado,No,7.0,G4 (grave),3 Buena,Diálisis peritoneal
+244,53.0,Femenino,No,Adecuado,Sí,8.0,G4 (grave),3 Buena,Tratamiento conservador
+245,59.0,Masculino,No,Adecuado,Sí,8.0,G3 (moderada),4 Muy buena,Hemodiálisis
+246,77.0,Masculino,No,Adecuado,No,12.0,G4 (grave),3 Buena,Diálisis peritoneal
+247,64.0,Masculino,Sí,Adecuado,No,17.0,G4 (grave),3 Buena,Diálisis peritoneal
+248,51.0,Masculino,No,Insuficiente,No,10.0,G3 (moderada),1 Mala,Trasplante
+249,24.0,Masculino,Sí,Adecuado,No,10.0,G3 (moderada),4 Muy buena,Trasplante
+250,59.0,Masculino,No,Adecuado,No,10.0,G3 (moderada),2 Regular,Trasplante
+251,76.0,Masculino,Sí,Adecuado,No,4.0,G5 (falla renal),1 Mala,Hemodiálisis
+252,74.0,Masculino,No,Insuficiente,Sí,6.0,G3 (moderada),3 Buena,Hemodiálisis
+253,62.0,Masculino,No,Adecuado,No,7.0,G3 (moderada),3 Buena,Hemodiálisis
+254,81.0,Masculino,No,Adecuado,Sí,15.0,G5 (falla renal),1 Mala,Hemodiálisis
+255,92.0,Masculino,No,Adecuado,Sí,13.0,G3 (moderada),2 Regular,Hemodiálisis
+256,60.0,Femenino,No,Adecuado,Sí,8.0,G5 (falla renal),4 Muy buena,Hemodiálisis
+257,48.0,Femenino,Sí,Adecuado,No,6.0,G3 (moderada),1 Mala,Diálisis peritoneal
+258,48.0,Masculino,No,Adecuado,Sí,13.0,G4 (grave),2 Regular,Diálisis peritoneal
+259,58.0,Masculino,Sí,Insuficiente,Sí,8.0,G4 (grave),2 Regular,Diálisis peritoneal
+260,77.0,Femenino,No,Insuficiente,No,7.0,G3 (moderada),1 Mala,Diálisis peritoneal
+261,53.0,Femenino,Sí,Insuficiente,No,6.0,G3 (moderada),1 Mala,Hemodiálisis
+262,69.0,Masculino,No,Adecuado,Sí,6.0,G5 (falla renal),2 Regular,Tratamiento conservador
+263,49.0,Masculino,Sí,Adecuado,Sí,2.0,G5 (falla renal),3 Buena,Hemodiálisis
+264,71.0,Masculino,Sí,Adecuado,No,15.0,G3 (moderada),1 Mala,Hemodiálisis
+265,70.0,Masculino,No,Insuficiente,No,9.0,G4 (grave),2 Regular,Diálisis peritoneal
+266,45.0,Masculino,No,Adecuado,No,9.0,G4 (grave),3 Buena,Diálisis peritoneal
+267,88.0,Femenino,No,Adecuado,No,5.0,G5 (falla renal),2 Regular,Tratamiento conservador
+268,61.0,Femenino,Sí,Adecuado,No,11.0,G3 (moderada),2 Regular,Hemodiálisis
+269,58.0,Masculino,No,Insuficiente,Sí,9.0,G3 (moderada),3 Buena,Tratamiento conservador
+270,74.0,Masculino,No,Insuficiente,No,5.0,G4 (grave),3 Buena,Tratamiento conservador
+271,57.0,Femenino,No,Insuficiente,No,12.0,G3 (moderada),2 Regular,Diálisis peritoneal
+272,61.0,Masculino,No,Insuficiente,No,15.0,G3 (moderada),1 Mala,Diálisis peritoneal
+273,50.0,Masculino,No,Adecuado,Sí,,G3 (moderada),4 Muy buena,Tratamiento conservador
+274,41.0,Masculino,No,Insuficiente,Sí,16.0,G5 (falla renal),3 Buena,Trasplante
+275,70.0,Femenino,Sí,Adecuado,No,10.0,G3 (moderada),2 Regular,Diálisis peritoneal
+276,83.0,Femenino,No,Insuficiente,No,14.0,G4 (grave),1 Mala,Tratamiento conservador
+277,33.0,Femenino,Sí,Adecuado,No,8.0,G3 (moderada),3 Buena,Diálisis peritoneal
+278,51.0,Masculino,Sí,Adecuado,Sí,16.0,G4 (grave),4 Muy buena,Diálisis peritoneal
+279,61.0,Femenino,No,Insuficiente,Sí,8.0,G4 (grave),1 Mala,Tratamiento conservador
+280,62.0,Femenino,No,Insuficiente,No,10.0,G4 (grave),1 Mala,Trasplante
+281,53.0,Femenino,No,Adecuado,No,9.0,G3 (moderada),3 Buena,Trasplante
+282,49.0,Femenino,No,Adecuado,No,7.0,G3 (moderada),3 Buena,Hemodiálisis
+283,63.0,Femenino,Sí,Adecuado,No,17.0,G5 (falla renal),4 Muy buena,Tratamiento conservador
+284,78.0,Femenino,No,Adecuado,No,8.0,G3 (moderada),2 Regular,Trasplante
+285,64.0,Femenino,Sí,Adecuado,Sí,9.0,G3 (moderada),3 Buena,Tratamiento conservador
+286,66.0,Femenino,No,Insuficiente,No,3.0,G4 (grave),3 Buena,Tratamiento conservador
+287,75.0,Femenino,No,Insuficiente,No,16.0,G3 (moderada),4 Muy buena,Diálisis peritoneal
+288,66.0,Femenino,No,Adecuado,No,6.0,G4 (grave),2 Regular,Trasplante
+289,91.0,Masculino,No,Adecuado,No,10.0,G4 (grave),3 Buena,Tratamiento conservador
+290,57.0,Masculino,Sí,Adecuado,No,8.0,G5 (falla renal),3 Buena,Hemodiálisis
+291,59.0,Masculino,No,Adecuado,Sí,4.0,G3 (moderada),2 Regular,Tratamiento conservador
+292,54.0,Femenino,No,Adecuado,No,15.0,G3 (moderada),4 Muy buena,Diálisis peritoneal
+293,51.0,Masculino,Sí,Adecuado,No,10.0,G3 (moderada),3 Buena,Hemodiálisis
+294,50.0,Masculino,No,Adecuado,No,13.0,G4 (grave),1 Mala,Diálisis peritoneal
+295,46.0,Femenino,No,Adecuado,Sí,12.0,G3 (moderada),3 Buena,Hemodiálisis
+296,68.0,Femenino,No,Insuficiente,No,14.0,G3 (moderada),2 Regular,Hemodiálisis
+297,72.0,Masculino,Sí,Adecuado,Sí,12.0,G4 (grave),1 Mala,Diálisis peritoneal
+298,89.0,Femenino,No,Adecuado,No,12.0,G4 (grave),3 Buena,Hemodiálisis
+299,73.0,Femenino,No,Insuficiente,No,6.0,G3 (moderada),1 Mala,Hemodiálisis
+300,57.0,Masculino,Sí,Insuficiente,No,19.0,G4 (grave),3 Buena,Tratamiento conservador
+301,60.0,Masculino,Sí,Adecuado,No,7.0,G3 (moderada),2 Regular,Tratamiento conservador
+302,71.0,Masculino,No,Adecuado,Sí,9.0,G3 (moderada),3 Buena,Tratamiento conservador
+303,58.0,Femenino,Sí,Adecuado,Sí,14.0,G3 (moderada),3 Buena,Trasplante
+304,69.0,Masculino,Sí,Adecuado,No,10.0,G5 (falla renal),3 Buena,Tratamiento conservador
+305,70.0,Masculino,Sí,Adecuado,No,6.0,G3 (moderada),3 Buena,Hemodiálisis
+306,28.0,Femenino,Sí,Insuficiente,No,10.0,G3 (moderada),1 Mala,Hemodiálisis
+307,73.0,Masculino,Sí,Adecuado,Sí,9.0,G4 (grave),1 Mala,Hemodiálisis
+308,46.0,Masculino,No,Adecuado,No,8.0,G4 (grave),4 Muy buena,Trasplante
+309,72.0,Masculino,Sí,Adecuado,No,12.0,G3 (moderada),2 Regular,Diálisis peritoneal
+310,77.0,Femenino,No,Insuficiente,Sí,7.0,G5 (falla renal),2 Regular,Hemodiálisis
+311,65.0,Femenino,Sí,Adecuado,No,13.0,G3 (moderada),2 Regular,Tratamiento conservador
+312,67.0,Femenino,Sí,Adecuado,No,10.0,G4 (grave),1 Mala,Diálisis peritoneal
+313,63.0,Masculino,Sí,Adecuado,No,11.0,G5 (falla renal),3 Buena,Tratamiento conservador
+314,73.0,Masculino,No,Adecuado,No,15.0,G5 (falla renal),4 Muy buena,Hemodiálisis
+315,72.0,Femenino,No,Insuficiente,No,10.0,G4 (grave),1 Mala,Diálisis peritoneal
+316,54.0,Masculino,No,Adecuado,Sí,12.0,G4 (grave),4 Muy buena,Trasplante
+317,64.0,Masculino,No,Adecuado,No,2.0,G3 (moderada),4 Muy buena,Trasplante
+318,75.0,Masculino,No,Adecuado,Sí,13.0,G4 (grave),3 Buena,Trasplante
+319,71.0,Masculino,No,Adecuado,Sí,11.0,G5 (falla renal),3 Buena,Diálisis peritoneal
+320,84.0,Femenino,Sí,Adecuado,No,15.0,G5 (falla renal),1 Mala,Hemodiálisis
+321,41.0,Femenino,No,Insuficiente,Sí,1.0,G3 (moderada),3 Buena,Diálisis peritoneal
+322,73.0,Masculino,No,Adecuado,No,14.0,G5 (falla renal),3 Buena,Diálisis peritoneal
+323,37.0,Femenino,No,Adecuado,No,5.0,G3 (moderada),3 Buena,Trasplante
+324,81.0,Masculino,No,Adecuado,No,13.0,G5 (falla renal),2 Regular,Diálisis peritoneal
+325,68.0,Femenino,Sí,Adecuado,No,2.0,G4 (grave),1 Mala,Tratamiento conservador
+326,48.0,Femenino,Sí,Adecuado,Sí,13.0,G4 (grave),4 Muy buena,Diálisis peritoneal
+327,67.0,Femenino,No,Adecuado,Sí,3.0,G5 (falla renal),2 Regular,Diálisis peritoneal
+328,77.0,Femenino,No,Insuficiente,Sí,8.0,G5 (falla renal),1 Mala,Hemodiálisis
+329,60.0,Femenino,Sí,Adecuado,No,18.0,G5 (falla renal),1 Mala,Hemodiálisis
+330,92.0,Femenino,No,Adecuado,No,19.0,G3 (moderada),4 Muy buena,Hemodiálisis
+331,64.0,Masculino,Sí,Insuficiente,No,3.0,G3 (moderada),2 Regular,Hemodiálisis
+332,56.0,Femenino,No,Adecuado,No,11.0,G3 (moderada),4 Muy buena,Diálisis peritoneal
+333,42.0,Masculino,No,Insuficiente,No,7.0,G3 (moderada),3 Buena,Tratamiento conservador
+334,55.0,Femenino,No,Adecuado,No,8.0,G4 (grave),4 Muy buena,Diálisis peritoneal
+335,56.0,Femenino,Sí,Adecuado,No,9.0,G5 (falla renal),1 Mala,Trasplante
+336,58.0,Femenino,Sí,Adecuado,No,16.0,G4 (grave),4 Muy buena,Hemodiálisis
+337,46.0,Femenino,No,Adecuado,Sí,18.0,G3 (moderada),4 Muy buena,Trasplante
+338,76.0,Femenino,Sí,Adecuado,Sí,,G5 (falla renal),1 Mala,Hemodiálisis
+339,49.0,Femenino,No,Insuficiente,No,15.0,G4 (grave),4 Muy buena,Trasplante
+340,85.0,Femenino,No,Adecuado,No,14.0,G3 (moderada),3 Buena,Tratamiento conservador
+341,65.0,Femenino,No,Adecuado,No,13.0,G3 (moderada),4 Muy buena,Diálisis peritoneal
+342,61.0,Masculino,No,Adecuado,Sí,14.0,G5 (falla renal),1 Mala,Hemodiálisis
+343,74.0,Masculino,No,Adecuado,Sí,8.0,G4 (grave),2 Regular,Hemodiálisis
+344,63.0,Femenino,No,Adecuado,Sí,10.0,G4 (grave),3 Buena,Trasplante
+345,72.0,Femenino,Sí,Adecuado,No,12.0,G3 (moderada),4 Muy buena,Diálisis peritoneal
+346,49.0,Femenino,No,Adecuado,Sí,11.0,G5 (falla renal),4 Muy buena,Trasplante
+347,68.0,Femenino,Sí,Insuficiente,No,16.0,G4 (grave),3 Buena,Hemodiálisis
+348,53.0,Masculino,No,Adecuado,No,13.0,G4 (grave),3 Buena,Trasplante
+349,45.0,Masculino,No,Adecuado,Sí,13.0,G3 (moderada),3 Buena,Trasplante
+350,46.0,Masculino,No,Adecuado,Sí,4.0,G4 (grave),2 Regular,Trasplante
+351,56.0,Femenino,Sí,Adecuado,Sí,6.0,G5 (falla renal),2 Regular,Tratamiento conservador
+352,72.0,Femenino,No,Adecuado,Sí,7.0,G3 (moderada),3 Buena,Trasplante
+353,67.0,Masculino,No,Adecuado,No,3.0,G3 (moderada),2 Regular,Diálisis peritoneal
+354,70.0,Masculino,Sí,Adecuado,No,9.0,G3 (moderada),3 Buena,Diálisis peritoneal
+355,49.0,Masculino,No,Insuficiente,No,15.0,G5 (falla renal),2 Regular,Diálisis peritoneal
+356,92.0,Masculino,No,Adecuado,Sí,6.0,G5 (falla renal),2 Regular,Tratamiento conservador
+357,61.0,Masculino,No,Adecuado,Sí,7.0,G4 (grave),2 Regular,Hemodiálisis
+358,58.0,Masculino,No,Adecuado,No,5.0,G4 (grave),2 Regular,Diálisis peritoneal
+359,55.0,Masculino,Sí,Adecuado,No,8.0,G4 (grave),3 Buena,Diálisis peritoneal
+360,69.0,Femenino,No,Adecuado,No,9.0,G3 (moderada),3 Buena,Hemodiálisis
+361,62.0,Femenino,Sí,Adecuado,No,13.0,G3 (moderada),3 Buena,Hemodiálisis
+362,50.0,Femenino,No,Adecuado,No,16.0,G3 (moderada),3 Buena,Diálisis peritoneal
+363,78.0,Femenino,No,Adecuado,No,12.0,G3 (moderada),4 Muy buena,Diálisis peritoneal
+364,60.0,Masculino,No,Insuficiente,No,14.0,G3 (moderada),4 Muy buena,Hemodiálisis
+365,52.0,Femenino,Sí,Insuficiente,No,8.0,G4 (grave),1 Mala,Hemodiálisis
+366,69.0,Masculino,Sí,Insuficiente,No,11.0,G4 (grave),1 Mala,Diálisis peritoneal
+367,70.0,Femenino,Sí,Adecuado,No,12.0,G4 (grave),1 Mala,Hemodiálisis
+368,77.0,Femenino,Sí,Adecuado,No,13.0,G5 (falla renal),1 Mala,Hemodiálisis
+369,46.0,Masculino,No,Adecuado,Sí,11.0,G4 (grave),4 Muy buena,Diálisis peritoneal
+370,59.0,Femenino,No,Adecuado,No,9.0,G3 (moderada),4 Muy buena,Tratamiento conservador
+371,58.0,Masculino,No,Insuficiente,No,14.0,G3 (moderada),3 Buena,Tratamiento conservador
+372,52.0,Masculino,Sí,Adecuado,No,6.0,G3 (moderada),4 Muy buena,Diálisis peritoneal
+373,52.0,Masculino,No,Insuficiente,No,,G5 (falla renal),1 Mala,Tratamiento conservador
+374,75.0,Masculino,Sí,Adecuado,Sí,9.0,G5 (falla renal),3 Buena,Tratamiento conservador
+375,59.0,Masculino,No,Insuficiente,No,2.0,G5 (falla renal),4 Muy buena,Hemodiálisis
+376,53.0,Masculino,Sí,Adecuado,Sí,11.0,G4 (grave),4 Muy buena,Diálisis peritoneal
+377,61.0,Femenino,No,Adecuado,No,12.0,G5 (falla renal),4 Muy buena,Hemodiálisis
+378,81.0,Masculino,No,Adecuado,Sí,13.0,G4 (grave),3 Buena,Diálisis peritoneal
+379,90.0,Masculino,No,Insuficiente,No,9.0,G5 (falla renal),2 Regular,Tratamiento conservador
+380,44.0,Femenino,No,Insuficiente,No,12.0,G4 (grave),1 Mala,Trasplante
+381,68.0,Masculino,No,Insuficiente,Sí,4.0,G5 (falla renal),1 Mala,Tratamiento conservador
+382,72.0,Femenino,Sí,Adecuado,Sí,15.0,G5 (falla renal),2 Regular,Hemodiálisis
+383,70.0,Masculino,Sí,Adecuado,No,5.0,G5 (falla renal),2 Regular,Diálisis peritoneal
+384,79.0,Femenino,Sí,Adecuado,Sí,14.0,G4 (grave),2 Regular,Tratamiento conservador
+385,63.0,Masculino,Sí,Adecuado,Sí,12.0,G4 (grave),1 Mala,Hemodiálisis
+386,64.0,Masculino,No,Adecuado,Sí,13.0,G4 (grave),1 Mala,Trasplante
+387,66.0,Masculino,No,Insuficiente,No,8.0,G3 (moderada),2 Regular,Hemodiálisis
+388,77.0,Femenino,Sí,Adecuado,Sí,11.0,G5 (falla renal),3 Buena,Tratamiento conservador
+389,67.0,Masculino,No,Insuficiente,No,13.0,G5 (falla renal),2 Regular,Diálisis peritoneal
+390,59.0,Masculino,No,Adecuado,No,14.0,G3 (moderada),2 Regular,Diálisis peritoneal
+391,73.0,Femenino,Sí,Adecuado,No,6.0,G5 (falla renal),3 Buena,Tratamiento conservador
+392,68.0,Masculino,No,Insuficiente,No,14.0,G4 (grave),1 Mala,Diálisis peritoneal
+393,50.0,Femenino,Sí,Insuficiente,Sí,4.0,G5 (falla renal),1 Mala,Hemodiálisis
+394,41.0,Masculino,Sí,Insuficiente,No,12.0,G4 (grave),4 Muy buena,Tratamiento conservador
+395,49.0,Masculino,No,Adecuado,Sí,12.0,G5 (falla renal),4 Muy buena,Diálisis peritoneal
+396,46.0,Femenino,Sí,Insuficiente,No,7.0,G4 (grave),1 Mala,Trasplante
+397,44.0,Femenino,Sí,Adecuado,Sí,16.0,G5 (falla renal),3 Buena,Diálisis peritoneal
+398,52.0,Masculino,Sí,Adecuado,No,12.0,G3 (moderada),1 Mala,Diálisis peritoneal
+399,57.0,Femenino,No,Adecuado,No,17.0,G3 (moderada),1 Mala,Hemodiálisis
+400,88.0,Masculino,No,Adecuado,No,16.0,G4 (grave),2 Regular,Trasplante
+401,80.0,Femenino,No,Adecuado,No,8.0,G3 (moderada),4 Muy buena,Hemodiálisis
+402,74.0,Femenino,Sí,Adecuado,Sí,10.0,G5 (falla renal),3 Buena,Hemodiálisis
+403,70.0,Femenino,No,Adecuado,No,11.0,G4 (grave),1 Mala,Diálisis peritoneal
+404,46.0,Femenino,Sí,Adecuado,Sí,12.0,G5 (falla renal),2 Regular,Tratamiento conservador
+405,79.0,Femenino,No,Adecuado,No,9.0,G5 (falla renal),2 Regular,Tratamiento conservador
+406,84.0,Femenino,Sí,Adecuado,Sí,7.0,G5 (falla renal),3 Buena,Diálisis peritoneal
+407,54.0,Masculino,No,Adecuado,No,5.0,G3 (moderada),2 Regular,Hemodiálisis
+408,57.0,Femenino,No,Insuficiente,No,15.0,G3 (moderada),3 Buena,Hemodiálisis
+409,54.0,Femenino,No,Adecuado,No,10.0,G3 (moderada),4 Muy buena,Diálisis peritoneal
+410,69.0,Masculino,No,Adecuado,Sí,6.0,G5 (falla renal),4 Muy buena,Trasplante
+411,46.0,Masculino,Sí,Adecuado,No,7.0,G3 (moderada),2 Regular,Diálisis peritoneal
+412,60.0,Femenino,Sí,Adecuado,Sí,4.0,G4 (grave),1 Mala,Tratamiento conservador
+413,54.0,Femenino,Sí,Adecuado,No,9.0,G4 (grave),3 Buena,Tratamiento conservador
+414,77.0,Femenino,Sí,Adecuado,Sí,9.0,G5 (falla renal),2 Regular,Diálisis peritoneal
+415,82.0,Femenino,Sí,Insuficiente,Sí,5.0,G5 (falla renal),2 Regular,Diálisis peritoneal
+416,46.0,Femenino,No,Insuficiente,No,11.0,G5 (falla renal),3 Buena,Diálisis peritoneal
+417,92.0,Masculino,Sí,Adecuado,No,5.0,G3 (moderada),1 Mala,Tratamiento conservador
+418,66.0,Masculino,No,Adecuado,Sí,13.0,G5 (falla renal),4 Muy buena,Diálisis peritoneal
+419,69.0,Femenino,No,Adecuado,Sí,10.0,G4 (grave),3 Buena,Tratamiento conservador
+420,69.0,Masculino,No,Insuficiente,No,15.0,G4 (grave),3 Buena,Tratamiento conservador
+421,49.0,Masculino,No,Adecuado,Sí,4.0,G3 (moderada),3 Buena,Hemodiálisis
+422,61.0,Masculino,No,Adecuado,No,,G4 (grave),1 Mala,Hemodiálisis
+423,34.0,Femenino,No,Insuficiente,No,12.0,G3 (moderada),1 Mala,Hemodiálisis
+424,61.0,Masculino,No,Insuficiente,Sí,4.0,G5 (falla renal),2 Regular,Hemodiálisis
+425,59.0,Femenino,No,Adecuado,Sí,13.0,G5 (falla renal),3 Buena,Hemodiálisis
+426,53.0,Masculino,Sí,Adecuado,No,11.0,G4 (grave),2 Regular,Hemodiálisis
+427,56.0,Femenino,Sí,Adecuado,No,14.0,G5 (falla renal),3 Buena,Diálisis peritoneal
+428,35.0,Femenino,No,Insuficiente,Sí,3.0,G5 (falla renal),3 Buena,Hemodiálisis
+429,58.0,Masculino,No,Adecuado,No,9.0,G3 (moderada),2 Regular,Diálisis peritoneal
+430,62.0,Masculino,Sí,Insuficiente,No,20.0,G5 (falla renal),3 Buena,Tratamiento conservador
+431,68.0,Masculino,No,Adecuado,No,10.0,G3 (moderada),4 Muy buena,Trasplante
+432,64.0,Femenino,Sí,Adecuado,No,17.0,G4 (grave),1 Mala,Diálisis peritoneal
+433,70.0,Masculino,No,Insuficiente,Sí,8.0,G3 (moderada),1 Mala,Tratamiento conservador
+434,51.0,Femenino,No,Adecuado,Sí,10.0,G3 (moderada),1 Mala,Tratamiento conservador
+435,75.0,Femenino,No,Insuficiente,Sí,10.0,G3 (moderada),2 Regular,Hemodiálisis
+436,72.0,Femenino,No,Adecuado,Sí,15.0,G5 (falla renal),3 Buena,Hemodiálisis
+437,50.0,Femenino,No,Insuficiente,No,12.0,G5 (falla renal),2 Regular,Diálisis peritoneal
+438,54.0,Femenino,No,Insuficiente,Sí,8.0,G5 (falla renal),1 Mala,Hemodiálisis
+439,61.0,Masculino,Sí,Adecuado,No,11.0,G5 (falla renal),1 Mala,Diálisis peritoneal
+440,58.0,Masculino,No,Adecuado,No,10.0,G4 (grave),3 Buena,Diálisis peritoneal
+441,52.0,Femenino,Sí,Adecuado,No,17.0,G4 (grave),1 Mala,Diálisis peritoneal
+442,65.0,Masculino,No,Insuficiente,No,12.0,G5 (falla renal),3 Buena,Hemodiálisis
+443,40.0,Femenino,No,Adecuado,No,6.0,G4 (grave),1 Mala,Diálisis peritoneal
+444,55.0,Femenino,No,Adecuado,No,16.0,G3 (moderada),3 Buena,Trasplante
+445,79.0,Masculino,Sí,Adecuado,No,10.0,G5 (falla renal),2 Regular,Diálisis peritoneal
+446,29.0,Femenino,Sí,Insuficiente,No,8.0,G3 (moderada),1 Mala,Trasplante
+447,92.0,Masculino,No,Adecuado,No,12.0,G3 (moderada),2 Regular,Tratamiento conservador
+448,73.0,Femenino,No,Insuficiente,No,19.0,G4 (grave),3 Buena,Tratamiento conservador
+449,49.0,Masculino,No,Adecuado,Sí,10.0,G3 (moderada),2 Regular,Diálisis peritoneal
+450,56.0,Masculino,Sí,Adecuado,Sí,8.0,G3 (moderada),2 Regular,Hemodiálisis
+451,72.0,Femenino,No,Insuficiente,No,13.0,G3 (moderada),1 Mala,Tratamiento conservador
+452,73.0,Masculino,No,Adecuado,No,6.0,G3 (moderada),2 Regular,Diálisis peritoneal
+453,83.0,Femenino,No,Insuficiente,No,12.0,G4 (grave),2 Regular,Hemodiálisis
+454,44.0,Masculino,No,Insuficiente,No,14.0,G5 (falla renal),3 Buena,Diálisis peritoneal
+455,68.0,Femenino,No,Adecuado,No,2.0,G4 (grave),1 Mala,Tratamiento conservador
+456,45.0,Masculino,Sí,Adecuado,No,3.0,G4 (grave),2 Regular,Diálisis peritoneal
+457,57.0,Femenino,No,Insuficiente,Sí,11.0,G4 (grave),2 Regular,Diálisis peritoneal
+458,59.0,Masculino,No,Adecuado,No,12.0,G3 (moderada),2 Regular,Diálisis peritoneal
+459,61.0,Femenino,Sí,Insuficiente,Sí,8.0,G5 (falla renal),1 Mala,Tratamiento conservador
+460,66.0,Masculino,No,Insuficiente,No,5.0,G3 (moderada),1 Mala,Trasplante
+461,72.0,Femenino,Sí,Insuficiente,Sí,10.0,G5 (falla renal),3 Buena,Hemodiálisis
+462,41.0,Femenino,No,Adecuado,Sí,15.0,G4 (grave),2 Regular,Diálisis peritoneal
+463,77.0,Femenino,No,Adecuado,Sí,8.0,G5 (falla renal),2 Regular,Tratamiento conservador
+464,70.0,Masculino,No,Adecuado,No,14.0,G3 (moderada),3 Buena,Hemodiálisis
+465,71.0,Masculino,No,Insuficiente,No,7.0,G3 (moderada),3 Buena,Tratamiento conservador
+466,65.0,Femenino,No,Adecuado,No,4.0,G4 (grave),3 Buena,Hemodiálisis
+467,71.0,Femenino,No,Adecuado,No,,G3 (moderada),2 Regular,Diálisis peritoneal
+468,37.0,Femenino,Sí,Insuficiente,Sí,16.0,G4 (grave),4 Muy buena,Diálisis peritoneal
+469,62.0,Femenino,Sí,Insuficiente,No,17.0,G3 (moderada),2 Regular,Diálisis peritoneal
+470,43.0,Masculino,Sí,Adecuado,No,17.0,G4 (grave),3 Buena,Diálisis peritoneal
+471,66.0,Masculino,Sí,Adecuado,Sí,15.0,G4 (grave),4 Muy buena,Trasplante
+472,65.0,Femenino,Sí,Adecuado,Sí,13.0,G4 (grave),1 Mala,Tratamiento conservador
+473,68.0,Masculino,Sí,Adecuado,Sí,15.0,G3 (moderada),3 Buena,Hemodiálisis
+474,55.0,Femenino,No,Adecuado,No,2.0,G3 (moderada),2 Regular,Diálisis peritoneal
+475,65.0,Femenino,Sí,Adecuado,Sí,8.0,G5 (falla renal),2 Regular,Diálisis peritoneal
+476,53.0,Masculino,Sí,Insuficiente,No,2.0,G4 (grave),1 Mala,Diálisis peritoneal
+477,34.0,Masculino,No,Insuficiente,Sí,3.0,G3 (moderada),2 Regular,Diálisis peritoneal
+478,29.0,Masculino,Sí,Adecuado,No,18.0,G4 (grave),4 Muy buena,Trasplante
+479,86.0,Femenino,No,Adecuado,No,,G3 (moderada),2 Regular,Hemodiálisis
+480,63.0,Masculino,No,Adecuado,No,8.0,G3 (moderada),3 Buena,Trasplante
+481,61.0,Femenino,Sí,Adecuado,Sí,12.0,G5 (falla renal),4 Muy buena,Diálisis peritoneal
+482,67.0,Masculino,Sí,Adecuado,Sí,13.0,G4 (grave),3 Buena,Diálisis peritoneal
+483,85.0,Femenino,No,Adecuado,No,6.0,G5 (falla renal),1 Mala,Diálisis peritoneal
+484,51.0,Masculino,Sí,Adecuado,No,2.0,G5 (falla renal),1 Mala,Diálisis peritoneal
+485,88.0,Femenino,No,Insuficiente,Sí,10.0,G4 (grave),2 Regular,Hemodiálisis
+486,70.0,Masculino,No,Adecuado,Sí,8.0,G5 (falla renal),3 Buena,Hemodiálisis
+487,68.0,Masculino,No,Adecuado,No,6.0,G3 (moderada),3 Buena,Hemodiálisis
+488,71.0,Femenino,Sí,Adecuado,Sí,15.0,G5 (falla renal),2 Regular,Hemodiálisis
+489,51.0,Masculino,Sí,Insuficiente,No,14.0,G3 (moderada),2 Regular,Hemodiálisis
+490,62.0,Femenino,No,Insuficiente,No,10.0,G5 (falla renal),1 Mala,Tratamiento conservador
+491,49.0,Masculino,No,Adecuado,Sí,-0.0,G3 (moderada),2 Regular,Diálisis peritoneal
+492,48.0,Femenino,Sí,Adecuado,No,3.0,G4 (grave),1 Mala,Diálisis peritoneal
+493,71.0,Femenino,No,Adecuado,No,12.0,G4 (grave),2 Regular,Trasplante
+494,75.0,Masculino,Sí,Insuficiente,No,3.0,G3 (moderada),2 Regular,Diálisis peritoneal
+495,50.0,Femenino,No,Adecuado,Sí,6.0,G3 (moderada),3 Buena,Hemodiálisis
+496,58.0,Femenino,No,Adecuado,No,7.0,G3 (moderada),3 Buena,Diálisis peritoneal
+497,56.0,Femenino,Sí,Adecuado,No,5.0,G4 (grave),2 Regular,Diálisis peritoneal
+498,67.0,Masculino,Sí,Insuficiente,No,18.0,G4 (grave),2 Regular,Diálisis peritoneal
+499,42.0,Femenino,No,Insuficiente,Sí,7.0,G3 (moderada),2 Regular,Diálisis peritoneal
+500,51.0,Masculino,Sí,Insuficiente,Sí,6.0,G4 (grave),1 Mala,Hemodiálisis
+501,35.0,Femenino,No,Adecuado,No,6.0,G3 (moderada),1 Mala,Hemodiálisis
+502,65.0,Femenino,Sí,Adecuado,No,15.0,G3 (moderada),2 Regular,Tratamiento conservador
+503,65.0,Femenino,No,Adecuado,No,12.0,G4 (grave),4 Muy buena,Hemodiálisis
+504,72.0,Femenino,No,Adecuado,No,,G4 (grave),3 Buena,Hemodiálisis
+505,76.0,Masculino,No,Adecuado,No,7.0,G3 (moderada),2 Regular,Diálisis peritoneal
+506,36.0,Masculino,Sí,Adecuado,Sí,9.0,G3 (moderada),4 Muy buena,Hemodiálisis
+507,50.0,Femenino,No,Adecuado,Sí,14.0,G3 (moderada),2 Regular,Trasplante
+508,65.0,Femenino,Sí,Insuficiente,Sí,10.0,G5 (falla renal),2 Regular,Hemodiálisis
+509,34.0,Femenino,Sí,Adecuado,Sí,10.0,G3 (moderada),4 Muy buena,Diálisis peritoneal
+510,64.0,Masculino,No,Adecuado,Sí,15.0,G5 (falla renal),4 Muy buena,Diálisis peritoneal
+511,56.0,Femenino,Sí,Adecuado,No,8.0,G3 (moderada),2 Regular,Hemodiálisis
+512,72.0,Femenino,No,Adecuado,No,18.0,G5 (falla renal),4 Muy buena,Diálisis peritoneal
+513,60.0,Masculino,Sí,Adecuado,Sí,8.0,G4 (grave),1 Mala,Trasplante
+514,73.0,Masculino,Sí,Adecuado,Sí,,G4 (grave),2 Regular,Diálisis peritoneal
+515,56.0,Masculino,No,Adecuado,No,9.0,G5 (falla renal),4 Muy buena,Diálisis peritoneal
+516,59.0,Femenino,Sí,Insuficiente,Sí,10.0,G3 (moderada),1 Mala,Hemodiálisis
+517,54.0,Masculino,No,Adecuado,No,4.0,G4 (grave),3 Buena,Diálisis peritoneal
+518,54.0,Masculino,No,Adecuado,No,8.0,G4 (grave),2 Regular,Hemodiálisis
+519,69.0,Masculino,No,Insuficiente,No,13.0,G4 (grave),1 Mala,Diálisis peritoneal
+520,67.0,Masculino,No,Insuficiente,Sí,13.0,G4 (grave),2 Regular,Diálisis peritoneal
+521,86.0,Masculino,Sí,Insuficiente,No,12.0,G4 (grave),1 Mala,Tratamiento conservador
+522,67.0,Masculino,Sí,Adecuado,No,12.0,G5 (falla renal),1 Mala,Diálisis peritoneal
+523,56.0,Femenino,No,Adecuado,No,5.0,G4 (grave),2 Regular,Diálisis peritoneal
+524,78.0,Femenino,No,Adecuado,Sí,,G5 (falla renal),2 Regular,Hemodiálisis
+525,56.0,Masculino,No,Adecuado,No,11.0,G3 (moderada),4 Muy buena,Trasplante
+526,57.0,Femenino,No,Adecuado,No,7.0,G5 (falla renal),4 Muy buena,Diálisis peritoneal
+527,53.0,Masculino,Sí,Adecuado,Sí,11.0,G3 (moderada),3 Buena,Trasplante
+528,76.0,Femenino,No,Adecuado,No,17.0,G4 (grave),3 Buena,Hemodiálisis
+529,69.0,Masculino,Sí,Adecuado,No,5.0,G3 (moderada),3 Buena,Tratamiento conservador
+530,75.0,Femenino,No,Insuficiente,No,10.0,G4 (grave),2 Regular,Hemodiálisis
+531,86.0,Masculino,No,Adecuado,No,11.0,G5 (falla renal),3 Buena,Diálisis peritoneal
+532,47.0,Masculino,No,Insuficiente,No,0.0,G3 (moderada),2 Regular,Hemodiálisis
+533,35.0,Femenino,Sí,Insuficiente,No,8.0,G4 (grave),1 Mala,Tratamiento conservador
+534,56.0,Femenino,Sí,Adecuado,No,11.0,G4 (grave),2 Regular,Hemodiálisis
+535,61.0,Femenino,No,Adecuado,Sí,16.0,G3 (moderada),2 Regular,Tratamiento conservador
+536,72.0,Femenino,No,Adecuado,No,12.0,G3 (moderada),1 Mala,Tratamiento conservador
+537,68.0,Femenino,Sí,Insuficiente,No,10.0,G4 (grave),1 Mala,Hemodiálisis
+538,57.0,Femenino,Sí,Insuficiente,Sí,10.0,G4 (grave),1 Mala,Diálisis peritoneal
+539,78.0,Masculino,Sí,Adecuado,Sí,14.0,G5 (falla renal),1 Mala,Hemodiálisis
+540,55.0,Femenino,No,Adecuado,Sí,,G5 (falla renal),2 Regular,Hemodiálisis
+541,75.0,Femenino,No,Adecuado,No,9.0,G4 (grave),2 Regular,Tratamiento conservador
+542,52.0,Masculino,No,Adecuado,No,11.0,G3 (moderada),3 Buena,Trasplante
+543,66.0,Masculino,Sí,Adecuado,Sí,10.0,G5 (falla renal),3 Buena,Hemodiálisis
+544,57.0,Masculino,No,Adecuado,Sí,11.0,G3 (moderada),2 Regular,Diálisis peritoneal
+545,60.0,Masculino,No,Adecuado,No,15.0,G5 (falla renal),3 Buena,Trasplante
+546,73.0,Femenino,No,Insuficiente,No,9.0,G5 (falla renal),1 Mala,Hemodiálisis
+547,55.0,Masculino,Sí,Insuficiente,No,3.0,G4 (grave),1 Mala,Tratamiento conservador
+548,67.0,Femenino,Sí,Adecuado,Sí,14.0,G5 (falla renal),2 Regular,Tratamiento conservador
+549,77.0,Masculino,Sí,Adecuado,Sí,17.0,G5 (falla renal),1 Mala,Diálisis peritoneal
+550,46.0,Masculino,Sí,Adecuado,No,16.0,G3 (moderada),2 Regular,Trasplante
+551,71.0,Masculino,Sí,Insuficiente,No,10.0,G3 (moderada),2 Regular,Tratamiento conservador
+552,58.0,Masculino,Sí,Adecuado,Sí,5.0,G4 (grave),4 Muy buena,Diálisis peritoneal
+553,54.0,Masculino,No,Adecuado,Sí,13.0,G4 (grave),3 Buena,Diálisis peritoneal
+554,89.0,Femenino,Sí,Insuficiente,No,12.0,G4 (grave),2 Regular,Tratamiento conservador
+555,54.0,Masculino,No,Adecuado,No,9.0,G4 (grave),4 Muy buena,Trasplante
+556,65.0,Masculino,No,Adecuado,Sí,6.0,G5 (falla renal),3 Buena,Diálisis peritoneal
+557,28.0,Femenino,Sí,Adecuado,No,18.0,G5 (falla renal),2 Regular,Diálisis peritoneal
+558,49.0,Femenino,Sí,Adecuado,No,7.0,G5 (falla renal),2 Regular,Trasplante
+559,45.0,Masculino,No,Adecuado,Sí,,G3 (moderada),2 Regular,Trasplante
+560,76.0,Femenino,No,Adecuado,No,8.0,G5 (falla renal),2 Regular,Hemodiálisis
+561,46.0,Masculino,No,Insuficiente,Sí,12.0,G3 (moderada),3 Buena,Trasplante
+562,71.0,Femenino,No,Adecuado,No,16.0,G3 (moderada),3 Buena,Diálisis peritoneal
+563,62.0,Femenino,No,Insuficiente,No,10.0,G5 (falla renal),1 Mala,Diálisis peritoneal
+564,60.0,Femenino,No,Adecuado,Sí,12.0,G5 (falla renal),2 Regular,Diálisis peritoneal
+565,54.0,Femenino,No,Adecuado,Sí,10.0,G3 (moderada),4 Muy buena,Hemodiálisis
+566,39.0,Femenino,No,Insuficiente,No,2.0,G3 (moderada),2 Regular,Diálisis peritoneal
+567,48.0,Femenino,Sí,Adecuado,Sí,11.0,G5 (falla renal),3 Buena,Hemodiálisis
+568,76.0,Femenino,No,Insuficiente,No,11.0,G5 (falla renal),1 Mala,Trasplante
+569,82.0,Femenino,Sí,Adecuado,Sí,7.0,G4 (grave),1 Mala,Tratamiento conservador
+570,60.0,Masculino,No,Adecuado,No,17.0,G3 (moderada),4 Muy buena,Diálisis peritoneal
+571,61.0,Femenino,Sí,Insuficiente,No,9.0,G5 (falla renal),2 Regular,Hemodiálisis
+572,51.0,Masculino,No,Adecuado,No,2.0,G3 (moderada),2 Regular,Hemodiálisis
+573,64.0,Femenino,Sí,Insuficiente,No,7.0,G4 (grave),1 Mala,Hemodiálisis
+574,69.0,Masculino,Sí,Adecuado,No,13.0,G5 (falla renal),3 Buena,Hemodiálisis
+575,65.0,Femenino,No,Adecuado,No,10.0,G3 (moderada),4 Muy buena,Hemodiálisis
+576,70.0,Femenino,No,Insuficiente,Sí,8.0,G4 (grave),1 Mala,Tratamiento conservador
+577,24.0,Masculino,Sí,Adecuado,Sí,14.0,G3 (moderada),3 Buena,Trasplante
+578,72.0,Masculino,Sí,Adecuado,Sí,9.0,G5 (falla renal),2 Regular,Diálisis peritoneal
+579,60.0,Femenino,Sí,Adecuado,No,13.0,G4 (grave),2 Regular,Trasplante
+580,53.0,Femenino,Sí,Adecuado,Sí,9.0,G4 (grave),4 Muy buena,Diálisis peritoneal
+581,69.0,Masculino,No,Adecuado,No,9.0,G3 (moderada),2 Regular,Hemodiálisis
+582,52.0,Femenino,No,Adecuado,No,11.0,G3 (moderada),1 Mala,Trasplante
+583,61.0,Femenino,No,Adecuado,No,9.0,G5 (falla renal),2 Regular,Hemodiálisis
+584,54.0,Femenino,No,Adecuado,Sí,6.0,G3 (moderada),4 Muy buena,Hemodiálisis
+585,56.0,Femenino,No,Insuficiente,No,5.0,G3 (moderada),4 Muy buena,Hemodiálisis
+586,67.0,Femenino,No,Adecuado,No,11.0,G3 (moderada),2 Regular,Trasplante
+587,72.0,Masculino,No,Insuficiente,No,15.0,G4 (grave),1 Mala,Diálisis peritoneal
+588,55.0,Femenino,Sí,Adecuado,No,5.0,G3 (moderada),2 Regular,Hemodiálisis
+589,57.0,Masculino,No,Adecuado,Sí,9.0,G5 (falla renal),4 Muy buena,Tratamiento conservador
+590,56.0,Masculino,No,Adecuado,Sí,10.0,G4 (grave),2 Regular,Diálisis peritoneal
+591,70.0,Femenino,Sí,Adecuado,No,14.0,G4 (grave),1 Mala,Diálisis peritoneal
+592,54.0,Femenino,No,Adecuado,No,,G3 (moderada),3 Buena,Diálisis peritoneal
+593,71.0,Femenino,No,Insuficiente,No,10.0,G3 (moderada),3 Buena,Hemodiálisis
+594,57.0,Masculino,Sí,Adecuado,No,9.0,G4 (grave),1 Mala,Trasplante
+595,58.0,Femenino,No,Adecuado,Sí,11.0,G4 (grave),1 Mala,Trasplante
+596,50.0,Femenino,No,Adecuado,No,11.0,G3 (moderada),1 Mala,Trasplante
+597,34.0,Femenino,Sí,Adecuado,No,7.0,G4 (grave),1 Mala,Diálisis peritoneal
+598,45.0,Femenino,No,Adecuado,No,10.0,G4 (grave),3 Buena,Trasplante
+599,75.0,Masculino,Sí,Adecuado,No,5.0,G5 (falla renal),3 Buena,Hemodiálisis
+600,71.0,Femenino,Sí,Adecuado,Sí,8.0,G3 (moderada),2 Regular,Diálisis peritoneal

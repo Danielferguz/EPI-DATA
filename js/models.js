@@ -1,6 +1,6 @@
 // Motores de estimación: MCO, MLG (logística, Poisson), Cox (Efron), Kaplan-Meier, log-rank, GEE y modelo lineal mixto.
-import { crossW, crossWv, symInv, mv, dot, logdet, zeros, sub, quadForm } from './linalg.js?v=2026.10.16-2';
-import { lgamma, qt, qnorm, p2t, p2z, pchisqU, pfU } from './dist.js?v=2026.10.16-2';
+import { crossW, crossWv, symInv, mv, dot, logdet, zeros, sub, quadForm } from './linalg.js?v=2026.10.26-1';
+import { lgamma, qt, qnorm, p2t, p2z, pchisqU, pfU } from './dist.js?v=2026.10.26-1';
 
 const sum = a => { let s = 0; for (const v of a) s += v; return s; };
 
@@ -286,10 +286,11 @@ export function fitLMM(X, y, cluster) {
 }
 
 // ---------------- utilidades comunes ----------------
-function finish(f) { f.se = f.V.map((r, j) => Math.sqrt(r[j])); f.stat = Array.from(f.beta, (b, j) => b / f.se[j]); f.p = f.stat.map(z => (isFinite(f.df) ? p2t(z, f.df) : p2z(z))); return f; }
+export function finish(f) { f.se = f.V.map((r, j) => Math.sqrt(r[j])); f.stat = Array.from(f.beta, (b, j) => b / f.se[j]); f.p = f.stat.map(z => (isFinite(f.df) ? p2t(z, f.df) : p2z(z))); return f; }
 export function ciOf(f, j, level = 0.95) { const q = isFinite(f.df) ? qt(1 - (1 - level) / 2, f.df) : qnorm(1 - (1 - level) / 2); return [f.beta[j] - q * f.se[j], f.beta[j] + q * f.se[j]]; }
 // prueba de Wald conjunta para un término (varias columnas); F si el modelo tiene gl residuales
 export function waldTerm(f, idx) {
+  if (f.waldAll) return f.waldAll(idx);
   const b = idx.map(j => f.beta[j]), Vi = symInv(sub(f.V, idx)); if (!Vi) return { stat: NaN, df: idx.length, p: NaN };
   const w = quadForm(b, Vi);
   return isFinite(f.df) ? { stat: w / idx.length, df: idx.length, df2: f.df, p: pfU(w / idx.length, idx.length, f.df), F: true } : { stat: w, df: idx.length, p: pchisqU(w, idx.length) };

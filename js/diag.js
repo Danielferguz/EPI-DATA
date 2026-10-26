@@ -1,10 +1,10 @@
 // Evaluación de supuestos: colinealidad (GVIF), normalidad y homocedasticidad de residuos, especificación,
-// bondad de ajuste (Hosmer-Lemeshow), discriminación (AUC), linealidad del logit (Box-Tidwell), riesgos proporcionales.
-import { fitOLS, fitGLM, coxZph, concordance, waldTerm } from './models.js?v=2026.10.16-2';
-import { shapiro } from './tests.js?v=2026.10.16-2';
-import { logdet, sub } from './linalg.js?v=2026.10.16-2';
-import { pchisqU, pfU, qnorm } from './dist.js?v=2026.10.16-2';
-import { auc } from './missing.js?v=2026.10.16-2';
+// linealidad en la escala del enlace (Box-Tidwell), sobredispersión y ceros en conteos, odds proporcionales, riesgos proporcionales.
+import { fitOLS, fitGLM, coxZph, waldTerm } from './models.js?v=2026.10.26-1';
+import { shapiro } from './tests.js?v=2026.10.26-1';
+import { logdet, sub } from './linalg.js?v=2026.10.26-1';
+import { pchisqU, pfU, qnorm } from './dist.js?v=2026.10.26-1';
+import { fitCount, vuong, lrtAlpha, ordinalCutpoints } from './models2.js?v=2026.10.26-1';
 
 // GVIF por término (Fox y Monette 1992); con 1 gl equivale al VIF clásico
 export function gvif(D) {
@@ -32,24 +32,6 @@ export function reset(X, y, fitted) {
   catch { return { stat: NaN, p: NaN }; }
 }
 // Hosmer-Lemeshow con g grupos de riesgo
-export function hosmerLemeshow(y, p, g = 10) {
-  const idx = Array.from(p.keys()).sort((a, b) => p[a] - p[b]), n = idx.length, groups = [];
-  for (let k = 0; k < g; k++) { const s = idx.slice(Math.round(k * n / g), Math.round((k + 1) * n / g)); if (s.length) groups.push(s); }
-  let stat = 0; const rows = groups.map(s => { const o = s.reduce((a, i) => a + y[i], 0), e = s.reduce((a, i) => a + p[i], 0), m = s.length; if (e > 0 && e < m) stat += (o - e) ** 2 / (e * (1 - e / m)); return { n: m, obs: o, exp: e, pobs: o / m, pexp: e / m }; });
-  return { stat, df: groups.length - 2, p: pchisqU(stat, groups.length - 2), rows };
-}
-// AUC con IC de Hanley-McNeil
-export function aucCI(score, y) {
-  const A = auc(score, y), n1 = y.reduce((a, b) => a + b, 0), n0 = y.length - n1, q1 = A / (2 - A), q2 = 2 * A * A / (1 + A);
-  const se = Math.sqrt((A * (1 - A) + (n1 - 1) * (q1 - A * A) + (n0 - 1) * (q2 - A * A)) / (n1 * n0)), z = qnorm(0.975);
-  return { auc: A, lo: Math.max(0, A - z * se), hi: Math.min(1, A + z * se) };
-}
-export function rocPoints(score, y) {
-  const idx = Array.from(score.keys()).sort((a, b) => score[b] - score[a]), P = y.reduce((a, b) => a + b, 0), N = y.length - P, pts = [[0, 0]];
-  let tp = 0, fp = 0;
-  for (let k = 0; k < idx.length;) { let j = k; while (j < idx.length && score[idx[j]] === score[idx[k]]) { if (y[idx[j]]) tp++; else fp++; j++; } pts.push([fp / N, tp / P]); k = j; }
-  return pts;
-}
 // Box-Tidwell: añade x·ln(x) para cada predictor cuantitativo positivo y prueba su coeficiente
 export function boxTidwell(D, y, family, numVars) {
   return numVars.map(v => {
@@ -104,18 +86,77 @@ export function assumptions(spec, R) {
     extra.bt = boxTidwell(D, y, spec.type === 'logistic' ? 'binomial' : 'poisson', spec.numVars);
     extra.bt.forEach(b => out.push(chk(`Linealidad en la escala del enlace: ${b.v} (Box-Tidwell)`, !(b.p < 0.05), `${pv(b.p)}`, b.p < 0.05 ? 'Relación no lineal: categorice o use splines.' : 'Lineal en el logaritmo.')));
     if (spec.type === 'logistic') {
-      const hl = hosmerLemeshow(y, fit.fitted), a = aucCI(fit.fitted, y);
-      out.push(chk('Calibración (Hosmer-Lemeshow, 10 grupos)', hl.p >= 0.05, `χ² = ${hl.stat.toFixed(2)}, gl = ${hl.df}; ${pv(hl.p)}`, hl.p >= 0.05 ? 'Buen ajuste.' : 'Mala calibración: revise especificación.'));
-      out.push(chk('Discriminación (AUC-ROC)', a.auc >= 0.7, `${a.auc.toFixed(3)} (IC 95%: ${a.lo.toFixed(3)}–${a.hi.toFixed(3)})`, a.auc >= 0.8 ? 'Discriminación buena.' : a.auc >= 0.7 ? 'Discriminación aceptable.' : 'Discriminación pobre (relevante en modelos predictivos, no en explicativos).'));
       const prev = ev / n;
       if (prev > 0.1) out.push(chk('Prevalencia del desenlace', false, `${(100 * prev).toFixed(1)} %`, 'Desenlace frecuente (> 10 %): el OR sobrestima la razón de prevalencias; considere Poisson con varianza robusta.'));
-      extra.hl = hl; extra.roc = rocPoints(fit.fitted, y); extra.auc = a;
     } else {
       const over = fit.fitted.filter(m => m > 1).length, isBin = y.every(v => v === 0 || v === 1);
       if (isBin) out.push(chk('Probabilidades predichas ≤ 1', over === 0, `${over} predicciones > 1`, over ? 'Algunas predicciones superan 1 (frecuente con Poisson): no afecta la RP, pero no use el modelo para predecir.' : 'Todas las predicciones son válidas.'));
       out.push(chk('Varianza robusta (sandwich HC0)', !!fit.robust, fit.robust ? 'sí' : 'no', 'La varianza robusta corrige la sobreestimación de la varianza de Poisson con desenlaces binarios (Zou 2004; Barros y Hirakata 2003).'));
       if (!isBin) { const disp = fit.pres.reduce((a, r) => a + r * r, 0) / (n - k - 1); out.push(chk('Sobredispersión (χ² de Pearson / gl)', disp < 1.5, disp.toFixed(2), disp < 1.5 ? 'Sin sobredispersión relevante.' : 'Sobredispersión: la varianza robusta la corrige; considere binomial negativa.')); }
     }
+  }
+
+  const nz = y => Array.from(y).filter(v => v === 0).length;
+  if (spec.type === 'count' || spec.type === 'nb' || spec.type === 'zip' || spec.type === 'zinb') {
+    const isNB = spec.type === 'nb' || spec.type === 'zinb', zi = spec.type === 'zip' || spec.type === 'zinb';
+    out.push(chk('Desenlace: conteo entero ≥ 0', true, `media ${(y.reduce((a, b) => a + b, 0) / n).toFixed(2)}; varianza ${(y.reduce((a, b) => a + b * b, 0) / n - (y.reduce((a, b) => a + b, 0) / n) ** 2).toFixed(2)}`, 'En un conteo Poisson la media y la varianza son iguales; varianza ≫ media sugiere sobredispersión.'));
+    const base = zi ? fitCount(D.X, y, { nb: isNB, offset: R.off }) : null;
+    if (spec.type === 'count') {
+      const disp = fit.pres.reduce((a, r) => a + r * r, 0) / (n - k - 1), z0 = nz(y), e0 = fit.fitted.reduce((a, m) => a + Math.exp(-m), 0), nbf = (() => { try { return fitCount(D.X, y, { nb: true, offset: R.off }); } catch { return null; } })(), lr = nbf ? lrtAlpha(nbf, fit) : { lr: 0, p: 1 };
+      out.push(chk('Sobredispersión (χ² de Pearson / gl)', disp < 1.5, disp.toFixed(2), disp < 1.5 ? 'Sin sobredispersión relevante: Poisson es adecuada.' : 'Sobredispersión: los EE de Poisson son demasiado pequeños. Use binomial negativa (o EE robustos).'));
+      out.push(chk('Sobredispersión (LRT: α = 0, binomial negativa vs Poisson)', lr.p >= 0.05, `χ² = ${lr.lr.toFixed(2)}; ${pv(lr.p)}; α = ${nbf ? nbf.alpha.toFixed(3) : '≈ 0'}`, lr.p >= 0.05 ? 'No hay evidencia de sobredispersión.' : 'Hay sobredispersión: prefiera binomial negativa.'));
+      out.push(chk('Exceso de ceros (observados vs esperados por Poisson)', z0 <= 1.3 * e0 + 2, `${z0} observados / ${e0.toFixed(1)} esperados`, z0 <= 1.3 * e0 + 2 ? 'Los ceros observados son compatibles con el modelo.' : 'Hay más ceros de los esperados: considere un modelo con ceros inflados (ZIP/ZINB) o binomial negativa.'));
+      extra.zeros = { obs: z0, exp: e0 };
+    } else {
+      const lrp = isNB && !zi ? lrtAlpha(fit, fitGLM(D.X, y, 'poisson', { offset: R.off })) : null;
+      if (isNB) out.push(chk('Parámetro de dispersión α', fit.alpha > 0.01, `${fit.alpha.toFixed(3)} (EE ${fit.alphaSE.toFixed(3)})`, 'α → 0 equivale a Poisson; α grande indica mucha sobredispersión.'));
+      if (lrp) out.push(chk('Binomial negativa vs Poisson (LRT de α)', lrp.p < 0.05, `χ² = ${lrp.lr.toFixed(2)}; ${pv(lrp.p)}`, lrp.p < 0.05 ? 'La binomial negativa ajusta mejor que Poisson.' : 'Poisson sería suficiente (más simple).'));
+      out.push(chk('Ceros observados vs esperados por el modelo', Math.abs(fit.zeroObs - fit.zeroExp) <= 0.25 * fit.zeroExp + 3, `${fit.zeroObs} observados / ${fit.zeroExp.toFixed(1)} esperados`, 'Si difieren mucho, revise la especificación o la parte de ceros.'));
+      if (zi) {
+        const V = vuong(fit.lli, base.lli);
+        out.push(chk(`Vuong: ${spec.type.toUpperCase()} vs ${isNB ? 'binomial negativa' : 'Poisson'} sin inflar`, V.z > 1.96, `z = ${V.z.toFixed(2)}; ${pv(V.p)}`, V.z > 1.96 ? 'La inflación de ceros mejora el ajuste.' : V.z < -1.96 ? 'El modelo sin inflar ajusta mejor.' : 'No concluyente: prefiera el modelo más simple.'));
+        out.push(chk('Convergencia y parte de ceros identificable', fit.conv && fit.zero.se.every(s => isFinite(s) && s < 10), fit.conv ? 'convergió' : 'sin convergencia', 'EE enormes en la parte de ceros indican que no está identificada (pocos ceros estructurales o covariables redundantes); acorte las covariables de la parte de ceros.'));
+        extra.zero = true;
+      }
+      extra.base = base;
+    }
+  }
+  if (spec.type === 'gamma' || spec.type === 'hgamma') {
+    out.push(chk('Desenlace estrictamente positivo (parte Gamma)', true, spec.type === 'hgamma' ? `${fit.nPos} positivos de ${n} (${(100 * (n - fit.nPos) / n).toFixed(1)} % ceros)` : `n = ${n}`, spec.type === 'hgamma' ? 'La parte logística modela P(Y > 0) y la parte Gamma la media entre los positivos.' : 'Gamma exige y > 0; si hay ceros use hurdle-Gamma.'));
+    out.push(chk('Dispersión φ (CV de la distribución)', true, `φ = ${fit.phi.toFixed(3)}; CV ≈ ${Math.sqrt(fit.phi).toFixed(2)}`, 'Gamma supone que la desviación típica es proporcional a la media (CV constante).'));
+    const rs = Array.from(fit.pres), skew = rs.reduce((a, r) => a + r ** 3, 0) / rs.length / (rs.reduce((a, r) => a + r * r, 0) / rs.length) ** 1.5;
+    out.push(chk('Residuos de Pearson sin asimetría extrema', Math.abs(skew) < 2, `asimetría = ${skew.toFixed(2)}`, 'Una cola larga de residuos sugiere un enlace o una familia inadecuados (pruebe log-normal o inversa gaussiana).'));
+    const eff = spec.type === 'hgamma' ? fit.nPos : n;
+    out.push(chk('Tamaño muestral (n por parámetro)', eff / (k + 1) >= 10, `${(eff / (k + 1)).toFixed(1)}`, eff / (k + 1) >= 10 ? '≥ 10 observaciones por parámetro.' : 'Pocas observaciones por parámetro: riesgo de sobreajuste.'));
+    if (spec.type === 'hgamma') {
+      out.push(chk('Convergencia de la parte logística', fit.zero.se.every(s => isFinite(s) && s < 10), `máx. EE = ${Math.max(...fit.zero.se).toFixed(2)}`, 'EE muy grandes indican separación (una categoría sin ceros o sin positivos).'));
+      extra.zero = true;
+    }
+  }
+  if (spec.type === 'ordinal') {
+    const mn = Math.min(...fit.counts);
+    out.push(chk('Pacientes por categoría del desenlace', mn >= 10, fit.counts.join(' / '), mn >= 10 ? 'Todas las categorías tienen ≥ 10 pacientes.' : 'Alguna categoría tiene < 10 pacientes: agrúpela con la vecina.'));
+    const cp = ordinalCutpoints(D.X, y, fit.K), pr = D.terms.map(t => t.idx.map(j => {
+      const bs = cp.map(c => c.beta?.[j]), ses = cp.map(c => c.se?.[j]); if (bs.some(b => b == null)) return { t: t.name, dev: NaN };
+      return { t: t.name, dev: Math.max(...bs.map((b, c) => Math.abs(b - fit.beta[j]) / ses[c])) };
+    })).flat();
+    const bad = pr.filter(r => r.dev > 2.5);
+    out.push(chk('Odds proporcionales (OR por punto de corte)', bad.length === 0, bad.length ? `desviación en: ${[...new Set(bad.map(b => b.t))].join(', ')}` : 'coherente', bad.length ? 'El OR de esos términos cambia entre los puntos de corte: considere regresión multinomial, un modelo de odds proporcionales parciales o dicotomizar.' : 'Los OR de los K−1 modelos logísticos acumulados son parecidos al OR común. Revise la tabla de abajo.'));
+    out.push(chk('Convergencia', fit.conv, fit.conv ? 'convergió' : 'sin convergencia', ''));
+    extra.cut = cp;
+  }
+  if (spec.type === 'multinom') {
+    const mn = Math.min(...fit.counts), epv = mn / k, big = fit.cats.some(c => Array.from(c.beta).some(b => Math.abs(b) > 15));
+    out.push(chk('Pacientes por categoría del desenlace', mn >= 10, fit.counts.join(' / '), 'La categoría más pequeña limita la precisión de todos los contrastes.'));
+    out.push(chk('Eventos por parámetro (categoría más pequeña)', epv >= 10, epv.toFixed(1), epv >= 10 ? 'EPV ≥ 10.' : 'EPV < 10: coeficientes inestables; reduzca covariables o agrupe categorías.'));
+    out.push(chk('Convergencia / separación', fit.conv && !big, fit.conv && !big ? 'convergió' : 'posible separación', 'Coeficientes enormes indican celdas vacías: agrupe categorías.'));
+    out.push(chk('Independencia de alternativas irrelevantes (IIA)', true, 'supuesto del modelo', 'Las razones entre dos categorías no deben depender de si existen otras categorías; es razonable si las categorías son distintas entre sí.'));
+  }
+  if (spec.type === 'glmm') {
+    out.push(chk('Número de conglomerados', fit.nclust >= 30, `${fit.nclust} (tamaño ${fit.sizeMin}–${fit.sizeMax})`, fit.nclust >= 30 ? 'Suficiente para estimar la varianza entre conglomerados.' : 'Pocos conglomerados (< 30): σ² y los EE son poco fiables; considere efectos fijos o GEE.'));
+    out.push(chk('Efecto aleatorio (LRT vs modelo sin conglomerado)', fit.lrtP < 0.05, `σ² = ${fit.tau2.toFixed(3)}${isFinite(fit.icc) ? `; CCI = ${fit.icc.toFixed(3)}` : ''}; MOR = ${fit.mor.toFixed(2)}; ${pv(fit.lrtP)}`, fit.lrtP < 0.05 ? 'Hay correlación dentro de los conglomerados: el modelo multinivel es pertinente.' : 'Variación entre conglomerados no significativa.'));
+    out.push(chk('Convergencia', fit.conv, fit.conv ? 'convergió (cuadratura adaptativa de 15 puntos)' : 'sin convergencia', ''));
+    if (spec.family === 'binomial') { const ev = y.reduce((a, b) => a + b, 0), m = Math.min(ev, n - ev) / k; out.push(chk('Eventos por parámetro', m >= 10, m.toFixed(1), '')); }
   }
   if (spec.type === 'cox') {
     const ev = R.status.reduce((a, b) => a + b, 0), epv = ev / k;
@@ -124,9 +165,7 @@ export function assumptions(spec, R) {
     const perTerm = D.terms.map(t => ({ term: t.name, ...z.term(t.idx) }));
     perTerm.forEach(t => out.push(chk(`Riesgos proporcionales: ${t.term} (Schoenfeld)`, t.p >= 0.05, `χ² = ${t.chisq.toFixed(2)}, gl = ${t.df}; ${pv(t.p)}`, t.p >= 0.05 ? 'Supuesto razonable.' : 'Violación de RP: estratifique, añada interacción con el tiempo o reporte HR por periodos.')));
     out.push(chk('Riesgos proporcionales: global', z.global.p >= 0.05, `χ² = ${z.global.chisq.toFixed(2)}, gl = ${z.global.df}; ${pv(z.global.p)}`, ''));
-    const C = concordance(fit.eta, R.time, R.status);
-    if (isFinite(C)) out.push(chk('Discriminación (C de Harrell)', C >= 0.7, C.toFixed(3), C >= 0.7 ? 'Aceptable o mejor.' : 'Discriminación limitada.'));
-    extra.zph = z; extra.C = C;
+    extra.zph = z;
   }
   if (spec.type === 'gee') {
     out.push(chk('Número de conglomerados', fit.nclust >= 40, `${fit.nclust}`, fit.nclust >= 40 ? 'Suficiente para el EE sándwich.' : 'Pocos conglomerados (< 40): el EE sándwich subestima la varianza; interprete con cautela.'));

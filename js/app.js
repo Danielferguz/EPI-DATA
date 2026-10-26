@@ -1,17 +1,19 @@
-import { readFile, download, toCSV } from './io.js?v=2026.10.16-2';
-import { inferMeta, typedData, NA_DEFAULT, isMiss, missCount, levelsOf, completeRows } from './data.js?v=2026.10.16-2';
-import { runAnalysis, fitModel, fitPooled, termsOf, modelVars, measureOf, fitStats, coefCI, TYPES } from './analysis.js?v=2026.10.16-2';
-import { assumptions, lowess } from './diag.js?v=2026.10.16-2';
-import { missingSummary, patterns, littleMCAR, compareByMissing, missingnessModel, mice, singleImpute, METHODS, methodsFor, defaultMethod } from './missing.js?v=2026.10.16-2';
-import { purposeful, backward, changeInEstimate, effectModification } from './select.js?v=2026.10.16-2';
-import { km, logrank } from './models.js?v=2026.10.16-2';
-import { forestTable, scatterPlot, qqPlot, rocPlot, calibPlot, schoenfeldPlot, kmPlot, missBarPlot, patternPlot, tracePlot, stripPlot, catImpPlot, tippingPlot, profilePlot, spaghettiPlot, densityPlot, vifPlot, leveragePlot, binnedResidPlot, missByGroupPlot } from './plots.js?v=2026.10.16-2';
-import { figWrap, bindFigs } from './figs.js?v=2026.10.16-2';
-import { table1, table1HTML, resultsMatrix, matrixHTML, matrixCSV, wordDoc, methodsText } from './report.js?v=2026.10.16-2';
-import { mean, sd, quantile, chisqTest } from './tests.js?v=2026.10.16-2';
-import { qt, pchisqU } from './dist.js?v=2026.10.16-2';
-import { interpretExposure } from './interp.js?v=2026.10.16-2';
-import { HELP_HTML } from './help.js?v=2026.10.16-2';
+import { readFile, download, toCSV } from './io.js?v=2026.10.26-1';
+import { inferMeta, typedData, NA_DEFAULT, isMiss, missCount, levelsOf, completeRows } from './data.js?v=2026.10.26-1';
+import { runAnalysis, fitModel, fitPooled, termsOf, modelVars, measureOf, fitStats, coefCI, TYPES, outLevels } from './analysis.js?v=2026.10.26-1';
+import { assumptions, lowess } from './diag.js?v=2026.10.26-1';
+import { missingSummary, patterns, littleMCAR, compareByMissing, missingnessModel, mice, singleImpute, METHODS, methodsFor, defaultMethod } from './missing.js?v=2026.10.26-1';
+import { purposeful, changeInEstimate, effectModification } from './select.js?v=2026.10.26-1';
+import { km, logrank } from './models.js?v=2026.10.26-1';
+import { ordinalCutpoints } from './models2.js?v=2026.10.26-1';
+import { forestTable, scatterPlot, qqPlot, schoenfeldPlot, kmPlot, missBarPlot, patternPlot, tracePlot, stripPlot, catImpPlot, tippingPlot, profilePlot, spaghettiPlot, densityPlot, vifPlot, leveragePlot, binnedResidPlot, missByGroupPlot } from './plots.js?v=2026.10.26-1';
+import { figWrap, bindFigs } from './figs.js?v=2026.10.26-1';
+import { table1, table1HTML, resultsMatrix, matrixHTML, matrixCSV, wordDoc, methodsText } from './report.js?v=2026.10.26-1';
+import { mean, sd, quantile, chisqTest } from './tests.js?v=2026.10.26-1';
+import { qt, pchisqU } from './dist.js?v=2026.10.26-1';
+import { qmapHTML } from './qmap.js?v=2026.10.26-1';
+import { interpretExposure } from './interp.js?v=2026.10.26-1';
+import { HELP_HTML } from './help.js?v=2026.10.26-1';
 
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -24,6 +26,7 @@ const howto = (a, b, c, t = ['Qué se ve', 'Para qué', 'Cómo interpretar']) =>
 const card = (title, body) => `<div class="card"><h2>${title}</h2>${body}</div>`;
 const tick = () => new Promise(r => setTimeout(r, 20));
 
+$('#qmap').innerHTML = qmapHTML('data');
 // ---------------- ejemplos de nefrología (datos simulados) ----------------
 const EXAMPLES = [
   { file: 'hemodialisis_depresion.csv', title: 'Hemodiálisis · depresión', design: 'Transversal · 260 pacientes', use: 'Poisson robusta (RP), logística o lineal (PHQ-9)',
@@ -44,11 +47,31 @@ const EXAMPLES = [
   { file: 'dialisis_peritonitis.csv', title: 'Diálisis peritoneal · peritonitis', design: 'Cohorte · 300 pacientes · persona-tiempo', use: 'Poisson robusta con offset (razón de tasas)',
     types: { 'Episodios de peritonitis': 'num' }, meta: { 'Programa de entrenamiento': { ref: 'Convencional' }, Diabetes: { ref: 'No' } },
     spec: { objective: 'causal', type: 'poisson', measureLabel: 'RTI', y: 'Episodios de peritonitis', offset: 'Tiempo en diálisis peritoneal (años)', exposure: 'Programa de entrenamiento', covs: ['Edad', 'Diabetes', 'Albúmina (g/dL)'] } },
+  { file: 'dialisis_peritonitis.csv', title: 'Diálisis peritoneal · peritonitis (conteos)', design: 'Cohorte · 300 pacientes · persona-tiempo', use: 'Poisson (varianza de Poisson) y binomial negativa; compare ambas y revise la sobredispersión',
+    types: { 'Episodios de peritonitis': 'num' }, meta: { 'Programa de entrenamiento': { ref: 'Convencional' }, Diabetes: { ref: 'No' } },
+    spec: { objective: 'causal', type: 'nb', y: 'Episodios de peritonitis', offset: 'Tiempo en diálisis peritoneal (años)', exposure: 'Programa de entrenamiento', covs: ['Edad', 'Diabetes', 'Albúmina (g/dL)'] } },
+  { file: 'erc_utilizacion.csv', title: 'ERC · consultas de urgencias (exceso de ceros)', design: 'Cohorte · 500 pacientes · persona-tiempo', use: 'Poisson inflada en ceros (ZIP): conteo + ceros estructurales',
+    types: { 'Consultas de urgencias': 'num', 'Ingresos hospitalarios': 'num' }, meta: { Diabetes: { ref: 'No' }, 'Programa de educación en ERC': { ref: 'No' }, Sexo: { ref: 'Masculino' } },
+    spec: { objective: 'causal', type: 'zip', y: 'Consultas de urgencias', offset: 'Seguimiento (años)', exposure: 'Programa de educación en ERC', covs: ['Edad', 'Diabetes', 'TFGe (mL/min/1.73 m²)'] } },
+  { file: 'erc_utilizacion.csv', title: 'ERC · ingresos hospitalarios (sobredispersión + ceros)', design: 'Misma base · 500 pacientes', use: 'Binomial negativa inflada en ceros (ZINB)',
+    types: { 'Consultas de urgencias': 'num', 'Ingresos hospitalarios': 'num' }, meta: { Diabetes: { ref: 'No' }, 'Programa de educación en ERC': { ref: 'No' }, Sexo: { ref: 'Masculino' } },
+    spec: { objective: 'causal', type: 'zinb', y: 'Ingresos hospitalarios', offset: 'Seguimiento (años)', exposure: 'Programa de educación en ERC', covs: ['Edad', 'Diabetes', 'TFGe (mL/min/1.73 m²)'] } },
+  { file: 'erc_utilizacion.csv', title: 'ERC · gasto en salud (continuo positivo con ceros)', design: 'Misma base · 500 pacientes', use: 'Hurdle-Gamma (¿gasta algo? + cuánto) o Gamma en «Estancia de la primera hospitalización»',
+    types: { 'Consultas de urgencias': 'num', 'Ingresos hospitalarios': 'num' }, meta: { Diabetes: { ref: 'No' }, 'Programa de educación en ERC': { ref: 'No' }, Sexo: { ref: 'Masculino' } },
+    spec: { objective: 'causal', type: 'hgamma', y: 'Gasto en salud (USD/año)', exposure: 'Programa de educación en ERC', covs: ['Edad', 'Diabetes', 'TFGe (mL/min/1.73 m²)'] } },
+  { file: 'erc_categoricas.csv', title: 'ERC · estadio de la enfermedad (ordinal)', design: 'Transversal · 600 pacientes', use: 'Regresión ordinal (odds proporcionales); también «Calidad de vida» (reordene las categorías)',
+    meta: { Diabetes: { ref: 'No' }, 'Apoyo familiar': { ref: 'Adecuado' }, 'Albuminuria alta (≥ 300 mg/g)': { ref: 'No' }, Sexo: { ref: 'Masculino' } },
+    spec: { objective: 'asociacion', type: 'ordinal', y: 'Estadio de ERC', exposure: 'Diabetes', covs: ['Edad', 'Sexo', 'Albuminuria alta (≥ 300 mg/g)'] } },
+  { file: 'erc_categoricas.csv', title: 'ERC · modalidad de tratamiento elegida (nominal)', design: 'Transversal · 600 pacientes', use: 'Regresión multinomial: cada modalidad frente a la referencia',
+    meta: { Diabetes: { ref: 'No' }, 'Apoyo familiar': { ref: 'Adecuado' }, 'Albuminuria alta (≥ 300 mg/g)': { ref: 'No' }, Sexo: { ref: 'Masculino' } },
+    spec: { objective: 'asociacion', type: 'multinom', y: 'Modalidad elegida', yRef: 'Hemodiálisis', yFocus: 'Trasplante', exposure: 'Apoyo familiar', covs: ['Edad', 'Diabetes', 'Años de estudio'] } },
+  { file: 'centros_dialisis.csv', title: 'Centros de diálisis · infección (multinivel)', design: '893 pacientes en 30 centros', use: 'Logística o Poisson con intercepto aleatorio por centro (CCI, MOR); Kt/V con el modelo mixto lineal',
+    types: { 'Episodios de infección': 'num' }, meta: { 'Hospitalización por infección': { event: 'Sí' }, 'Catéter venoso central': { ref: 'No' }, Diabetes: { ref: 'No' }, 'Tipo de centro': { ref: 'Público' }, Sexo: { ref: 'Masculino' } },
+    spec: { objective: 'causal', type: 'glmm', family: 'binomial', y: 'Hospitalización por infección', id: 'Centro', exposure: 'Catéter venoso central', covs: ['Edad', 'Diabetes', 'Albúmina (g/dL)', 'Tipo de centro'] } },
 ];
 const OBJECTIVES = {
   causal: { t: 'Causal: efecto de una intervención o exposición', d: '¿Cuál es el efecto del catéter vs la fístula sobre la mortalidad? Se ajusta por confusores elegidos a priori.' },
   asociacion: { t: 'Explicativo: factores asociados', d: '¿Qué características se asocian con depresión en hemodiálisis? Describe asociaciones, sin afirmar causalidad.' },
-  prediccion: { t: 'Predictivo: estimar el riesgo individual', d: '¿Quién tendrá lesión renal aguda? Importa la discriminación y la calibración, no los coeficientes.' },
 };
 const SOURCES = {
   cc: { t: 'Casos completos', d: 'Solo pacientes con todos los datos del modelo. Insesgado si la pérdida es MCAR; pierde potencia.' },
@@ -94,6 +117,11 @@ $$('[data-ex]').forEach(b => b.addEventListener('click', async () => {
   $$('[data-ex]').forEach(e => e.classList.toggle('active', e === b));
   renderVarTable(); renderMissing(); renderQuestion();
 }));
+$('#db-dl').addEventListener('click', () => {
+  if (!state.ds) return; const cols = Object.keys(state.meta).filter(c => state.meta[c].type !== 'skip');
+  const rows = Array.from({ length: state.ds.n }, (_, i) => Object.fromEntries(cols.map(c => [c, isMiss(state.ds.cols[c][i]) ? '' : state.ds.cols[c][i]])));
+  download(`${state.fname || 'datos'}_limpia.csv`, toCSV(rows, cols), 'text/csv');
+});
 $('#file').addEventListener('change', e => e.target.files[0] && loadFile(e.target.files[0]));
 const drop = $('#drop');
 ['dragover', 'dragenter'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('over'); }));
@@ -200,7 +228,6 @@ function renderQuestion() {
   $$('input[name="obj"]').forEach(r => r.addEventListener('change', () => { state.draft = currentDraft(); state.objective = r.value; renderQuestion(); }));
   $('#obj-msg').innerHTML = state.objective === 'causal'
     ? `<p><b>Pregunta causal.</b> Indique la <b>variable de intervención</b> (la causa cuyo efecto quiere estimar) y como covariables solo los <b>confusores</b>: causas comunes de la intervención y del desenlace. Dibuje antes un diagrama causal (DAG; p. ej., en dagitty.net).</p><p>No ajuste por <b>mediadores</b> (variables en el camino entre intervención y desenlace, p. ej., la albúmina si la intervención la modifica) ni por <b>colisionadores</b> (consecuencias comunes de ambas).</p><p class="warn"><b>Falacia de la Tabla 2</b> (Westreich y Greenland 2013): en un modelo causal, solo el coeficiente de la intervención estima un efecto. Los coeficientes de los confusores <b>no</b> deben interpretarse como sus efectos, porque el modelo no está construido para ellos (sus propios confusores y mediadores son otros). Por eso, en los resultados las covariables se ocultan por defecto.</p>`
-    : state.objective === 'prediccion' ? '<p><b>Pregunta predictiva.</b> Incluya los predictores disponibles en el momento de la predicción. Los coeficientes no son efectos causales; el modelo se juzga por su discriminación (AUC/C) y calibración. Para publicar un modelo predictivo se necesita validación interna (bootstrap) o externa (TRIPOD).</p>'
     : '<p><b>Pregunta explicativa.</b> Se describen las asociaciones de cada variable con el desenlace, ajustadas por las demás. Use un lenguaje de asociación («se asoció con»), no causal. Si le interesa una variable en particular, márquela como exposición principal.</p>';
   renderSpecForm();
 }
@@ -208,31 +235,59 @@ $$('#types button').forEach(b => b.addEventListener('click', () => { state.draft
 function sel(id, label, vars, cur, { none = false, hint = '' } = {}) {
   return `<label>${label}${hint ? ` <span class="sub">${hint}</span>` : ''}<select id="${id}">${none ? opt('', '— ninguna —', !cur) : ''}${vars.map(v => opt(v, v, v === cur)).join('')}</select></label>`;
 }
-function currentDraft() { if (!$('#sp-exp')) return state.draft; const g = id => $(id)?.value || null; return { ...(state.draft || {}), y: g('#sp-y') ?? state.draft?.y, time: g('#sp-time') ?? state.draft?.time, status: g('#sp-status') ?? state.draft?.status, id: g('#sp-id') ?? state.draft?.id, tvar: g('#sp-tvar') ?? state.draft?.tvar, exposure: g('#sp-exp'), covs: checked($('#sp-covs')), robust: g('#sp-robust'), measureLabel: g('#sp-measure'), offset: g('#sp-offset'), family: g('#sp-family'), corstr: g('#sp-corstr') }; }
+function currentDraft() { if (!$('#sp-exp')) return state.draft; const g = id => $(id)?.value || null; return { ...(state.draft || {}), y: g('#sp-y') ?? state.draft?.y, time: g('#sp-time') ?? state.draft?.time, status: g('#sp-status') ?? state.draft?.status, id: g('#sp-id') ?? state.draft?.id, tvar: g('#sp-tvar') ?? state.draft?.tvar, exposure: g('#sp-exp'), covs: checked($('#sp-covs')), robust: g('#sp-robust'), measureLabel: g('#sp-measure'), offset: g('#sp-offset'), family: g('#sp-family'), corstr: g('#sp-corstr'), zeroMode: g('#sp-zmode') || 'same', zeroVars: $('#sp-zvars') ? checked($('#sp-zvars')) : null, yRef: g('#sp-yref'), yFocus: g('#sp-yfocus'), yOrder: state.type === 'ordinal' && sp0y() ? [...(state.yOrder?.[sp0y()] || [])] : null }; }
 function renderSpecForm() {
   if (!state.ds) return;
-  const t = state.type, sp = state.draft || state.spec || {}, causal = state.objective === 'causal', pred = state.objective === 'prediccion';
+  const t = state.type, sp = state.draft || state.spec || {}, causal = state.objective === 'causal';
   $$('#types button').forEach(b => b.classList.toggle('active', b.dataset.type === t));
   const num = usable('num'), cat = usable('cat'), anyv = usable('num', 'cat'), ids = usable('id', 'cat', 'num');
   let h = '<div class="spec-grid">';
-  const yC = t === 'linear' || t === 'lmm' ? num : t === 'logistic' ? cat : t === 'poisson' ? [...cat, ...num] : t === 'gee' ? [...num, ...cat] : [];
+  const cat3 = cat.filter(v => state.meta[v].levels.length > 2), isCount = ['count', 'nb', 'zip', 'zinb'].includes(t);
+  const yC = ['linear', 'lmm', 'gamma', 'hgamma'].includes(t) || isCount ? num : t === 'logistic' ? cat : t === 'poisson' ? [...cat, ...num] : t === 'gee' || t === 'glmm' ? [...num, ...cat] : ['ordinal', 'multinom'].includes(t) ? (cat3.length ? cat3 : cat) : [];
   if (t === 'cox') h += sel('sp-time', 'Tiempo de seguimiento', num, sp.time) + sel('sp-status', 'Indicador de evento (desenlace)', [...cat, ...num.filter(v => state.meta[v].nDistinct === 2)], sp.status) + '<label>Categoría que indica el evento<select id="sp-event"></select></label>';
   else h += sel('sp-y', 'Desenlace (variable dependiente)', yC, sp.y) + '<label id="sp-event-wrap">Categoría de evento<select id="sp-event"></select></label>';
-  if (t === 'gee' || t === 'lmm') h += sel('sp-id', 'Identificador del paciente', ids, sp.id ?? usable('id')[0]) + sel('sp-tvar', 'Tiempo / visita', num, sp.tvar);
-  h += sel('sp-exp', causal ? '<b>Variable de intervención</b> (causa de interés)' : pred ? 'Predictor principal (opcional)' : 'Exposición principal', anyv, sp.exposure, { none: !causal });
+  if (t === 'gee' || t === 'lmm' || t === 'glmm') h += sel('sp-id', t === 'glmm' ? 'Identificador del conglomerado (hospital, centro, paciente)' : 'Identificador del paciente', ids, sp.id ?? usable('id')[0]) + (t === 'glmm' ? '' : sel('sp-tvar', 'Tiempo / visita', num, sp.tvar));
+  h += sel('sp-exp', causal ? '<b>Variable de intervención</b> (causa de interés)' : 'Exposición principal', anyv, sp.exposure, { none: !causal });
+
+  if (isCount || t === 'gamma') h += sel('sp-offset', isCount ? 'Persona-tiempo (offset; se usa su logaritmo)' : 'Offset (opcional; se usa su logaritmo)', num, sp.offset, { none: true });
+  if (t === 'glmm') h += `<label>Tipo de desenlace<select id="sp-family">${opt('binomial', 'Binario · logit (OR condicional)', sp.family !== 'poisson')}${opt('poisson', 'Conteo · log (razón de tasas condicional)', sp.family === 'poisson')}</select></label>` + sel('sp-offset', 'Persona-tiempo (solo conteos; offset)', num, sp.offset, { none: true });
+  if (['zip', 'zinb', 'hgamma'].includes(t)) h += `<label>${t === 'hgamma' ? 'Covariables de la parte «¿es positivo?»' : 'Covariables de la parte de ceros estructurales'}<select id="sp-zmode">${opt('same', 'Las mismas que el resto del modelo', (sp.zeroMode || 'same') === 'same')}${opt('const', 'Solo el intercepto (como statsmodels por defecto)', sp.zeroMode === 'const')}${opt('custom', 'Elegir cuáles…', sp.zeroMode === 'custom')}</select></label><div class="wide" id="sp-zvars-wrap" hidden><b class="small">Variables de la parte de ceros</b><div id="sp-zvars" class="checks"></div></div>`;
+  if (t === 'ordinal') h += `<div class="wide"><b class="small">Orden de las categorías del desenlace (de menor a mayor)</b><div id="sp-yorder" class="row gap wrap mt"></div><span class="sub">El OR indica la ventaja de estar en una categoría más alta. Reordene con las flechas si el orden alfabético no es el clínico.</span></div>`;
+  if (t === 'multinom') h += '<label>Categoría de referencia del desenlace<select id="sp-yref"></select></label><label>Categoría que se muestra en el forest<select id="sp-yfocus"></select></label>';
   if (t === 'linear') h += `<label>Errores estándar<select id="sp-robust">${opt('none', 'Clásicos (MCO)', sp.robust === 'none')}${opt('HC3', 'Robustos HC3 (si hay heterocedasticidad)', sp.robust === 'HC3')}${opt('HC1', 'Robustos HC1 (Stata)', sp.robust === 'HC1')}</select></label>`;
   if (t === 'poisson') h += `<label>Medida de asociación<select id="sp-measure">${opt('RP', 'Razón de prevalencias (transversal)', sp.measureLabel === 'RP')}${opt('RR', 'Riesgo relativo (cohorte)', sp.measureLabel === 'RR')}${opt('RTI', 'Razón de tasas (conteos con persona-tiempo)', sp.measureLabel === 'RTI')}</select></label>` + sel('sp-offset', 'Persona-tiempo (offset; se usa su logaritmo)', num, sp.offset, { none: true });
   if (t === 'gee') h += `<label>Familia / enlace<select id="sp-family">${opt('gaussian', 'Gaussiana · identidad (β)', sp.family === 'gaussian')}${opt('binomial', 'Binomial · logit (OR)', sp.family === 'binomial')}${opt('poisson', 'Poisson · log (RR)', sp.family === 'poisson')}</select></label><label>Correlación de trabajo<select id="sp-corstr">${opt('exchangeable', 'Intercambiable', sp.corstr === 'exchangeable')}${opt('ar1', 'Autorregresiva AR(1)', sp.corstr === 'ar1')}${opt('independence', 'Independencia', sp.corstr === 'independence')}</select></label>`;
-  h += `<div class="wide"><b class="small">${causal ? 'Confusores (variables de ajuste elegidas por conocimiento previo / DAG)' : pred ? 'Predictores' : 'Covariables de ajuste'}</b><div id="sp-covs" class="checks"></div></div>`;
+  h += `<div class="wide"><b class="small">${causal ? 'Confusores (variables de ajuste elegidas por conocimiento previo / DAG)' : 'Covariables de ajuste'}</b><div id="sp-covs" class="checks"></div></div>`;
   h += `<div class="wide"><b class="small">Interacciones</b> <span class="sub">(¿el efecto cambia según otra variable? p. ej., Tratamiento × Mes en datos longitudinales)</span><div class="row gap wrap mt"><select id="sp-ia">${anyv.map(v => opt(v)).join('')}</select>×<select id="sp-ib">${anyv.map(v => opt(v)).join('')}</select><button id="sp-iadd" class="ghost" type="button">Añadir</button></div><div class="inter-list" id="sp-ilist"></div></div></div>`;
   $('#spec-form').innerHTML = h;
   const refreshEvent = () => {
     const v = t === 'cox' ? $('#sp-status').value : $('#sp-y').value, m = state.meta[v], wrap = $('#sp-event-wrap');
-    const show = m && m.type === 'cat'; if (wrap) wrap.hidden = !show;
+    const show = m && m.type === 'cat'; if (wrap) wrap.hidden = !show || t === 'ordinal' || t === 'multinom';
     $('#sp-event').innerHTML = show ? m.levels.map(l => opt(l, l, l === m.event)).join('') : '';
+    if (t === 'glmm' && m) $('#sp-family').value = m.type === 'cat' ? 'binomial' : 'poisson';
+    if (t === 'ordinal' && m) drawOrder(v);
+    if (t === 'multinom' && m) drawRef(v);
     if (t === 'gee' && m) { const f = $('#sp-family'); if (m.type === 'cat' && f.value === 'gaussian') f.value = 'binomial'; if (m.type === 'num' && f.value === 'binomial') f.value = 'gaussian'; }
     hint();
   };
+  const orderOf = v => { const m = state.meta[v], cur = state.yOrder?.[v]; return cur && cur.length === m.levels.length && m.levels.every(l => cur.includes(l)) ? cur : [...m.levels]; };
+  const drawOrder = v => {
+    const o = orderOf(v); state.yOrder = { ...(state.yOrder || {}), [v]: o };
+    $('#sp-yorder').innerHTML = o.map((l, k) => `<span class="chip">${k + 1}. ${esc(l)} <button type="button" data-k="${k}" data-d="-1" title="Subir">↑</button><button type="button" data-k="${k}" data-d="1" title="Bajar">↓</button></span>`).join('');
+    $$('#sp-yorder button').forEach(b => b.addEventListener('click', () => { const k = +b.dataset.k, j = k + +b.dataset.d; if (j < 0 || j >= o.length) return; [o[k], o[j]] = [o[j], o[k]]; drawOrder(v); hint(); }));
+  };
+  const drawRef = v => {
+    const m = state.meta[v], ref = $('#sp-yref').value || sp.yRef || m.ref, fo = $('#sp-yfocus').value || sp.yFocus;
+    $('#sp-yref').innerHTML = m.levels.map(l => opt(l, l, l === ref)).join('');
+    const others = m.levels.filter(l => l !== ref); $('#sp-yfocus').innerHTML = others.map(l => opt(l, l, l === (others.includes(fo) ? fo : others[0]))).join('');
+  };
+  $('#sp-yref')?.addEventListener('change', () => { drawRef($('#sp-y').value); hint(); });
+  const refreshZero = () => {
+    const wrap = $('#sp-zvars-wrap'); if (!wrap) return; wrap.hidden = $('#sp-zmode').value !== 'custom'; if (wrap.hidden) return;
+    const cand = [$('#sp-exp').value, ...checked($('#sp-covs'))].filter(Boolean), cur = $('#sp-zvars').dataset.init ? checked($('#sp-zvars')) : sp.zeroVars || cand;
+    checks($('#sp-zvars'), cand, cur.filter(v => cand.includes(v)), 'zvars'); $('#sp-zvars').dataset.init = '1';
+  };
+  $('#sp-zmode')?.addEventListener('change', refreshZero); $('#sp-exp').addEventListener('change', refreshZero); $('#sp-covs').addEventListener('change', refreshZero);
   const refreshCovs = () => {
     const excl = new Set([$('#sp-y')?.value, $('#sp-time')?.value, $('#sp-status')?.value, $('#sp-id')?.value, $('#sp-exp').value, $('#sp-offset')?.value].filter(Boolean));
     const cur = $('#sp-covs').dataset.init ? checked($('#sp-covs')) : sp.covs || [];
@@ -242,7 +297,7 @@ function renderSpecForm() {
   ['#sp-exp', '#sp-time', '#sp-id', '#sp-offset'].forEach(s => $(s)?.addEventListener('change', () => { refreshCovs(); hint(); }));
   $('#sp-event').addEventListener('change', e => { const v = t === 'cox' ? $('#sp-status').value : $('#sp-y').value; state.meta[v].event = e.target.value; hint(); });
   $('#sp-measure')?.addEventListener('change', hint);
-  refreshEvent(); refreshCovs();
+  refreshEvent(); refreshCovs(); refreshZero();
   state.inter = (state.inter || []).filter(p => p.every(v => state.meta[v]));
   const drawInter = () => { $('#sp-ilist').innerHTML = state.inter.map((p, k) => `<span>${esc(p.join(' × '))}<button data-k="${k}" title="Quitar">✕</button></span>`).join(''); $$('#sp-ilist button').forEach(b => b.addEventListener('click', () => { state.inter.splice(+b.dataset.k, 1); drawInter(); })); };
   drawInter();
@@ -268,6 +323,18 @@ function hint() {
     if ((t === 'linear' || t === 'lmm') && Math.abs(sk) > 1) msg += 'Distribución asimétrica: revise la normalidad de residuos; considere transformar (log) o errores estándar robustos. ';
     if (t === 'poisson' && ints) msg += 'Conteo: use la razón de tasas (RTI) e indique la persona-tiempo como offset si el seguimiento varía entre pacientes. ';
   }
+  const hs = {
+    count: 'Poisson supone media = varianza; si hay sobredispersión o más ceros de los esperados, el análisis de supuestos se lo indicará (use entonces binomial negativa o ZIP/ZINB). ',
+    nb: 'La binomial negativa añade un parámetro α para la sobredispersión (varianza = μ + αμ²). Si α ≈ 0, Poisson es suficiente. ',
+    zip: 'ZIP mezcla un proceso que genera ceros estructurales (parte logística) con un conteo Poisson. Úselo si hay más ceros de los que Poisson/binomial negativa explican (compruébelo con la prueba de Vuong en los supuestos). ',
+    zinb: 'ZINB añade sobredispersión al ZIP. Necesita muestras mayores (más parámetros); elija pocas covariables en la parte de ceros. ',
+    gamma: 'Gamma con enlace log modela la media de un desenlace positivo y asimétrico: el efecto es una razón de medias (multiplicativo). No admite ceros. ',
+    hgamma: 'Hurdle-Gamma: una logística decide si el valor es &gt; 0 y una Gamma modela el tamaño entre los positivos. Los efectos de ambas partes se reportan por separado. ',
+    ordinal: 'Un único OR resume el efecto sobre cualquier punto de corte de la escala ordenada (odds proporcionales). Compruebe el orden de las categorías abajo. ',
+    multinom: 'Un conjunto de coeficientes por cada categoría frente a la referencia. Úsela cuando las categorías no tienen orden o no se cumplen las odds proporcionales. ',
+    glmm: 'Intercepto aleatorio por conglomerado (hospital, centro, paciente): estima efectos condicionales y la variación entre conglomerados (CCI, MOR). Se ajusta por máxima verosimilitud con cuadratura adaptativa. ',
+  }[t];
+  if (hs) msg += hs;
   if (state.objective === 'causal' && !$('#sp-exp')?.value) msg += '<b>Elija la variable de intervención.</b>';
   el.innerHTML = `<p>${msg}</p>`;
 }
@@ -276,9 +343,11 @@ function checks(el, vars, chk, name) {
   el.innerHTML = `<div class="tools"><a data-all="1">todas</a><a data-all="0">ninguna</a></div>` + vars.map(v => `<label><input type="checkbox" name="${name}" value="${esc(v)}"${chk.includes(v) ? ' checked' : ''}> ${esc(v)}</label>`).join('');
   el.querySelectorAll('[data-all]').forEach(a => a.addEventListener('click', () => { el.querySelectorAll('input').forEach(i => (i.checked = a.dataset.all === '1')); el.dispatchEvent(new Event('change')); }));
 }
+const sp0y = () => $('#sp-y')?.value;
 function readSpec() {
   const t = state.type, g = id => $(id)?.value || null;
-  const sp = { type: t, objective: state.objective, y: g('#sp-y'), time: g('#sp-time'), status: g('#sp-status'), id: g('#sp-id'), tvar: g('#sp-tvar'), exposure: g('#sp-exp'), covs: checked($('#sp-covs')), inter: state.inter.map(p => [...p]), robust: g('#sp-robust') || 'none', measureLabel: g('#sp-measure'), offset: g('#sp-offset'), family: g('#sp-family'), corstr: g('#sp-corstr') };
+  const sp = { type: t, objective: state.objective, y: g('#sp-y'), time: g('#sp-time'), status: g('#sp-status'), id: g('#sp-id'), tvar: g('#sp-tvar'), exposure: g('#sp-exp'), covs: checked($('#sp-covs')), inter: state.inter.map(p => [...p]), robust: g('#sp-robust') || 'none', measureLabel: g('#sp-measure'), offset: g('#sp-offset'), family: g('#sp-family'), corstr: g('#sp-corstr'),
+    zeroMode: g('#sp-zmode') || 'same', zeroVars: $('#sp-zvars') ? checked($('#sp-zvars')) : null, yRef: g('#sp-yref'), yFocus: g('#sp-yfocus'), yOrder: t === 'ordinal' && g('#sp-y') ? [...(state.yOrder?.[g('#sp-y')] || [])] : null };
   if (t === 'cox') sp.y = null; else { sp.time = sp.status = null; }
   const ev = g('#sp-event'), ov = t === 'cox' ? sp.status : sp.y; if (ev && state.meta[ov]?.type === 'cat') state.meta[ov].event = ev;
   sp.inter.flat().forEach(v => { if (v !== sp.exposure && !sp.covs.includes(v)) sp.covs.push(v); });
@@ -287,8 +356,17 @@ function readSpec() {
   if (!sp.exposure && !sp.covs.length) throw new Error('Elija una exposición o al menos una covariable.');
   if (t !== 'cox' && !sp.y) throw new Error('Elija el desenlace.');
   if (t === 'cox' && (!sp.time || !sp.status)) throw new Error('Elija el tiempo y el indicador de evento.');
-  if ((t === 'gee' || t === 'lmm') && !sp.id) throw new Error('Elija el identificador del paciente.');
-  if ((t === 'linear' || t === 'lmm') && state.meta[sp.y].type !== 'num') throw new Error('El modelo lineal requiere un desenlace cuantitativo.');
+  if ((t === 'gee' || t === 'lmm' || t === 'glmm') && !sp.id) throw new Error('Elija el identificador del paciente.');
+  if (['linear', 'lmm', 'gamma', 'hgamma', 'count', 'nb', 'zip', 'zinb'].includes(t) && state.meta[sp.y].type !== 'num') throw new Error('El modelo lineal requiere un desenlace cuantitativo.');
+  if (['ordinal', 'multinom'].includes(t)) {
+    const m = state.meta[sp.y]; if (m.type !== 'cat' || m.levels.length < 3) throw new Error('Este modelo requiere un desenlace categórico con al menos 3 categorías.');
+    if (t === 'multinom') m.event = sp.yFocus; else m.event = sp.yOrder[sp.yOrder.length - 1];
+  }
+  if (['count', 'nb', 'zip', 'zinb'].includes(t) && Array.from(state.ds.cols[sp.y]).some(v => isFinite(v) && (v < 0 || !Number.isInteger(v)))) throw new Error('Los modelos de conteo requieren un desenlace entero ≥ 0.');
+  if (t === 'gamma' && Array.from(state.ds.cols[sp.y]).some(v => isFinite(v) && v <= 0)) throw new Error('Gamma requiere un desenlace > 0. Si hay ceros, use hurdle-Gamma.');
+  if (t === 'hgamma') { const y = Array.from(state.ds.cols[sp.y]).filter(isFinite); if (y.some(v => v < 0)) throw new Error('Hurdle-Gamma requiere un desenlace ≥ 0.'); if (!y.some(v => v === 0)) throw new Error('El desenlace no tiene ceros: use el modelo Gamma.'); }
+  if (t === 'glmm' && !sp.id) throw new Error('Elija el identificador del conglomerado.');
+  if (t === 'glmm' && sp.family === 'poisson' && state.meta[sp.y].type === 'num' && Array.from(state.ds.cols[sp.y]).some(v => isFinite(v) && (v < 0 || !Number.isInteger(v)))) throw new Error('El desenlace de conteo debe ser entero ≥ 0.');
   if (t === 'poisson' && state.meta[sp.y].type === 'num' && Array.from(state.ds.cols[sp.y]).some(v => isFinite(v) && (v < 0 || !Number.isInteger(v)))) throw new Error('Poisson requiere un desenlace binario o un conteo entero ≥ 0.');
   return sp;
 }
@@ -472,6 +550,7 @@ function renderResults() {
   const est = R.adj.est, D = R.adj.D, mi = R.mi;
   h += card('Coeficientes del modelo ajustado', `<details><summary>Ver tabla completa de coeficientes y ajuste del modelo</summary><div class="tablewrap"><table class="data"><thead><tr><th>Término</th><th class="num">β</th><th class="num">EE${spec.type === 'linear' && spec.robust !== 'none' ? ` (${spec.robust})` : spec.type === 'poisson' || spec.type === 'gee' ? ' robusto' : ''}</th><th class="num">${isFinite(est.df) || mi ? 't' : 'z'}</th><th class="num">p</th><th class="num">${M.measure} (IC 95%)</th>${mi ? '<th class="num">gl</th><th class="num">FMI</th>' : ''}</tr></thead><tbody>${D.cols.map((c, j) => { const [lo, hi] = coefCI(est, j), tr = M.exp && c.term !== '(Intercept)' ? Math.exp : v => v; return `<tr><td>${esc(c.label)}</td><td class="num">${f2(est.beta[j], 4)}</td><td class="num">${f2(est.se[j], 4)}</td><td class="num">${f2(est.stat[j])}</td><td class="num">${fp(est.p[j])}</td><td class="num">${c.term === '(Intercept)' ? '' : `${f2(tr(est.beta[j]))} (${f2(tr(lo))}–${f2(tr(hi))})`}</td>${mi ? `<td class="num">${f2(est.dfj[j], 1)}</td><td class="num">${f2(est.fmi[j], 3)}</td>` : ''}</tr>`; }).join('')}</tbody></table></div>
     <div class="kpis">${fitStats(R).map(([k, v]) => `<div class="kpi"><b>${esc(v)}</b><span>${esc(k)}</span></div>`).join('')}</div>${mi ? '<p class="notes">FMI: fracción de información perdida por los datos faltantes. gl: grados de libertad de Barnard-Rubin.</p>' : ''}</details>`);
+  h += modelExtras(R);
   if (spec.type === 'cox') h += card('Curvas de supervivencia (Kaplan-Meier)', howto('La proporción de pacientes sin el evento a lo largo del tiempo, por grupo; las marcas verticales son censuras.', 'Visualizar cuándo y cuánto difieren los grupos, sin supuestos de modelo.', 'Curvas separadas = distinta supervivencia; la prueba de log-rank compara las curvas completas. Curvas que se cruzan sugieren riesgos no proporcionales.') + '<div id="km"></div>');
   if (spec.type === 'gee' || spec.type === 'lmm') h += card('Trayectorias en el tiempo', howto('El promedio del desenlace en cada visita por grupo (con IC 95 %) y las trayectorias de cada paciente.', 'Ver si los grupos evolucionan distinto (interacción grupo × tiempo).', 'Líneas que se separan con el tiempo indican diferente velocidad de cambio. Las líneas que terminan antes son abandonos.') + '<div class="plots" id="long-plots"></div>');
   if (mi && state.mi) h += card('Sensibilidad a datos perdidos no al azar (MNAR): ajuste δ', `${howto('Se repite la imputación desplazando los valores imputados de una variable en δ (cuantitativas: en sus unidades; binarias: en log-odds).', 'Simular que los pacientes sin dato son sistemáticamente distintos de lo que predice el supuesto MAR.', 'Si el efecto de la exposición se mantiene en todo el rango plausible de δ, la conclusión es robusta. El δ en el que cambia la conclusión es el «punto de inflexión».')}
@@ -495,6 +574,29 @@ function renderResults() {
   if (spec.type === 'gee') qicTable(R);
   if (mi && state.mi && $('#d-var')) { const setDef = () => { const v = $('#d-var').value; if (!v) return; const m = state.meta[v]; const s = m.type === 'num' ? sd(Array.from(state.ds.cols[v]).filter(isFinite)) : 1; $('#d-vals').value = (m.type === 'num' ? [-1, -0.5, -0.25, 0, 0.25, 0.5, 1].map(k => +(k * s).toPrecision(3)) : [-2, -1, -0.5, 0, 0.5, 1, 2]).join(', '); }; setDef(); $('#d-var').addEventListener('change', setDef); $('#d-run').addEventListener('click', deltaRun); }
   bindFigs(out);
+}
+// tablas propias de cada modelo: parte de ceros, umbrales, todas las categorías, efectos aleatorios
+function modelExtras(R) {
+  const spec = R.spec, est = R.adj.est, mi = R.mi, f = R.adj.fit, fx = (v, d = 2) => (isFinite(v) ? (Math.abs(v) >= 100 ? v.toFixed(0) : v.toFixed(d)) : '–');
+  const coefRows = (e, cols, exp) => cols.map((c, j) => { const [lo, hi] = coefCI(e, j), tr = exp && c.term !== '(Intercept)' ? Math.exp : v => v; return `<tr><td>${esc(c.label)}</td><td class="num">${fx(e.beta[j], 4)}</td><td class="num">${fx(e.se[j], 4)}</td><td class="num">${fp(e.p[j])}</td><td class="num">${c.term === '(Intercept)' ? '' : `${fx(tr(e.beta[j]))} (${fx(tr(lo))}–${fx(tr(hi))})`}</td></tr>`; }).join('');
+  const tbl = (title, note, head, body) => card(title, `${note ? `<p class="small">${note}</p>` : ''}<div class="tablewrap"><table class="data"><thead><tr>${head.map((h, k) => `<th${k ? ' class="num"' : ''}>${h}</th>`).join('')}</tr></thead><tbody>${body}</tbody></table></div>`);
+  let h = '';
+  if (est.zero && R.adj.Dz) {
+    const hg = spec.type === 'hgamma';
+    h += tbl(hg ? 'Parte «¿es positivo?» (logística)' : 'Parte de ceros estructurales (logística)', hg ? 'Modela la probabilidad de que el desenlace sea &gt; 0. OR &gt; 1: mayor probabilidad de un valor positivo.' : 'Modela la probabilidad de ser un cero estructural (la persona no puede tener el evento). OR &gt; 1: mayor probabilidad de ser un cero estructural; el efecto sobre los conteos está en la tabla principal.', ['Término', 'β', 'EE', 'p', 'OR (IC 95%)'], coefRows(est.zero, R.adj.Dz.cols, true));
+  }
+  if (spec.type === 'ordinal' && !mi) h += tbl('Umbrales y comprobación de odds proporcionales', `Los umbrales son los puntos de corte entre categorías (escala logit). A la derecha, el OR de cada término estimado por separado en cada punto de corte (y &gt; c): si son parecidos entre sí y al OR común, el supuesto de odds proporcionales es razonable.`, ['Punto de corte', 'Umbral', 'EE', ...R.adj.D.terms.map(t => `OR ${esc(t.name)}`).slice(0, 4)], (() => {
+    const lv = outLevels(spec, state.metaX || state.meta), cp = ordinalCutpoints(R.adj.D.X, R.adj.y, lv.length);
+    return f.thresholds.map((k, c) => `<tr><td>${esc(lv.slice(0, c + 1).join(', '))} | ${esc(lv.slice(c + 1).join(', '))}</td><td class="num">${fx(k, 3)}</td><td class="num">${fx(f.thresholdSE[c], 3)}</td>${R.adj.D.terms.slice(0, 4).map(t => `<td class="num">${cp[c].beta ? t.idx.map(j => fx(Math.exp(cp[c].beta[j]))).join(' / ') : '–'}</td>`).join('')}</tr>`).join('');
+  })());
+  if (spec.type === 'multinom' && !mi) {
+    const lv = outLevels(spec, state.metaX || state.meta), D = R.adj.D;
+    h += tbl('Todas las categorías frente a la referencia', `Referencia del desenlace: «${esc(lv[0])}». Cada columna es el RRR (IC 95 %) de ese término para la categoría indicada. Prueba de Wald conjunta de cada variable sobre todas las categorías al final.`, ['Término', ...lv.slice(1).map(l => `${esc(l)} vs ${esc(lv[0])}`)],
+      D.cols.map((c, j) => (c.term === '(Intercept)' ? '' : `<tr><td>${esc(c.label)}</td>${f.cats.map(ct => { const [lo, hi] = [ct.beta[j] - 1.96 * ct.se[j], ct.beta[j] + 1.96 * ct.se[j]]; return `<td class="num">${fx(Math.exp(ct.beta[j]))} (${fx(Math.exp(lo))}–${fx(Math.exp(hi))})</td>`; }).join('')}</tr>`)).join('')
+      + D.terms.map(t => { const w = f.waldAll(t.idx); return `<tr><td><i>Wald: ${esc(t.name)}</i></td><td class="num" colspan="${lv.length - 1}">χ² = ${fx(w.stat)} (gl ${w.df}); ${fp(w.p)}</td></tr>`; }).join(''));
+  }
+  if (spec.type === 'glmm' && !mi) h += card('Efectos aleatorios', `<div class="kpis"><div class="kpi"><b>${fx(f.tau2, 3)}</b><span>σ² entre conglomerados</span></div>${isFinite(f.icc) ? `<div class="kpi"><b>${fx(f.icc, 3)}</b><span>CCI (escala latente)</span></div>` : ''}<div class="kpi"><b>${fx(f.mor)}</b><span>OR/RT mediano (MOR)</span></div><div class="kpi"><b>${f.nclust}</b><span>conglomerados (${f.sizeMin}–${f.sizeMax} por conglomerado)</span></div></div><p class="small">El <b>MOR</b> es el cociente mediano entre dos personas idénticas de conglomerados distintos elegidos al azar: ${fx(f.mor)} ⇒ ${f.mor < 1.2 ? 'la pertenencia al conglomerado importa poco' : f.mor < 2 ? 'efecto moderado del conglomerado' : 'efecto grande del conglomerado, comparable a un factor de riesgo fuerte'}.</p>`);
+  return h;
 }
 function drawCompare(show) {
   const R = state.R, C = state.Rcc, spec = R.spec, M = R.M;
@@ -522,12 +624,18 @@ const EXPLAIN = [
   [/Tamaño muestral|EPV/, 'Con pocos eventos por parámetro, los estimados son inestables y el modelo se sobreajusta.'],
   [/Convergencia|separación/, 'Si una categoría tiene 0 % o 100 % de eventos, el modelo no puede estimar su efecto (separación).'],
   [/Linealidad/, 'Las variables cuantitativas se suponen con efecto lineal en la escala del modelo; si no, categorice o use splines.'],
-  [/Calibración/, 'Concordancia entre el riesgo predicho y el observado; importa sobre todo en modelos predictivos.'],
-  [/Discriminación/, 'Capacidad de distinguir quién tendrá el evento (0.5 = azar, 0.7 aceptable, 0.8 buena).'],
   [/Prevalencia/, 'Con desenlaces frecuentes, el OR se aleja del riesgo relativo y exagera la asociación.'],
   [/Probabilidades predichas/, 'Poisson puede predecir probabilidades > 1; no afecta a la RP/RR, pero el modelo no sirve para predecir.'],
   [/Varianza robusta/, 'Corrige el error estándar de Poisson cuando el desenlace es Sí/No.'],
-  [/Sobredispersión/, 'Varianza mayor que la media en conteos; la varianza robusta lo corrige.'],
+  [/Sobredispersión/, 'Varianza mayor que la media en conteos: los EE de Poisson quedan demasiado pequeños. Se corrige con binomial negativa o varianza robusta.'],
+  [/Ceros observados|Exceso de ceros/, 'Compara cuántos ceros hay con los que el modelo espera. Muchos más ceros que los esperados sugieren ceros estructurales (ZIP/ZINB o hurdle).'],
+  [/Vuong/, 'Contrasta si añadir la parte de ceros mejora el ajuste frente al mismo modelo sin ella. Es una prueba orientativa, no definitiva.'],
+  [/Parámetro de dispersión|Binomial negativa vs/, 'α mide cuánto excede la varianza a la media; α = 0 equivale a Poisson.'],
+  [/Odds proporcionales/, 'El modelo ordinal supone que el OR es el mismo en todos los puntos de corte de la escala; si cambia mucho, un único OR engaña.'],
+  [/Pacientes por categoría/, 'Las categorías con pocos pacientes hacen inestables los coeficientes; agrúpelas si es clínicamente razonable.'],
+  [/IIA|alternativas irrelevantes/, 'Supuesto del modelo multinomial logit: añadir o quitar una categoría no cambia las razones entre las demás.'],
+  [/Dispersión φ|asimetría/, 'Gamma supone que la variabilidad crece con la media (CV constante); residuos muy asimétricos indican otra distribución.'],
+  [/Desenlace estrictamente positivo|Desenlace: conteo/, 'Comprobación de que el desenlace tiene la forma que exige el modelo.'],
   [/Riesgos proporcionales/, 'El HR debe ser constante en el tiempo; si cambia, un único HR resume mal el efecto.'],
   [/conglomerados|sujetos/, 'El error estándar robusto necesita suficientes pacientes (≥ 40 recomendado).'],
   [/Correlación de trabajo/, 'Cómo se parecen las mediciones repetidas de un mismo paciente; compare estructuras con el QIC.'],
@@ -553,14 +661,16 @@ function renderAssumptions(R) {
   if (spec.type === 'logistic') {
     add(binnedResidPlot(f.fitted, R.adj.y), 'residuos_agrupados', 'Se agrupan los pacientes por riesgo predicho y se promedia el residuo. Más del 5 % de puntos fuera de las bandas sugiere mala especificación.');
     add(leveragePlot(f.hat, Array.from(f.pres, (r, i) => r / Math.sqrt(1 - f.hat[i])), p), 'influyentes', 'Pacientes fuera de las curvas de Cook influyen mucho en los OR.');
-    add(rocPlot(A.extra.roc, `AUC = ${f2(A.extra.auc.auc, 3)}`), 'roc', 'Cuanto más se acerca la curva a la esquina superior izquierda, mejor distingue el modelo entre pacientes con y sin el evento.');
-    add(calibPlot(A.extra.hl), 'calibracion', 'Cada punto es un decil de riesgo predicho; deben quedar sobre la diagonal (riesgo predicho = observado).');
   }
-  if (spec.type === 'poisson') {
+  if (['nb', 'zip', 'zinb', 'gamma', 'hgamma', 'glmm'].includes(spec.type)) {
+    const fit = spec.type === 'hgamma' ? f.fittedPos : f.fitted, yy = R.adj.y, r = f.pres || Array.from(f.fitted, (m, i) => (f.resid ? f.resid[i] : yy[i] - m) / Math.sqrt(Math.max(spec.type === 'glmm' && spec.family !== 'poisson' ? m * (1 - m) : f.mu?.[i] ?? m, 1e-9)));
+    if (spec.type !== 'hgamma' || f.pres) add(scatterPlot({ x: fit, y: r, xlab: 'Valores ajustados', ylab: 'Residuo de Pearson', title: 'Residuos vs ajustados', sub: 'La línea debe ser plana y horizontal', hline: 0, smooth: lowess(fit, r) }), 'residuos_vs_ajustados', 'Una curva sistemática indica mala especificación (falta una curva, una interacción o la distribución es otra). En los modelos de conteo, residuos que se abren con el valor ajustado indican sobredispersión.');
+  }
+  if (spec.type === 'poisson' || spec.type === 'count') {
     add(scatterPlot({ x: f.fitted, y: f.pres, xlab: 'Valores ajustados', ylab: 'Residuo de Pearson', title: 'Residuos vs ajustados', sub: 'La línea debe ser plana y horizontal', hline: 0, smooth: lowess(f.fitted, f.pres) }), 'residuos', 'Con desenlaces Sí/No los residuos forman dos bandas (es normal); lo importante es que la línea sea plana.');
     add(leveragePlot(f.hat, Array.from(f.pres, (r, i) => r / Math.sqrt(1 - f.hat[i])), p), 'influyentes', 'Pacientes fuera de las curvas de Cook influyen mucho en las razones estimadas.');
   }
-  if (['linear', 'logistic', 'poisson'].includes(spec.type)) spec.numVars.slice(0, 4).forEach(v => {
+  if (['linear', 'logistic', 'poisson', 'count'].includes(spec.type)) spec.numVars.slice(0, 4).forEach(v => {
     const j = R.adj.D.cols.findIndex(c => c.term === v); if (j < 0) return;
     const x = R.adj.D.X.map(r => r[j]), res = spec.type === 'linear' ? f.resid : Array.from(f.resid, (r, i) => r / (spec.type === 'logistic' ? f.fitted[i] * (1 - f.fitted[i]) : f.fitted[i]));
     const pr = x.map((xi, i) => res[i] + f.beta[j] * xi);
@@ -629,15 +739,14 @@ const selData = () => ({ ds: state.sets[0], rows: state.R.rows, meta: state.meta
 function renderSelCtx() {
   if (!state.R) return; const s = state.R.spec;
   $('#sel-ctx').innerHTML = `Modelo del paso 6: <b>${esc(TYPES[s.type].label)}</b>; desenlace <b>${esc(s.y || s.status)}</b>; ${s.objective === 'causal' ? 'intervención' : 'exposición'} (siempre en el modelo) <b>${esc(s.exposure || '—')}</b>; ${s.covs.length} covariables candidatas. n = ${state.R.n}${state.R.mi ? ' (selección en la imputación 1)' : ''}.${s.objective === 'causal' ? ' <span class="flag">Pregunta causal: use la selección automática solo como exploración.</span>' : ''}`;
-  renderCompare();
 }
 $('#sel-run').addEventListener('click', () => {
-  const spec = { ...state.R.spec, inter: [] }, { ds, rows, meta } = selData(), st = $('#sel-strategy').value, o = $('#sel-out');
+  const spec = { ...state.R.spec, inter: [] }, { ds, rows, meta } = selData(), st = 'purposeful', o = $('#sel-out');
   try {
-    const r = st === 'purposeful' ? purposeful(spec, ds, meta, rows, { pEnter: +$('#sel-pin').value, pStay: +$('#sel-pout').value, delta: +$('#sel-delta').value }) : backward(spec, ds, meta, rows, { by: st, pOut: +$('#sel-pout').value });
+    const r = purposeful(spec, ds, meta, rows, { pEnter: +$('#sel-pin').value, pStay: +$('#sel-pout').value, delta: +$('#sel-delta').value });
     state.sel = { ...r, strategy: st };
     o.innerHTML = `<ol class="log">${r.log.map(l => `<li>${esc(l.text)}${l.table ? `<table class="data mt"><thead><tr><th>Variable</th><th class="num">p bivariado</th><th></th></tr></thead><tbody>${l.table.map(t => `<tr><td>${esc(t[0])}</td><td class="num">${t[1]}</td><td>${t[2]}</td></tr>`).join('')}</tbody></table>` : ''}</li>`).join('')}</ol><p><b>Covariables seleccionadas:</b> ${esc(r.covs.join(', ') || 'ninguna')}</p>`;
-    $('#sel-apply').hidden = false; renderCompare();
+    $('#sel-apply').hidden = false;
   } catch (e) { o.innerHTML = errBox(e); }
 });
 $('#sel-apply').addEventListener('click', () => {
@@ -645,7 +754,7 @@ $('#sel-apply').addEventListener('click', () => {
   const s = state.R.spec;
   state.inter = s.inter.filter(p => p.every(v => v === s.exposure || state.sel.covs.includes(v)));
   state.draft = { ...s, covs: state.sel.covs, inter: state.inter };
-  state.selection = { purposeful: 'la estrategia de selección intencionada de Hosmer y Lemeshow (Bursac et al. 2008)', aic: 'una eliminación hacia atrás por AIC', p: 'una eliminación hacia atrás por valor p' }[state.sel.strategy];
+  state.selection = 'la estrategia de selección intencionada de Hosmer y Lemeshow (Bursac et al. 2008)';
   renderSpecForm(); showTab('modelos'); run();
 });
 $('#cie-run').addEventListener('click', () => {
@@ -665,14 +774,6 @@ $('#em-run').addEventListener('click', () => {
     o.querySelectorAll('[data-add]').forEach(b => b.addEventListener('click', () => { state.inter = [...state.R.spec.inter, [spec.exposure, b.dataset.add]]; state.draft = { ...state.R.spec, inter: state.inter }; renderSpecForm(); showTab('modelos'); run(); }));
   } catch (e) { o.innerHTML = errBox(e); }
 });
-function renderCompare() {
-  const s = { ...state.R.spec, inter: [] }, { ds, rows, meta } = selData(), models = [['Crudo (solo exposición)', s.exposure ? [] : null], ['Completo (todas las covariables)', s.covs]];
-  if (state.sel) models.push(['Seleccionado', state.sel.covs]);
-  const fits = models.filter(m => m[1]).map(([name, covs]) => { try { const r = fitModel(s, ds, meta, termsOf(s, covs), rows); return { name, covs, r, k: r.D.X[0].length }; } catch (e) { return { name, err: e.message }; } });
-  const full = fits.find(f => f.name.startsWith('Completo')), lik = ['linear', 'logistic', 'poisson', 'cox'].includes(s.type), crit = f => (s.type === 'gee' ? f.r.fit.qic : f.r.fit.aic);
-  $('#cmp-out').innerHTML = `<table class="data"><thead><tr><th>Modelo</th><th class="num">Parámetros</th><th class="num">${s.type === 'gee' ? 'QIC' : 'AIC'}</th>${lik ? '<th class="num">BIC</th><th class="num">LRT vs completo</th>' : ''}</tr></thead><tbody>${fits.map(f => f.err ? `<tr><td>${esc(f.name)}</td><td colspan="4">${esc(f.err)}</td></tr>` : `<tr><td>${esc(f.name)}</td><td class="num">${f.k}</td><td class="num">${f2(crit(f), 1)}</td>${lik ? `<td class="num">${f2(f.r.fit.bic, 1)}</td><td class="num">${f === full || !full ? '' : (() => { const lr = 2 * (full.r.fit.ll - f.r.fit.ll), df = full.k - f.k; return df > 0 ? `χ² ${f2(lr)} (gl ${df}); p ${fp(pchisqU(lr, df))}` : ''; })()}</td>` : ''}</tr>`).join('')}</tbody></table>${s.type === 'poisson' ? '<p class="notes">En Poisson robusta con desenlace Sí/No la verosimilitud es aproximada: use AIC/LRT solo como orientación.</p>' : ''}`;
-}
-
 // ---------------- 8 · reporte ----------------
 $$('[data-lang]').forEach(b => b.addEventListener('click', () => { state.lang = b.dataset.lang; renderReport(); }));
 $('#meth-copy').addEventListener('click', () => { const t = $('#methods'); try { navigator.clipboard.writeText(t.value).catch(() => t.select()); } catch { t.select(); } });
